@@ -32,22 +32,22 @@ export const SavedScholarshipsPage: React.FC<SavedScholarshipsPageProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs font-semibold mb-2">
-            <Bookmark className="w-3.5 h-3.5 fill-rose-500 text-rose-500" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-[#1E2E28] border border-amber-200 dark:border-amber-800/60 text-amber-800 dark:text-amber-300 text-xs font-bold mb-2">
+            <Bookmark className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
             <span>Browser-Saved Items</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#064E3B] dark:text-emerald-400 font-editorial tracking-tight">
             Saved Scholarships
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Stored privately in your browser. No registration or account needed.
+          <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
+            Stored locally on your device. No login or accounts required.
           </p>
         </div>
 
         {savedScholarships.length > 0 && (
           <button
             onClick={clearSaved}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900 transition-colors self-start sm:self-auto"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900 transition-colors self-start sm:self-auto"
           >
             <Trash2 className="w-3.5 h-3.5" />
             <span>Clear Saved List</span>
@@ -55,7 +55,7 @@ export const SavedScholarshipsPage: React.FC<SavedScholarshipsPageProps> = ({
         )}
       </div>
 
-      {/* Saved Scholarships Grid or Approved Empty State Illustration */}
+      {/* Saved Scholarships Grid or Empty State */}
       {savedScholarships.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {savedScholarships.map((s) => (
@@ -68,36 +68,36 @@ export const SavedScholarshipsPage: React.FC<SavedScholarshipsPageProps> = ({
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 px-4 max-w-md mx-auto bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs mb-16">
-          {/* Approved 2D Student illustration asset for Empty State */}
+        <div className="text-center py-12 px-4 max-w-md mx-auto bg-white dark:bg-[#142420] rounded-3xl border border-[#E8E2D7] dark:border-[#1E3A33] shadow-2xs mb-16">
+          {/* Approved Empty-State 2D Illustration */}
           <StudentIllustration variant="empty" className="mb-4" />
 
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-            You haven&apos;t saved any scholarships yet
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white font-editorial">
+            No saved scholarships yet
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-            Explore scholarships and click the bookmark icon on any card to save opportunities you want to apply for later.
+          <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-2 leading-relaxed">
+            Save scholarships here so you can come back to them later.
           </p>
 
           <button
             onClick={onExplore}
-            className="mt-6 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/20 transition-all inline-flex items-center gap-2"
+            className="mt-6 px-6 py-3 rounded-xl bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 font-bold text-xs sm:text-sm shadow-md shadow-[#064E3B]/20 transition-all inline-flex items-center gap-2"
           >
-            <Compass className="w-4 h-4" />
-            <span>Explore Scholarships Now →</span>
+            <Compass className="w-4 h-4 text-amber-400" />
+            <span>Explore Scholarships</span>
           </button>
         </div>
       )}
 
       {/* Recently Viewed Scholarships Tray */}
       {recentlyViewed.length > 0 && (
-        <div className="pt-10 border-t border-slate-200 dark:border-slate-800">
+        <div className="pt-10 border-t border-[#E8E2D7] dark:border-[#1E3A33]">
           <div className="flex items-center gap-2 mb-4">
-            <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            <h2 className="text-base font-bold text-slate-900 dark:text-white">
+            <Clock className="w-4 h-4 text-[#065F46] dark:text-emerald-400" />
+            <h2 className="text-base font-bold text-[#064E3B] dark:text-white font-editorial">
               Recently Viewed Scholarships
             </h2>
-            <span className="text-xs text-slate-400">({recentlyViewed.length})</span>
+            <span className="text-xs text-stone-400 font-semibold">({recentlyViewed.length})</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -105,17 +105,17 @@ export const SavedScholarshipsPage: React.FC<SavedScholarshipsPageProps> = ({
               <div
                 key={s.id}
                 onClick={() => onViewScholarshipDetails(s.slug)}
-                className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 cursor-pointer transition-all flex items-center justify-between gap-3 group"
+                className="p-4 rounded-2xl bg-white dark:bg-[#142420] border border-[#E8E2D7] dark:border-[#1E3A33] hover:border-[#065F46] dark:hover:border-emerald-600 cursor-pointer transition-all flex items-center justify-between gap-3 group shadow-2xs"
               >
                 <div className="min-w-0">
-                  <h3 className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                  <h3 className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-[#065F46] dark:group-hover:text-emerald-400">
                     {s.name}
                   </h3>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400 truncate mt-0.5">
                     {s.provider}
                   </p>
                 </div>
-                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all shrink-0" />
+                <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-[#065F46] group-hover:translate-x-0.5 transition-all shrink-0" />
               </div>
             ))}
           </div>

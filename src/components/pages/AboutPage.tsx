@@ -17,69 +17,69 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onStartFinder }) => {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 animate-in fade-in duration-300 space-y-12">
       {/* Hero Header */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold">
-          <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-          <span>About VidyaSetu</span>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-[#142420] border border-emerald-200 dark:border-emerald-800 text-[#065F46] dark:text-emerald-300 text-xs font-bold">
+          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+          <span>About Edvora</span>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-          Democratizing Scholarship Discovery
+        <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white font-editorial tracking-tight">
+          Find Scholarships That Fit You
         </h1>
-        <p className="text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          A modern, student-centric platform designed to solve the complexity of finding and understanding higher education scholarships in Gujarat and across India.
+        <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 max-w-2xl mx-auto leading-relaxed">
+          Edvora is a modern scholarship discovery platform built for students across India. We eliminate the frustration of navigating dozens of scattered government portals and private trust websites.
         </p>
       </div>
 
       {/* Core Principles Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-2">
-          <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-3">
+        <div className="p-6 rounded-3xl bg-white dark:bg-[#142420] border border-[#E8E2D7] dark:border-[#1E3A33] shadow-2xs space-y-2">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-[#1C3630] text-[#065F46] dark:text-emerald-400 flex items-center justify-center mb-3">
             <Lock className="w-5 h-5" />
           </div>
-          <h2 className="text-base font-bold text-slate-900 dark:text-white">
+          <h2 className="text-base font-bold text-slate-900 dark:text-white font-editorial">
             Zero Registration
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-            No accounts, passwords, email verification, or permanent student records. Your answers stay strictly in your browser session.
+          <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+            No accounts, passwords, email verification, or permanent student records. Your answers stay strictly in your current browser session.
           </p>
         </div>
 
-        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-2">
-          <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">
+        <div className="p-6 rounded-3xl bg-white dark:bg-[#142420] border border-[#E8E2D7] dark:border-[#1E3A33] shadow-2xs space-y-2">
+          <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-[#2A2415] text-amber-700 dark:text-amber-300 flex items-center justify-center mb-3">
             <ShieldCheck className="w-5 h-5" />
           </div>
-          <h2 className="text-base font-bold text-slate-900 dark:text-white">
+          <h2 className="text-base font-bold text-slate-900 dark:text-white font-editorial">
             Transparent Rules
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+          <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
             No artificial black-box scores. Our engine displays the exact reason why each criterion passed, requires verification, or failed.
           </p>
         </div>
 
-        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-2">
-          <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-3">
+        <div className="p-6 rounded-3xl bg-white dark:bg-[#142420] border border-[#E8E2D7] dark:border-[#1E3A33] shadow-2xs space-y-2">
+          <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-[#132A24] text-teal-700 dark:text-teal-300 flex items-center justify-center mb-3">
             <Globe2 className="w-5 h-5" />
           </div>
-          <h2 className="text-base font-bold text-slate-900 dark:text-white">
-            Gujarat + National
+          <h2 className="text-base font-bold text-slate-900 dark:text-white font-editorial">
+            Across India
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-            Curated coverage of state-level schemes like MYSY and Digital Gujarat alongside popular Central Sector and AICTE initiatives.
+          <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+            Covers prominent state schemes (like Gujarat MYSY, CMSS) alongside major Central Sector, AICTE, and premier philanthropic programs.
           </p>
         </div>
       </div>
 
       {/* Scope Section */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-          What Does This Platform Cover?
+      <div className="bg-white dark:bg-[#142420] rounded-3xl p-8 border border-[#E8E2D7] dark:border-[#1E3A33] shadow-2xs space-y-6">
+        <h2 className="text-xl font-bold text-[#064E3B] dark:text-white font-editorial">
+          What Does Edvora Cover?
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs sm:text-sm">
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-blue-600 font-bold">
+            <div className="flex items-center gap-2 text-[#065F46] dark:text-emerald-400 font-bold">
               <MapPin className="w-4 h-4" />
-              <span>Gujarat State Scholarships</span>
+              <span>State Government Initiatives</span>
             </div>
-            <ul className="space-y-1.5 text-slate-600 dark:text-slate-300">
+            <ul className="space-y-1.5 text-stone-600 dark:text-stone-300">
               <li>• Mukhyamantri Yuva Swavalamban Yojana (MYSY)</li>
               <li>• Hon. Chief Minister Scholarship Scheme (CMSS)</li>
               <li>• Digital Gujarat Post-Matric (SC, ST, SEBC/OBC)</li>
@@ -90,11 +90,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onStartFinder }) => {
           </div>
 
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-indigo-600 font-bold">
+            <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-bold">
               <Globe2 className="w-4 h-4" />
-              <span>Popular All-India Scholarships</span>
+              <span>National & Philanthropic Grants</span>
             </div>
-            <ul className="space-y-1.5 text-slate-600 dark:text-slate-300">
+            <ul className="space-y-1.5 text-stone-600 dark:text-stone-300">
               <li>• PM-USP CSSS (Ministry of Education / NSP)</li>
               <li>• AICTE Pragati Scholarship for Girls</li>
               <li>• AICTE Saksham for Specially-Abled Students</li>
@@ -107,27 +107,27 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onStartFinder }) => {
         </div>
       </div>
 
-      {/* Legal & Application Disclaimer */}
-      <div className="p-6 rounded-3xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/80 text-xs sm:text-sm text-amber-900 dark:text-amber-200 space-y-2">
+      {/* Important Disclaimer */}
+      <div className="p-6 rounded-3xl bg-amber-50/70 dark:bg-[#201C12] border border-amber-200 dark:border-amber-900/60 text-xs sm:text-sm text-amber-900 dark:text-amber-200 space-y-2">
         <div className="flex items-center gap-2 font-bold text-amber-800 dark:text-amber-300">
-          <AlertTriangle className="w-4 h-4" />
-          <span>Crucial Disclaimer & Processing Policy</span>
+          <AlertTriangle className="w-4 h-4 text-amber-600" />
+          <span>Important Notice & Application Policy</span>
         </div>
         <p className="leading-relaxed">
-          VidyaSetu is an informational discovery guide. We do <strong>NOT</strong> accept, process, or approve scholarship applications, nor do we handle government disbursements. All applications must be submitted directly through the designated official portals (such as Digital Gujarat, MYSY, or the National Scholarship Portal).
+          Edvora is an independent discovery platform. We do <strong>NOT</strong> process, evaluate, or approve applications, nor do we disburse government or private funds. All applications must be submitted directly through the respective authorized official websites.
         </p>
         <p className="leading-relaxed">
-          Eligibility evaluations shown on this site are indicative estimations based solely on the criteria provided. Final eligibility, document verification, quota allocation, and selection are determined exclusively by the respective scholarship authority.
+          Eligibility evaluations on this platform are indicative estimations based solely on available criteria. Final eligibility, document verification, and selection are determined exclusively by the respective scholarship authority.
         </p>
       </div>
 
-      {/* CTA Box */}
+      {/* Action CTA */}
       <div className="text-center pt-4">
         <button
           onClick={onStartFinder}
-          className="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-500/20 transition-all hover:scale-105"
+          className="px-8 py-3.5 rounded-xl bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 font-bold text-xs sm:text-sm shadow-md shadow-[#064E3B]/20 transition-all hover:scale-105"
         >
-          Try the Scholarship Finder Now →
+          Find My Scholarships Now →
         </button>
       </div>
     </div>

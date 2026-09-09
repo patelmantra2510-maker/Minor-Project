@@ -40,7 +40,7 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
   const comparing = isComparing(scholarship.id);
 
   return (
-    <div className="group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-800 transition-all duration-200 flex flex-col justify-between overflow-hidden">
+    <div className="group bg-white dark:bg-[#142420] rounded-2xl border border-[#E8E2D7] dark:border-[#1E3A33] shadow-2xs hover:shadow-md hover:border-[#065F46] dark:hover:border-emerald-600 transition-all duration-200 flex flex-col justify-between overflow-hidden">
       {/* Top Banner with Badges */}
       <div className="p-5 sm:p-6 pb-4">
         <div className="flex items-start justify-between gap-3 mb-3">
@@ -53,8 +53,8 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
               startDate={scholarship.applicationStart}
               overrideStatus={scholarship.status}
             />
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-              <MapPin className="w-3 h-3 text-blue-500" />
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 dark:bg-[#1C3630] text-stone-700 dark:text-stone-300">
+              <MapPin className="w-3 h-3 text-[#065F46] dark:text-emerald-400" />
               {scholarship.state === 'Gujarat' ? 'Gujarat' : 'All India'}
             </span>
           </div>
@@ -63,10 +63,10 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
           <div className="flex items-center gap-1">
             <button
               onClick={() => toggleCompare(scholarship.id)}
-              className={`text-xs px-2 py-1 rounded-md font-medium border transition-colors ${
+              className={`text-xs px-2.5 py-1 rounded-lg font-bold border transition-colors ${
                 comparing
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                  ? 'bg-[#064E3B] text-amber-100 border-[#064E3B]'
+                  : 'bg-stone-50 dark:bg-[#1C3630] border-stone-200 dark:border-[#23453E] text-stone-700 dark:text-stone-300 hover:bg-stone-100'
               }`}
               title="Add to comparison tray"
             >
@@ -76,13 +76,13 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
               onClick={() => toggleSave(scholarship.id)}
               className={`p-1.5 rounded-full border transition-all ${
                 saved
-                  ? 'bg-rose-50 border-rose-200 text-rose-600 dark:bg-rose-950/60 dark:border-rose-800 dark:text-rose-400 scale-110'
-                  : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-rose-500 hover:border-rose-200 dark:hover:border-rose-900'
+                  ? 'bg-amber-50 border-amber-300 text-amber-600 dark:bg-amber-950/60 dark:border-amber-800 dark:text-amber-400 scale-110'
+                  : 'bg-stone-50 dark:bg-[#1C3630] border-stone-200 dark:border-[#23453E] text-stone-400 hover:text-amber-600 hover:border-amber-300'
               }`}
               aria-label={saved ? 'Remove from saved' : 'Save scholarship'}
               title={saved ? 'Saved' : 'Save for later'}
             >
-              <Bookmark className={`w-4 h-4 ${saved ? 'fill-rose-500 text-rose-500' : ''}`} />
+              <Bookmark className={`w-4 h-4 ${saved ? 'fill-amber-500 text-amber-500' : ''}`} />
             </button>
           </div>
         </div>
@@ -90,22 +90,22 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
         {/* Title and Provider */}
         <h3
           onClick={() => onViewDetails(scholarship.slug)}
-          className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors cursor-pointer line-clamp-2"
+          className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white group-hover:text-[#065F46] dark:group-hover:text-emerald-400 font-editorial transition-colors cursor-pointer line-clamp-2"
         >
           {scholarship.name}
         </h3>
-        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-1 font-medium">
-          <Building2 className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+        <p className="text-xs text-stone-500 dark:text-stone-400 flex items-center gap-1.5 mt-1 font-medium">
+          <Building2 className="w-3.5 h-3.5 shrink-0 text-stone-400" />
           <span className="truncate">{scholarship.provider}</span>
         </p>
 
-        {/* Key Information Chips */}
-        <div className="grid grid-cols-2 gap-2.5 mt-4 py-3 border-y border-slate-100 dark:border-slate-800/80 text-xs">
+        {/* Key Information Matrix */}
+        <div className="grid grid-cols-2 gap-2.5 mt-4 py-3 border-y border-stone-100 dark:border-[#1E3A33] text-xs">
           <div className="flex items-start gap-2">
-            <GraduationCap className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+            <GraduationCap className="w-4 h-4 text-[#065F46] dark:text-emerald-400 shrink-0 mt-0.5" />
             <div>
-              <span className="text-slate-400 block text-[10px] uppercase font-semibold">Education</span>
-              <span className="font-semibold text-slate-800 dark:text-slate-200 truncate block">
+              <span className="text-stone-400 block text-[10px] uppercase font-bold">Education</span>
+              <span className="font-semibold text-slate-800 dark:text-stone-200 truncate block">
                 {scholarship.educationLevels.slice(0, 2).join(' · ')}
                 {scholarship.educationLevels.length > 2 && ' +more'}
               </span>
@@ -113,31 +113,31 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
           </div>
 
           <div className="flex items-start gap-2">
-            <IndianRupee className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+            <IndianRupee className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
             <div>
-              <span className="text-slate-400 block text-[10px] uppercase font-semibold">Benefits</span>
-              <span className="font-semibold text-emerald-700 dark:text-emerald-400 line-clamp-1">
+              <span className="text-stone-400 block text-[10px] uppercase font-bold">Benefits</span>
+              <span className="font-semibold text-[#065F46] dark:text-emerald-400 line-clamp-1">
                 {scholarship.benefits.amountDescription}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Short description preview */}
-        <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mt-3 leading-relaxed">
+        {/* Description */}
+        <p className="text-xs text-stone-600 dark:text-stone-400 line-clamp-2 mt-3 leading-relaxed">
           {scholarship.description}
         </p>
       </div>
 
-      {/* "Why This Matches Me?" Expandable Section */}
+      {/* Expandable "Why this matches me?" */}
       {matchResult && (
         <div className="px-5 sm:px-6 pb-2">
           <button
             onClick={() => setShowMatchReasons(!showMatchReasons)}
-            className="w-full py-2 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-blue-50 dark:hover:bg-blue-950/40 text-xs font-semibold text-blue-700 dark:text-blue-300 transition-colors flex items-center justify-between border border-slate-200 dark:border-slate-800"
+            className="w-full py-2 px-3 rounded-xl bg-stone-50 dark:bg-[#1C3630] hover:bg-emerald-50 dark:hover:bg-[#23453E] text-xs font-bold text-[#065F46] dark:text-emerald-300 transition-colors flex items-center justify-between border border-stone-200/80 dark:border-[#23453E]"
           >
             <span className="flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
               <span>Why this matches me?</span>
             </span>
             {showMatchReasons ? (
@@ -148,8 +148,8 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
           </button>
 
           {showMatchReasons && (
-            <div className="mt-2.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-xs space-y-2 animate-in fade-in slide-in-from-top-1">
-              <p className="font-medium text-slate-600 dark:text-slate-300 text-[11px] pb-1 border-b border-slate-200 dark:border-slate-700">
+            <div className="mt-2.5 p-3 rounded-xl bg-[#FAF8F5] dark:bg-[#162A24] border border-stone-200 dark:border-[#23453E] text-xs space-y-2 animate-in fade-in slide-in-from-top-1">
+              <p className="font-medium text-stone-600 dark:text-stone-300 text-[11px] pb-1 border-b border-stone-200 dark:border-[#23453E]">
                 {matchResult.summaryMessage}
               </p>
               <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
@@ -168,7 +168,7 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
                       <span
                         className={`font-semibold ${
                           check.status === 'matched'
-                            ? 'text-emerald-800 dark:text-emerald-300'
+                            ? 'text-[#065F46] dark:text-emerald-300'
                             : check.status === 'warning'
                             ? 'text-amber-800 dark:text-amber-300'
                             : 'text-rose-800 dark:text-rose-300'
@@ -176,7 +176,7 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
                       >
                         {check.label}:
                       </span>{' '}
-                      <span className="text-slate-600 dark:text-slate-400 text-[11px]">
+                      <span className="text-stone-600 dark:text-stone-400 text-[11px]">
                         {check.detail}
                       </span>
                     </div>
@@ -189,18 +189,18 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
       )}
 
       {/* Card Footer Button */}
-      <div className="p-5 sm:p-6 pt-3 bg-slate-50/50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-3">
-        <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
-          <Layers className="w-3 h-3 text-slate-400" />
+      <div className="p-5 sm:p-6 pt-3 bg-stone-50/60 dark:bg-[#101D1A] border-t border-stone-100 dark:border-[#1E3A33] flex items-center justify-between gap-3">
+        <span className="text-[11px] text-stone-500 dark:text-stone-400 flex items-center gap-1 font-medium">
+          <Layers className="w-3 h-3 text-stone-400" />
           {scholarship.type}
         </span>
 
         <button
           onClick={() => onViewDetails(scholarship.slug)}
-          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
+          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#065F46] dark:text-emerald-400 hover:text-[#043E2F] dark:hover:text-emerald-300 focus:outline-none"
         >
-          <span>View Scholarship</span>
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          <span>View Details</span>
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-amber-500" />
         </button>
       </div>
     </div>

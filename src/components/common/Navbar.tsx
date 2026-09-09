@@ -4,15 +4,14 @@ import { useSaved } from '../../context/SavedContext';
 import { useLanguage } from '../../context/LanguageContext';
 import type { SupportedLanguage } from '../../data/translations';
 import {
-  GraduationCap,
   Sun,
   Moon,
   Bookmark,
   Menu,
   X,
-  Compass,
   Sparkles,
   Globe,
+  Compass,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -27,15 +26,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
 
+  // Exact required navigation: Home, Find Scholarships, Explore Scholarships, Saved, About
   const navLinks = [
     { key: 'home', label: t('home'), route: 'home' },
     { key: 'find', label: t('findScholarships'), route: 'find', highlight: true },
-    { key: 'all', label: t('allScholarships'), route: 'all-scholarships' },
-    { key: 'gujarat', label: t('gujaratScholarships'), route: 'gujarat' },
-    { key: 'national', label: t('allIndiaScholarships'), route: 'all-india' },
+    { key: 'explore', label: t('exploreScholarships'), route: 'explore' },
     {
       key: 'saved',
-      label: `${t('savedScholarships')} (${savedIds.length})`,
+      label: `${t('saved')} (${savedIds.length})`,
       route: 'saved',
       hasBadge: savedIds.length > 0,
     },
@@ -48,26 +46,33 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
+    <header className="sticky top-0 z-40 bg-[#FAF8F5]/95 dark:bg-[#0C1513]/95 backdrop-blur-md border-b border-[#E8E2D7] dark:border-[#1A2E28] transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
-          {/* Brand Logo */}
+          {/* Brand Logo & Name: Edvora */}
           <div
             onClick={() => handleLinkClick('home')}
-            className="flex items-center gap-3 cursor-pointer group focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-1"
+            className="flex items-center gap-3 cursor-pointer group focus:outline-none focus:ring-2 focus:ring-emerald-600 rounded-xl p-1"
           >
-            <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-              <GraduationCap className="w-6 h-6" />
+            {/* Edvora Logo Mark */}
+            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-xs border border-[#E2DACB] dark:border-[#1E3A33] group-hover:scale-105 transition-transform bg-white dark:bg-[#142420] flex items-center justify-center">
+              <img
+                src="/edvora-logo.png"
+                alt="Edvora Logo"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Fallback to SVG if image not rendered
+                  (e.target as HTMLElement).style.display = 'none';
+                }}
+              />
             </div>
             <div>
-              <div className="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
-                <span>{t('siteName')}</span>
-                <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 font-semibold">
-                  Beta
-                </span>
+              <div className="text-2xl font-black tracking-tight text-[#064E3B] dark:text-emerald-400 font-editorial flex items-center gap-1.5">
+                <span>Edvora</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block" />
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium hidden sm:block">
-                Gujarat & All-India Discovery
+              <p className="text-[10px] text-stone-500 dark:text-stone-400 font-medium tracking-wide uppercase hidden sm:block">
+                Scholarships That Fit You
               </p>
             </div>
           </div>
@@ -78,16 +83,16 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
               const isActive =
                 currentRoute === item.route ||
                 (item.route === 'home' && currentRoute === '') ||
-                (item.route === 'all-scholarships' && currentRoute.startsWith('scholarships/'));
+                (item.route === 'explore' && (currentRoute === 'all-scholarships' || currentRoute.startsWith('scholarships/')));
 
               if (item.highlight) {
                 return (
                   <button
                     key={item.key}
                     onClick={() => handleLinkClick(item.route)}
-                    className="ml-1 mr-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-sm hover:shadow transition-all flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="ml-2 mr-1 px-4 py-2 rounded-xl bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 font-bold text-xs sm:text-sm shadow-sm hover:shadow transition-all flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
-                    <Sparkles className="w-4 h-4" />
+                    <Sparkles className="w-4 h-4 text-amber-400" />
                     <span>{item.label}</span>
                   </button>
                 );
@@ -97,22 +102,22 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
                 <button
                   key={item.key}
                   onClick={() => handleLinkClick(item.route)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors relative flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-colors relative flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
                     isActive
-                      ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 font-semibold'
-                      : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
+                      ? 'text-[#064E3B] dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 font-bold'
+                      : 'text-stone-700 dark:text-stone-300 hover:text-[#064E3B] dark:hover:text-white hover:bg-stone-100/70 dark:hover:bg-stone-800/50'
                   }`}
                 >
                   {item.key === 'saved' && (
                     <Bookmark
-                      className={`w-4 h-4 ${
-                        savedIds.length > 0 ? 'fill-rose-500 text-rose-500' : ''
+                      className={`w-3.5 h-3.5 ${
+                        savedIds.length > 0 ? 'fill-amber-500 text-amber-500' : ''
                       }`}
                     />
                   )}
                   <span>{item.label}</span>
                   {item.hasBadge && (
-                    <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                   )}
                 </button>
               );
@@ -125,35 +130,35 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
             <div className="relative">
               <button
                 onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-                className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="p-2 rounded-xl text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-[#142420] border border-transparent hover:border-stone-200 dark:hover:border-[#1E3A33] transition-colors flex items-center gap-1 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 title="Change language"
                 aria-label="Change language"
               >
-                <Globe className="w-4 h-4" />
+                <Globe className="w-4 h-4 text-[#065F46] dark:text-emerald-400" />
                 <span className="uppercase">{language}</span>
               </button>
 
               {langDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-36 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 py-1.5 z-50 animate-in fade-in zoom-in-95">
-                  {(['en', 'gu', 'hi'] as SupportedLanguage[]).map((lang) => (
+                <div className="absolute right-0 mt-2 w-36 bg-white dark:bg-[#142420] rounded-2xl shadow-xl border border-stone-200 dark:border-[#1E3A33] py-1.5 z-50 animate-in fade-in zoom-in-95">
+                  {(['en', 'hi', 'gu'] as SupportedLanguage[]).map((lang) => (
                     <button
                       key={lang}
                       onClick={() => {
                         setLanguage(lang);
                         setLangDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-1.5 text-xs font-medium flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors ${
+                      className={`w-full text-left px-3.5 py-2 text-xs font-semibold flex items-center justify-between hover:bg-stone-50 dark:hover:bg-[#1C3630] transition-colors ${
                         language === lang
-                          ? 'text-blue-600 dark:text-blue-400 font-bold bg-blue-50/50 dark:bg-blue-950/30'
-                          : 'text-slate-700 dark:text-slate-300'
+                          ? 'text-[#064E3B] dark:text-emerald-400 font-bold bg-emerald-50/70 dark:bg-emerald-950/40'
+                          : 'text-stone-700 dark:text-stone-300'
                       }`}
                     >
                       <span>
                         {lang === 'en' && 'English'}
-                        {lang === 'gu' && 'ગુજરાતી'}
                         {lang === 'hi' && 'हिंदी'}
+                        {lang === 'gu' && 'ગુજરાતી'}
                       </span>
-                      {language === lang && <span className="text-blue-600">✓</span>}
+                      {language === lang && <span className="text-amber-500 font-bold">✓</span>}
                     </button>
                   ))}
                 </div>
@@ -163,53 +168,57 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="p-2 rounded-xl text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-[#142420] border border-transparent hover:border-stone-200 dark:hover:border-[#1E3A33] transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
               title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? (
-                <Sun className="w-5 h-5 text-amber-400 hover:rotate-90 transition-transform duration-300" />
+                <Sun className="w-4 h-4 text-amber-400 hover:rotate-90 transition-transform duration-300" />
               ) : (
-                <Moon className="w-5 h-5 text-slate-700 hover:-rotate-12 transition-transform duration-300" />
+                <Moon className="w-4 h-4 text-stone-700 hover:-rotate-12 transition-transform duration-300" />
               )}
             </button>
 
-            {/* Mobile Hamburger Menu Button */}
+            {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="lg:hidden p-2 rounded-xl text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#142420] transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
               aria-label="Open menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 pt-2 pb-6 space-y-2 animate-in slide-in-from-top-2">
+        <div className="lg:hidden bg-[#FAF8F5] dark:bg-[#0C1513] border-b border-stone-200 dark:border-[#1A2E28] px-4 pt-2 pb-6 space-y-1.5 animate-in slide-in-from-top-2">
           {navLinks.map((item) => {
-            const isActive = currentRoute === item.route;
+            const isActive =
+              currentRoute === item.route ||
+              (item.route === 'explore' && (currentRoute === 'all-scholarships' || currentRoute.startsWith('scholarships/')));
+
             return (
               <button
                 key={item.key}
                 onClick={() => handleLinkClick(item.route)}
-                className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium flex items-center justify-between transition-colors ${
+                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-between transition-colors ${
                   item.highlight
-                    ? 'bg-blue-600 text-white font-semibold shadow-sm'
+                    ? 'bg-[#064E3B] text-amber-100 font-bold shadow-xs'
                     : isActive
-                    ? 'bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 font-semibold'
-                    : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    ? 'bg-emerald-50 dark:bg-[#142420] text-[#064E3B] dark:text-emerald-400 font-bold'
+                    : 'text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#142420]'
                 }`}
               >
                 <span className="flex items-center gap-2">
-                  {item.key === 'find' && <Compass className="w-4 h-4" />}
+                  {item.key === 'find' && <Sparkles className="w-4 h-4 text-amber-400" />}
+                  {item.key === 'explore' && <Compass className="w-4 h-4" />}
                   {item.key === 'saved' && <Bookmark className="w-4 h-4" />}
                   {item.label}
                 </span>
                 {item.hasBadge && (
-                  <span className="px-2 py-0.5 rounded-full text-xs bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 font-bold">
+                  <span className="px-2 py-0.5 rounded-full text-xs bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 font-bold">
                     {savedIds.length}
                   </span>
                 )}

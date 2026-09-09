@@ -14,7 +14,7 @@ const SavedContext = createContext<SavedContextType | undefined>(undefined);
 export const SavedProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [savedIds, setSavedIds] = useState<string[]>(() => {
     try {
-      const stored = localStorage.getItem('vidyasetu_saved_ids');
+      const stored = localStorage.getItem('edvora_saved_ids') || localStorage.getItem('vidyasetu_saved_ids');
       return stored ? JSON.parse(stored) : [];
     } catch {
       return [];
@@ -23,7 +23,7 @@ export const SavedProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const [recentlyViewedIds, setRecentlyViewedIds] = useState<string[]>(() => {
     try {
-      const stored = localStorage.getItem('vidyasetu_recent_ids');
+      const stored = localStorage.getItem('edvora_recent_ids') || localStorage.getItem('vidyasetu_recent_ids');
       return stored ? JSON.parse(stored) : [];
     } catch {
       return [];
@@ -31,11 +31,11 @@ export const SavedProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   });
 
   useEffect(() => {
-    localStorage.setItem('vidyasetu_saved_ids', JSON.stringify(savedIds));
+    localStorage.setItem('edvora_saved_ids', JSON.stringify(savedIds));
   }, [savedIds]);
 
   useEffect(() => {
-    localStorage.setItem('vidyasetu_recent_ids', JSON.stringify(recentlyViewedIds));
+    localStorage.setItem('edvora_recent_ids', JSON.stringify(recentlyViewedIds));
   }, [recentlyViewedIds]);
 
   const toggleSave = (id: string) => {

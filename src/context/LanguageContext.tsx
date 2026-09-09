@@ -12,13 +12,13 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<SupportedLanguage>(() => {
-    const saved = localStorage.getItem('vidyasetu_lang') as SupportedLanguage;
+    const saved = (localStorage.getItem('edvora_lang') || localStorage.getItem('vidyasetu_lang')) as SupportedLanguage;
     if (saved === 'en' || saved === 'gu' || saved === 'hi') return saved;
     return 'en';
   });
 
   useEffect(() => {
-    localStorage.setItem('vidyasetu_lang', language);
+    localStorage.setItem('edvora_lang', language);
   }, [language]);
 
   const setLanguage = (lang: SupportedLanguage) => {

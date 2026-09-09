@@ -7,6 +7,8 @@ import { LanguageProvider } from './context/LanguageContext';
 import { Navbar } from './components/common/Navbar';
 import { Footer } from './components/common/Footer';
 import { Hero } from './components/home/Hero';
+import { ExploreByCategory } from './components/home/ExploreByCategory';
+import { FeaturedScholarships } from './components/home/FeaturedScholarships';
 import { Features } from './components/home/Features';
 import { HowItWorks } from './components/home/HowItWorks';
 import { QuestionnaireWizard } from './components/questionnaire/QuestionnaireWizard';
@@ -28,10 +30,25 @@ export function AppContent() {
     return hash || 'home';
   });
 
+  // Directory filter state when navigated from home category cards
+  const [directoryFilters, setDirectoryFilters] = useState<{
+    locationTab?: 'all' | 'Gujarat' | 'All India';
+    educationFilter?: string;
+    categoryFilter?: string;
+    genderFilter?: string;
+    typeFilter?: string;
+  }>({
+    locationTab: 'all',
+    educationFilter: 'all',
+    categoryFilter: 'all',
+    genderFilter: 'all',
+    typeFilter: 'all',
+  });
+
   // Session-only student answers (No accounts, no permanent profile)
   const [studentAnswers, setStudentAnswers] = useState<StudentAnswers | null>(() => {
     try {
-      const stored = sessionStorage.getItem('vidyasetu_session_answers');
+      const stored = sessionStorage.getItem('edvora_session_answers') || sessionStorage.getItem('vidyasetu_session_answers');
       return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
@@ -41,7 +58,7 @@ export function AppContent() {
   // Keep session answers in sessionStorage for refreshing finder page
   useEffect(() => {
     if (studentAnswers) {
-      sessionStorage.setItem('vidyasetu_session_answers', JSON.stringify(studentAnswers));
+      sessionStorage.setItem('edvora_session_answers', JSON.stringify(studentAnswers));
     }
   }, [studentAnswers]);
 
@@ -61,6 +78,24 @@ export function AppContent() {
     window.location.hash = `#/${route}`;
     setCurrentRoute(route);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCategorySelect = (filterType: string, filterValue: string) => {
+    const newFilters = {
+      locationTab: 'all' as const,
+      educationFilter: 'all',
+      categoryFilter: 'all',
+      genderFilter: 'all',
+      typeFilter: 'all',
+    };
+
+    if (filterType === 'education') newFilters.educationFilter = filterValue;
+    if (filterType === 'category') newFilters.categoryFilter = filterValue;
+    if (filterType === 'gender') newFilters.genderFilter = filterValue;
+    if (filterType === 'type') newFilters.typeFilter = filterValue;
+
+    setDirectoryFilters(newFilters);
+    navigateTo('explore');
   };
 
   // Questionnaire completion handler
@@ -83,7 +118,7 @@ export function AppContent() {
     : null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-[#0C1513] text-stone-900 dark:text-stone-100 transition-colors">
       <Navbar currentRoute={currentRoute} onNavigate={navigateTo} />
 
       <main className="flex-1">
@@ -100,19 +135,21 @@ export function AppContent() {
               if (window.history.length > 1) {
                 window.history.back();
               } else {
-                navigateTo('all-scholarships');
+                navigateTo('explore');
               }
             }}
           />
         ) : isDetailRoute && !currentScholarship ? (
           <div className="max-w-md mx-auto py-20 text-center px-4">
-            <h2 className="text-xl font-bold">Scholarship Not Found</h2>
-            <p className="text-sm text-slate-500 mt-2">
+            <h2 className="text-xl font-bold font-editorial text-[#064E3B] dark:text-emerald-400">
+              Scholarship Not Found
+            </h2>
+            <p className="text-xs sm:text-sm text-stone-500 mt-2">
               The scholarship you requested does not exist or may have been updated.
             </p>
             <button
-              onClick={() => navigateTo('all-scholarships')}
-              className="mt-4 px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold"
+              onClick={() => navigateTo('explore')}
+              className="mt-4 px-4 py-2 rounded-xl bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 text-xs font-semibold shadow-xs transition-colors"
             >
               Browse All Scholarships
             </button>
@@ -124,7 +161,12 @@ export function AppContent() {
           <div>
             <Hero
               onFindScholarships={() => navigateTo('find')}
-              onExploreScholarships={() => navigateTo('all-scholarships')}
+              onExploreScholarships={() => navigateTo('explore')}
+            />
+            <ExploreByCategory onSelectCategory={handleCategorySelect} />
+            <FeaturedScholarships
+              onViewDetails={(slug) => navigateTo(`scholarships/${slug}`)}
+              onExploreAll={() => navigateTo('explore')}
             />
             <Features />
             <HowItWorks onStart={() => navigateTo('find')} />
@@ -140,9 +182,10 @@ export function AppContent() {
                 answers={studentAnswers}
                 onRetake={() => {
                   setStudentAnswers(null);
+                  sessionStorage.removeItem('edvora_session_answers');
                   sessionStorage.removeItem('vidyasetu_session_answers');
                 }}
-                onExploreAll={() => navigateTo('all-scholarships')}
+                onExploreAll={() => navigateTo('explore')}
                 onViewScholarshipDetails={(slug) => navigateTo(`scholarships/${slug}`)}
               />
             ) : (
@@ -154,30 +197,34 @@ export function AppContent() {
           </div>
         )}
 
-        {/* ALL SCHOLARSHIPS DIRECTORY */}
-        {!isDetailRoute && currentRoute === 'all-scholarships' && (
+        {/* EXPLORE SCHOLARSHIPS DIRECTORY (Unified Single Directory) */}
+        {!isDetailRoute && (currentRoute === 'explore' || currentRoute === 'all-scholarships') && (
           <DirectoryView
-            initialLocationFilter="all"
-            pageTitle="All Scholarships Directory"
-            pageSubtitle="Browse and filter through all verified Gujarat state and popular All-India scholarships."
+            initialLocationTab={directoryFilters.locationTab || 'all'}
+            initialCategoryFilter={directoryFilters.categoryFilter || 'all'}
+            initialEducationFilter={directoryFilters.educationFilter || 'all'}
+            initialGenderFilter={directoryFilters.genderFilter || 'all'}
+            initialTypeFilter={directoryFilters.typeFilter || 'all'}
+            pageTitle="Explore Scholarships"
+            pageSubtitle="The single directory for scholarships across Gujarat and India. Search, filter, and discover verified opportunities."
             onViewScholarshipDetails={(slug) => navigateTo(`scholarships/${slug}`)}
           />
         )}
 
-        {/* GUJARAT SCHOLARSHIPS */}
+        {/* GUJARAT SCHOLARSHIPS (Route Alias) */}
         {!isDetailRoute && currentRoute === 'gujarat' && (
           <DirectoryView
-            initialLocationFilter="Gujarat"
+            initialLocationTab="Gujarat"
             pageTitle="Gujarat State Scholarships"
             pageSubtitle="Explore state government initiatives including MYSY, Digital Gujarat Post-Matric, CMSS, Kanya Kelavani, and SHODH."
             onViewScholarshipDetails={(slug) => navigateTo(`scholarships/${slug}`)}
           />
         )}
 
-        {/* ALL INDIA SCHOLARSHIPS */}
+        {/* ALL INDIA SCHOLARSHIPS (Route Alias) */}
         {!isDetailRoute && currentRoute === 'all-india' && (
           <DirectoryView
-            initialLocationFilter="All India"
+            initialLocationTab="All India"
             pageTitle="Popular All India Scholarships"
             pageSubtitle="Discover selected national scholarships by Ministry of Education, AICTE, DST INSPIRE, and premier philanthropic trusts."
             onViewScholarshipDetails={(slug) => navigateTo(`scholarships/${slug}`)}
@@ -188,7 +235,7 @@ export function AppContent() {
         {!isDetailRoute && currentRoute === 'saved' && (
           <SavedScholarshipsPage
             onViewScholarshipDetails={(slug) => navigateTo(`scholarships/${slug}`)}
-            onExplore={() => navigateTo('all-scholarships')}
+            onExplore={() => navigateTo('explore')}
           />
         )}
 

@@ -2,12 +2,17 @@
 
 @layer base {
   :root {
-    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-serif: 'Playfair Display', Georgia, Cambria, 'Times New Roman', serif;
   }
 
   html {
     scroll-behavior: smooth;
     font-family: var(--font-sans);
+  }
+
+  .font-editorial {
+    font-family: var(--font-serif);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -22,32 +27,63 @@
   }
 
   body {
-    @apply bg-slate-50 text-slate-900 antialiased min-h-screen selection:bg-blue-500 selection:text-white;
+    background-color: #FAF8F5;
+    color: #1A202C;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   .dark body {
-    @apply bg-slate-950 text-slate-100 selection:bg-blue-600;
+    background-color: #0C1513;
+    color: #F3F4F6;
   }
 }
 
-/* Custom subtle scrollbar */
+/* Tasteful subtle floating animation for 3D educational motifs */
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(1.5deg);
+  }
+}
+
+@keyframes floatGentleAlt {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(-2deg);
+  }
+}
+
+.animate-float {
+  animation: floatGentle 5s ease-in-out infinite;
+}
+
+.animate-float-alt {
+  animation: floatGentleAlt 6s ease-in-out infinite;
+}
+
+/* Custom warm scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #D1D5DB;
   border-radius: 9999px;
 }
 .dark ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #233D35;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #9CA3AF;
 }
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #2D5046;
 }

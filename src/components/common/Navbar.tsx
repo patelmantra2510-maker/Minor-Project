@@ -3,15 +3,14 @@ import { useTheme } from '../../context/ThemeContext';
 import { useSaved } from '../../context/SavedContext';
 import { useLanguage } from '../../context/LanguageContext';
 import type { SupportedLanguage } from '../../data/translations';
+import { EdvoraLogo } from './EdvoraLogo';
 import {
   Sun,
   Moon,
   Bookmark,
   Menu,
   X,
-  Sparkles,
   Globe,
-  Compass,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -29,13 +28,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
   // Exact required navigation: Home, Find Scholarships, Explore Scholarships, Saved, About
   const navLinks = [
     { key: 'home', label: t('home'), route: 'home' },
-    { key: 'find', label: t('findScholarships'), route: 'find', highlight: true },
+    { key: 'find', label: t('findScholarships'), route: 'find' },
     { key: 'explore', label: t('exploreScholarships'), route: 'explore' },
     {
       key: 'saved',
-      label: `${t('saved')} (${savedIds.length})`,
+      label: t('saved'),
       route: 'saved',
-      hasBadge: savedIds.length > 0,
+      badgeCount: savedIds.length,
     },
     { key: 'about', label: t('about'), route: 'about' },
   ];
@@ -46,36 +45,22 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#FAF8F5]/95 dark:bg-[#0C1513]/95 backdrop-blur-md border-b border-[#E8E2D7] dark:border-[#1A2E28] transition-colors">
+    <header className="sticky top-0 z-40 bg-[#FAF8F5]/90 dark:bg-[#0C1513]/90 backdrop-blur-md border-b border-[#E8E2D7] dark:border-[#1A2E28] transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
-          {/* Brand Logo & Name: Edvora */}
-          <div
+          {/* Edvora Logo & Wordmark */}
+          <button
             onClick={() => handleLinkClick('home')}
-            className="flex items-center gap-3 cursor-pointer group focus:outline-none focus:ring-2 focus:ring-emerald-600 rounded-xl p-1"
+            className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#065F46] rounded-xl text-left transition-opacity hover:opacity-90"
+            aria-label="Edvora Home"
           >
-            {/* Edvora Logo Mark */}
-            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-xs border border-[#E2DACB] dark:border-[#1E3A33] group-hover:scale-105 transition-transform bg-white dark:bg-[#142420] flex items-center justify-center">
-              <img
-                src="/edvora-logo.png"
-                alt="Edvora Logo"
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  // Fallback to SVG if image not rendered
-                  (e.target as HTMLElement).style.display = 'none';
-                }}
-              />
+            <div className="hidden sm:block">
+              <EdvoraLogo variant="navbar" />
             </div>
-            <div>
-              <div className="text-2xl font-black tracking-tight text-[#064E3B] dark:text-emerald-400 font-editorial flex items-center gap-1.5">
-                <span>Edvora</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block" />
-              </div>
-              <p className="text-[10px] text-stone-500 dark:text-stone-400 font-medium tracking-wide uppercase hidden sm:block">
-                Scholarships That Fit You
-              </p>
+            <div className="sm:hidden">
+              <EdvoraLogo variant="mobile" />
             </div>
-          </div>
+          </button>
 
           {/* Desktop Navigation Links */}
           <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
@@ -83,41 +68,34 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
               const isActive =
                 currentRoute === item.route ||
                 (item.route === 'home' && currentRoute === '') ||
-                (item.route === 'explore' && (currentRoute === 'all-scholarships' || currentRoute.startsWith('scholarships/')));
-
-              if (item.highlight) {
-                return (
-                  <button
-                    key={item.key}
-                    onClick={() => handleLinkClick(item.route)}
-                    className="ml-2 mr-1 px-4 py-2 rounded-xl bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 font-bold text-xs sm:text-sm shadow-sm hover:shadow transition-all flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  >
-                    <Sparkles className="w-4 h-4 text-amber-400" />
-                    <span>{item.label}</span>
-                  </button>
-                );
-              }
+                (item.route === 'explore' &&
+                  (currentRoute === 'all-scholarships' || currentRoute.startsWith('scholarships/')));
 
               return (
                 <button
                   key={item.key}
                   onClick={() => handleLinkClick(item.route)}
-                  className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-colors relative flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                  className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all relative flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-[#065F46] ${
                     isActive
-                      ? 'text-[#064E3B] dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 font-bold'
-                      : 'text-stone-700 dark:text-stone-300 hover:text-[#064E3B] dark:hover:text-white hover:bg-stone-100/70 dark:hover:bg-stone-800/50'
+                      ? 'text-[#064E3B] dark:text-emerald-400 bg-emerald-50/80 dark:bg-[#142420] font-bold shadow-2xs'
+                      : 'text-stone-700 dark:text-stone-300 hover:text-[#064E3B] dark:hover:text-white hover:bg-stone-100/60 dark:hover:bg-[#142420]/60'
                   }`}
                 >
                   {item.key === 'saved' && (
                     <Bookmark
                       className={`w-3.5 h-3.5 ${
-                        savedIds.length > 0 ? 'fill-amber-500 text-amber-500' : ''
+                        savedIds.length > 0 ? 'fill-amber-500 text-amber-500' : 'text-stone-400'
                       }`}
                     />
                   )}
                   <span>{item.label}</span>
-                  {item.hasBadge && (
-                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                  {item.badgeCount !== undefined && item.badgeCount > 0 && (
+                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300">
+                      {item.badgeCount}
+                    </span>
+                  )}
+                  {isActive && (
+                    <span className="absolute -bottom-[1px] left-3 right-3 h-[2px] bg-[#065F46] dark:bg-emerald-400 rounded-full" />
                   )}
                 </button>
               );
@@ -203,23 +181,25 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
               <button
                 key={item.key}
                 onClick={() => handleLinkClick(item.route)}
-                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-between transition-colors ${
-                  item.highlight
-                    ? 'bg-[#064E3B] text-amber-100 font-bold shadow-xs'
-                    : isActive
+                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium flex items-center justify-between transition-colors ${
+                  isActive
                     ? 'bg-emerald-50 dark:bg-[#142420] text-[#064E3B] dark:text-emerald-400 font-bold'
                     : 'text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#142420]'
                 }`}
               >
-                <span className="flex items-center gap-2">
-                  {item.key === 'find' && <Sparkles className="w-4 h-4 text-amber-400" />}
-                  {item.key === 'explore' && <Compass className="w-4 h-4" />}
-                  {item.key === 'saved' && <Bookmark className="w-4 h-4" />}
-                  {item.label}
+                <span className="flex items-center gap-2.5">
+                  {item.key === 'saved' && (
+                    <Bookmark
+                      className={`w-4 h-4 ${
+                        savedIds.length > 0 ? 'fill-amber-500 text-amber-500' : 'text-stone-400'
+                      }`}
+                    />
+                  )}
+                  <span>{item.label}</span>
                 </span>
-                {item.hasBadge && (
+                {item.badgeCount !== undefined && item.badgeCount > 0 && (
                   <span className="px-2 py-0.5 rounded-full text-xs bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 font-bold">
-                    {savedIds.length}
+                    {item.badgeCount}
                   </span>
                 )}
               </button>

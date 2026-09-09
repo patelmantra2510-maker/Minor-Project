@@ -18,62 +18,102 @@ interface ExploreByCategoryProps {
   onSelectCategory: (filterType: string, filterValue: string) => void;
 }
 
+interface CategoryItem {
+  id: string;
+  name: string;
+  description: string;
+  filterType: string;
+  filterValue: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: string;
+}
+
 export const ExploreByCategory: React.FC<ExploreByCategoryProps> = ({ onSelectCategory }) => {
-  const categories = [
+  const categories: CategoryItem[] = [
     {
-      id: 'ug',
-      name: 'Undergraduate',
-      description: 'B.E., B.Tech, MBBS, B.Sc, B.Com, B.A.',
+      id: 'school',
+      name: 'School',
+      description: 'Pre-matric and higher secondary (Classes 9–12)',
       filterType: 'education',
-      filterValue: 'Undergraduate',
-      icon: GraduationCap,
-      badge: 'Most Popular',
+      filterValue: 'School',
+      icon: BookOpen,
     },
     {
       id: 'diploma',
       name: 'Diploma',
-      description: 'Polytechnic & technical diploma streams',
+      description: 'Polytechnic & technical diploma programs',
       filterType: 'education',
       filterValue: 'Diploma',
       icon: Layers,
     },
     {
-      id: 'girls',
-      name: 'Girls / Women',
-      description: 'AICTE Pragati, Kanya Kelavani, Kotak Kanya',
-      filterType: 'gender',
-      filterValue: 'Female',
-      icon: Heart,
-      badge: 'Special Grants',
+      id: 'iti',
+      name: 'ITI',
+      description: 'Industrial Training Institutes & vocational trade certificates',
+      filterType: 'education',
+      filterValue: 'ITI',
+      icon: Cpu,
+    },
+    {
+      id: 'ug',
+      name: 'Undergraduate',
+      description: 'B.E., B.Tech, MBBS, B.Sc, B.Com, B.A. degrees',
+      filterType: 'education',
+      filterValue: 'Undergraduate',
+      icon: GraduationCap,
+    },
+    {
+      id: 'pg',
+      name: 'Postgraduate',
+      description: 'M.Tech, MBA, M.Sc, M.A., MD post-graduate studies',
+      filterType: 'education',
+      filterValue: 'Postgraduate',
+      icon: BookmarkCheck,
+    },
+    {
+      id: 'phd',
+      name: 'PhD',
+      description: 'Doctoral research programs and fellowship grants',
+      filterType: 'education',
+      filterValue: 'PhD',
+      icon: Sparkles,
     },
     {
       id: 'technical',
       name: 'Technical Education',
-      description: 'Engineering, Technology, Architecture, Pharmacy',
+      description: 'Engineering, Technology, Architecture, Pharmacy schemes',
       filterType: 'type',
-      filterValue: 'Technical',
+      filterValue: 'Government',
       icon: Cpu,
     },
     {
       id: 'merit',
-      name: 'Merit-Based',
-      description: 'DST INSPIRE, CMSS, PM-USP CSSS',
+      name: 'Merit Based',
+      description: 'Academic excellence awards & percentile cutoffs',
       filterType: 'type',
       filterValue: 'Merit',
       icon: Award,
     },
     {
       id: 'need',
-      name: 'Need-Based / Means',
-      description: 'Financial hardship & tuition assistance',
+      name: 'Need Based',
+      description: 'Income ceiling and family financial hardship support',
       filterType: 'type',
       filterValue: 'Need-based',
       icon: HeartHandshake,
     },
     {
+      id: 'girls',
+      name: 'Girls / Women',
+      description: 'Special female student grants (AICTE Pragati, Kanya Kelavani)',
+      filterType: 'gender',
+      filterValue: 'Female',
+      icon: Heart,
+    },
+    {
       id: 'sc-st',
-      name: 'SC / ST Scholarships',
-      description: 'Digital Gujarat Post-Matric & central welfare',
+      name: 'SC / ST',
+      description: 'Scheduled Caste & Scheduled Tribe post-matric initiatives',
       filterType: 'category',
       filterValue: 'SC',
       icon: Users,
@@ -81,57 +121,24 @@ export const ExploreByCategory: React.FC<ExploreByCategoryProps> = ({ onSelectCa
     {
       id: 'ews-sebc',
       name: 'EWS / OBC / SEBC',
-      description: 'Tuition subsidies & maintenance allowances',
+      description: 'Economically Weaker & Socially Backward class scholarships',
       filterType: 'category',
       filterValue: 'SEBC/OBC',
-      icon: ShieldCheck,
-    },
-    {
-      id: 'school',
-      name: 'Schooling (9-12)',
-      description: 'Pre-matric and post-matric board students',
-      filterType: 'education',
-      filterValue: 'School',
-      icon: BookOpen,
-    },
-    {
-      id: 'pg',
-      name: 'Postgraduate',
-      description: 'M.E., M.Tech, MBA, M.Sc, M.A., MD',
-      filterType: 'education',
-      filterValue: 'Postgraduate',
-      icon: BookmarkCheck,
-    },
-    {
-      id: 'phd',
-      name: 'PhD & Research',
-      description: 'SHODH Fellowship & doctoral research grants',
-      filterType: 'education',
-      filterValue: 'PhD',
-      icon: Sparkles,
-      badge: 'Fellowships',
-    },
-    {
-      id: 'disability',
-      name: 'Disability / Divyang',
-      description: 'AICTE Saksham & special assistance aid',
-      filterType: 'type',
-      filterValue: 'Special',
       icon: ShieldCheck,
     },
   ];
 
   return (
-    <section className="py-16 bg-[#FAF8F5] dark:bg-[#0C1513] transition-colors">
+    <section className="py-16 sm:py-20 bg-[#FAF8F5] dark:bg-[#0C1513] transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <span className="text-xs font-bold uppercase tracking-wider text-[#065F46] dark:text-emerald-400">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#065F46] dark:text-emerald-400">
             Browse By Focus Area
           </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#064E3B] dark:text-emerald-400 font-editorial mt-1">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-stone-100 font-editorial mt-2 tracking-tight">
             Explore Scholarships by Category
           </h2>
-          <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-2">
+          <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-2.5">
             Click on any segment to view matching verified scholarship programs across India.
           </p>
         </div>

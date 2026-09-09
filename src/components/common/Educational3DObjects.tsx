@@ -270,3 +270,61 @@ export const Pencil3D: React.FC<Object3DProps> = ({ className = '', size = 44 })
     </g>
   </svg>
 );
+
+// Soft 3D Notebook / Folio
+export const Notebook3D: React.FC<Object3DProps> = ({ className = '', size = 48 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 80 80"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={`drop-shadow-sm ${className}`}
+    aria-hidden="true"
+  >
+    <defs>
+      <linearGradient id="notebookGrad" x1="15" y1="10" x2="65" y2="70" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#0D5C46" />
+        <stop offset="100%" stopColor="#043E2F" />
+      </linearGradient>
+    </defs>
+    <rect x="18" y="14" width="48" height="56" rx="4" fill="url(#notebookGrad)" stroke="#10B981" strokeWidth="0.8" strokeOpacity="0.4" />
+    <line x1="26" y1="14" x2="26" y2="70" stroke="#D97706" strokeWidth="2" />
+    <circle cx="26" cy="24" r="1.5" fill="#FEF3C7" />
+    <circle cx="26" cy="34" r="1.5" fill="#FEF3C7" />
+    <circle cx="26" cy="44" r="1.5" fill="#FEF3C7" />
+    <circle cx="26" cy="54" r="1.5" fill="#FEF3C7" />
+    <circle cx="26" cy="64" r="1.5" fill="#FEF3C7" />
+    <line x1="34" y1="28" x2="56" y2="28" stroke="#FAF8F5" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.8" />
+    <line x1="34" y1="38" x2="52" y2="38" stroke="#FAF8F5" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.6" />
+    <line x1="34" y1="48" x2="48" y2="48" stroke="#FAF8F5" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.6" />
+  </svg>
+);
+
+// Soft 3D Laptop
+export const Laptop3D: React.FC<Object3DProps> = ({ className = '', size = 52 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 80 80"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={`drop-shadow-sm ${className}`}
+    aria-hidden="true"
+  >
+    <defs>
+      <linearGradient id="laptopScreen" x1="20" y1="15" x2="60" y2="50" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#1E293B" />
+        <stop offset="100%" stopColor="#0F172A" />
+      </linearGradient>
+    </defs>
+    {/* Screen */}
+    <rect x="18" y="16" width="44" height="32" rx="3" fill="url(#laptopScreen)" stroke="#94A3B8" strokeWidth="1.5" />
+    {/* Display Glow */}
+    <rect x="22" y="20" width="36" height="24" rx="1.5" fill="#042F2E" />
+    <line x1="26" y1="26" x2="46" y2="26" stroke="#34D399" strokeWidth="1.8" strokeLinecap="round" />
+    <line x1="26" y1="32" x2="40" y2="32" stroke="#F59E0B" strokeWidth="1.8" strokeLinecap="round" />
+    {/* Base */}
+    <polygon points="12,52 68,52 62,58 18,58" fill="#CBD5E1" stroke="#94A3B8" strokeWidth="1" />
+  </svg>
+);

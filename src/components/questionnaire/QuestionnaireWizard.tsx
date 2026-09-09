@@ -13,7 +13,6 @@ import {
   ArrowLeft,
   CheckCircle2,
   AlertCircle,
-  Sparkles,
 } from 'lucide-react';
 
 interface QuestionnaireWizardProps {
@@ -26,7 +25,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
   initialAnswers,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 6;
+  const totalSteps = 7;
 
   const [answers, setAnswers] = useState<StudentAnswers>(() => {
     if (initialAnswers) return initialAnswers;
@@ -88,6 +87,8 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
         setErrorMsg('Please enter a valid annual family income.');
         return false;
       }
+    }
+    if (currentStep === 6) {
       const percent = parseFloat(percentageInput);
       if (isNaN(percent) || percent < 0 || percent > 100) {
         setErrorMsg('Please enter a valid academic percentage between 0% and 100%.');
@@ -118,21 +119,22 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
   const stepTitles = [
     'Where do you study or reside?',
     'What are you studying?',
-    'Course Stream & Year',
-    'Category & Gender',
-    'Income & Percentage',
-    'Additional Conditions',
+    'Course / Stream & Current Year',
+    'Social Category & Gender',
+    'Annual Family Income',
+    'Academic Percentage',
+    'Additional Circumstances',
   ];
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12 animate-in fade-in duration-300">
       {/* Header & Progress Indicator */}
       <div className="mb-8 sm:mb-10 text-center">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-[#142420] text-[#065F46] dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold mb-2">
-          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-50 dark:bg-[#142420] text-[#064E3B] dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800 text-xs font-bold mb-2 shadow-2xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block" />
           <span>Step {currentStep} of {totalSteps}</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#064E3B] dark:text-emerald-400 font-editorial">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#064E3B] dark:text-emerald-400 font-editorial tracking-tight">
           {stepTitles[currentStep - 1]}
         </h1>
         <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
@@ -140,7 +142,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
         </p>
 
         {/* Progress Bar */}
-        <div className="mt-6 max-w-md mx-auto">
+        <div className="mt-6 max-w-lg mx-auto">
           <div className="flex items-center justify-between relative">
             <div className="absolute top-1/2 left-0 right-0 h-1 bg-stone-200 dark:bg-[#1E3A33] -translate-y-1/2 z-0" />
             <div
@@ -161,9 +163,9 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                   disabled={stepNum > currentStep}
                   className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold relative z-10 transition-all ${
                     isPassed
-                      ? 'bg-[#064E3B] text-amber-100 cursor-pointer'
+                      ? 'bg-[#064E3B] text-amber-100 cursor-pointer shadow-xs'
                       : isCurrent
-                      ? 'bg-[#064E3B] text-amber-100 ring-4 ring-emerald-100 dark:ring-emerald-950 scale-110'
+                      ? 'bg-[#064E3B] text-amber-100 ring-4 ring-emerald-100 dark:ring-[#1E3A33] scale-110 shadow-sm'
                       : 'bg-stone-200 dark:bg-[#1C3630] text-stone-500 dark:text-stone-400 cursor-not-allowed'
                   }`}
                   aria-label={`Go to step ${stepNum}`}
@@ -173,13 +175,13 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
               );
             })}
           </div>
-          <div className="flex justify-between text-[11px] font-medium text-stone-400 mt-2 px-1">
+          <div className="flex justify-between text-[10px] sm:text-[11px] font-medium text-stone-500 dark:text-stone-400 mt-2 px-1">
             <span>Location</span>
             <span>Level</span>
-            <span>Stream</span>
+            <span>Course</span>
             <span>Category</span>
-            <span>Finances</span>
-            <span>Special</span>
+            <span>Income</span>
+            <span>Score</span>
           </div>
         </div>
       </div>
@@ -453,25 +455,24 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
           </div>
         )}
 
-        {/* STEP 5: INCOME & PERCENTAGE */}
+        {/* STEP 5: ANNUAL FAMILY INCOME */}
         {currentStep === 5 && (
           <div className="space-y-6 animate-in fade-in">
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                Family Income & Academic Score
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white font-editorial">
+                Annual Family Income
               </h2>
               <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                Enter your latest relevant academic percentage and total annual family income.
+                Many government, state, and private scholarships have specific household income ceilings.
               </p>
             </div>
 
-            {/* Income */}
-            <div className="space-y-2">
+            <div className="space-y-4">
               <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
-                Annual Family Income (in ₹ INR)
+                Total Family Income (₹ per annum)
               </label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 font-bold">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-500 dark:text-stone-400 font-bold text-base">
                   ₹
                 </span>
                 <input
@@ -479,35 +480,57 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                   value={incomeInput}
                   onChange={(e) => handleIncomeChange(e.target.value)}
                   placeholder="e.g. 250000"
-                  className="w-full pl-8 pr-4 py-3 rounded-xl border border-stone-300 dark:border-[#23453E] bg-white dark:bg-[#1C3630] text-slate-900 dark:text-white font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                  className="w-full pl-10 pr-4 py-4 rounded-2xl border border-stone-200 dark:border-[#23453E] bg-white dark:bg-[#1C3630] text-slate-900 dark:text-white font-bold text-lg focus:outline-none focus:ring-2 focus:ring-[#065F46] transition-all shadow-2xs"
                 />
               </div>
 
-              {/* Quick Chips */}
-              <div className="flex flex-wrap gap-2 pt-1">
-                {[
-                  { label: '₹1.5 Lakh', val: 150000 },
-                  { label: '₹2.5 Lakh (Post-Matric)', val: 250000 },
-                  { label: '₹4.5 Lakh (CSSS / CMSS)', val: 450000 },
-                  { label: '₹6.0 Lakh (MYSY)', val: 600000 },
-                  { label: '₹8.0 Lakh (AICTE)', val: 800000 },
-                ].map((chip) => (
-                  <button
-                    key={chip.label}
-                    type="button"
-                    onClick={() => handleIncomeChange(chip.val.toString())}
-                    className="px-2.5 py-1 rounded-lg text-xs bg-stone-100 dark:bg-[#1C3630] hover:bg-emerald-50 hover:text-[#064E3B] text-stone-600 dark:text-stone-300 transition-colors"
-                  >
-                    {chip.label}
-                  </button>
-                ))}
+              {/* Quick Preset Chips */}
+              <div className="pt-2">
+                <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider block mb-2">
+                  Common Thresholds
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { label: '₹1.5 Lakh', val: 150000 },
+                    { label: '₹2.5 Lakh (Post-Matric)', val: 250000 },
+                    { label: '₹4.5 Lakh (CSSS / CMSS)', val: 450000 },
+                    { label: '₹6.0 Lakh (MYSY)', val: 600000 },
+                    { label: '₹8.0 Lakh (AICTE / Central)', val: 800000 },
+                  ].map((chip) => (
+                    <button
+                      key={chip.label}
+                      type="button"
+                      onClick={() => handleIncomeChange(chip.val.toString())}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                        answers.annualIncome === chip.val
+                          ? 'bg-[#064E3B] text-amber-100 border-[#064E3B] shadow-2xs'
+                          : 'bg-stone-50 dark:bg-[#1C3630] hover:bg-emerald-50 hover:text-[#064E3B] border-stone-200 dark:border-[#23453E] text-stone-600 dark:text-stone-300'
+                      }`}
+                    >
+                      {chip.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
+          </div>
+        )}
 
-            {/* Percentage */}
-            <div className="space-y-2 pt-2 border-t border-stone-100 dark:border-[#1E3A33]">
+        {/* STEP 6: ACADEMIC PERCENTAGE */}
+        {currentStep === 6 && (
+          <div className="space-y-6 animate-in fade-in">
+            <div>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white font-editorial">
+                Academic Percentage
+              </h2>
+              <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
+                Enter your score from your latest qualifying exam (Class 10th, 12th, Diploma, or recent semester).
+              </p>
+            </div>
+
+            <div className="space-y-4">
               <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
-                Latest Academic Percentage (0 - 100%)
+                Percentage Score (0 - 100%)
               </label>
               <div className="relative">
                 <input
@@ -517,22 +540,51 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                   step="0.1"
                   value={percentageInput}
                   onChange={(e) => handlePercentageChange(e.target.value)}
-                  placeholder="e.g. 78"
-                  className="w-full pl-4 pr-10 py-3 rounded-xl border border-stone-300 dark:border-[#23453E] bg-white dark:bg-[#1C3630] text-slate-900 dark:text-white font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                  placeholder="e.g. 80"
+                  className="w-full pl-5 pr-12 py-4 rounded-2xl border border-stone-200 dark:border-[#23453E] bg-white dark:bg-[#1C3630] text-slate-900 dark:text-white font-bold text-lg focus:outline-none focus:ring-2 focus:ring-[#065F46] transition-all shadow-2xs"
                 />
-                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 font-bold">
+                <span className="absolute right-5 top-1/2 -translate-y-1/2 text-stone-500 dark:text-stone-400 font-bold text-lg">
                   %
                 </span>
+              </div>
+
+              {/* Quick Percent Chips */}
+              <div className="pt-2">
+                <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider block mb-2">
+                  Common Benchmarks
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { label: '50% (Passing)', val: 50 },
+                    { label: '60% (1st Class)', val: 60 },
+                    { label: '75% (Distinction)', val: 75 },
+                    { label: '80% (MYSY cutoff)', val: 80 },
+                    { label: '90%+ (National Merit)', val: 90 },
+                  ].map((chip) => (
+                    <button
+                      key={chip.label}
+                      type="button"
+                      onClick={() => handlePercentageChange(chip.val.toString())}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                        answers.academicPercentage === chip.val
+                          ? 'bg-[#064E3B] text-amber-100 border-[#064E3B] shadow-2xs'
+                          : 'bg-stone-50 dark:bg-[#1C3630] hover:bg-emerald-50 hover:text-[#064E3B] border-stone-200 dark:border-[#23453E] text-stone-600 dark:text-stone-300'
+                      }`}
+                    >
+                      {chip.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* STEP 6: ADDITIONAL CONDITIONS */}
-        {currentStep === 6 && (
+        {/* STEP 7: ADDITIONAL CIRCUMSTANCES */}
+        {currentStep === 7 && (
           <div className="space-y-6 animate-in fade-in">
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white font-editorial">
                 Additional Circumstances
               </h2>
               <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
@@ -542,7 +594,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
 
             <div className="space-y-4">
               {/* Disability */}
-              <div className="p-4 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/50 dark:bg-[#182E29] space-y-3">
+              <div className="p-4 sm:p-5 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/50 dark:bg-[#182E29] space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 dark:text-white">
@@ -556,7 +608,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                     <button
                       type="button"
                       onClick={() => setAnswers({ ...answers, isDisability: true })}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors ${
                         answers.isDisability
                           ? 'bg-[#064E3B] text-white'
                           : 'bg-white dark:bg-[#142420] border border-stone-200 dark:border-[#1E3A33] text-stone-700 dark:text-stone-300'
@@ -567,7 +619,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                     <button
                       type="button"
                       onClick={() => setAnswers({ ...answers, isDisability: false })}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors ${
                         !answers.isDisability
                           ? 'bg-stone-700 text-white dark:bg-stone-600'
                           : 'bg-white dark:bg-[#142420] border border-stone-200 dark:border-[#1E3A33] text-stone-700 dark:text-stone-300'
@@ -595,7 +647,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                             disabilityPercentage: parseInt(e.target.value, 10) || 40,
                           })
                         }
-                        className="w-full px-2 py-1 rounded-lg border border-stone-300 dark:border-[#23453E] bg-white dark:bg-[#142420] text-center text-xs font-bold"
+                        className="w-full px-2 py-1.5 rounded-lg border border-stone-300 dark:border-[#23453E] bg-white dark:bg-[#142420] text-center text-xs font-bold"
                       />
                       <span className="text-xs font-bold text-stone-500">%</span>
                     </div>
@@ -603,69 +655,66 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                 )}
               </div>
 
-              {/* Orphan / Defence */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/50 dark:bg-[#182E29] flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xs font-bold text-slate-900 dark:text-white">
-                      Orphan Candidate?
-                    </h3>
-                    <p className="text-[11px] text-stone-500 dark:text-stone-400">
-                      AICTE Swanath
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setAnswers({ ...answers, isOrphan: !answers.isOrphan })}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-                      answers.isOrphan
-                        ? 'bg-[#064E3B] text-white'
-                        : 'bg-white dark:bg-[#142420] border border-stone-200 dark:border-[#1E3A33] text-stone-700 dark:text-stone-300'
-                    }`}
-                  >
-                    {answers.isOrphan ? 'Yes' : 'No'}
-                  </button>
+              {/* Orphan / Single Parent */}
+              <div className="p-4 sm:p-5 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/50 dark:bg-[#182E29] flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                    Orphan / Wards of COVID-19?
+                  </h3>
+                  <p className="text-xs text-stone-500 dark:text-stone-400">
+                    Unlocks AICTE Swanath scheme
+                  </p>
                 </div>
-
-                <div className="p-4 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/50 dark:bg-[#182E29] flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xs font-bold text-slate-900 dark:text-white">
-                      Ward of Armed Forces?
-                    </h3>
-                    <p className="text-[11px] text-stone-500 dark:text-stone-400">
-                      Defence / CAPF martyred
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setAnswers({ ...answers, isDefenceWard: !answers.isDefenceWard })
-                    }
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-                      answers.isDefenceWard
-                        ? 'bg-[#064E3B] text-white'
-                        : 'bg-white dark:bg-[#142420] border border-stone-200 dark:border-[#1E3A33] text-stone-700 dark:text-stone-300'
-                    }`}
-                  >
-                    {answers.isDefenceWard ? 'Yes' : 'No'}
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setAnswers({ ...answers, isOrphan: !answers.isOrphan })}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors ${
+                    answers.isOrphan
+                      ? 'bg-[#064E3B] text-white'
+                      : 'bg-white dark:bg-[#142420] border border-stone-200 dark:border-[#1E3A33] text-stone-700 dark:text-stone-300'
+                  }`}
+                >
+                  {answers.isOrphan ? 'Yes' : 'No'}
+                </button>
               </div>
 
-              {/* Minority Community */}
-              <div className="p-4 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/50 dark:bg-[#182E29] flex items-center justify-between">
+              {/* Armed Forces / Paramilitary Ward */}
+              <div className="p-4 sm:p-5 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/50 dark:bg-[#182E29] flex items-center justify-between">
                 <div>
-                  <h3 className="text-xs font-bold text-slate-900 dark:text-white">
-                    Notified Minority Community?
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                    Ward of Armed Forces / CAPF?
                   </h3>
-                  <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                  <p className="text-xs text-stone-500 dark:text-stone-400">
+                    Unlocks AICTE Swanath & defence welfare assistance
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setAnswers({ ...answers, isDefenceWard: !answers.isDefenceWard })}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors ${
+                    answers.isDefenceWard
+                      ? 'bg-[#064E3B] text-white'
+                      : 'bg-white dark:bg-[#142420] border border-stone-200 dark:border-[#1E3A33] text-stone-700 dark:text-stone-300'
+                  }`}
+                >
+                  {answers.isDefenceWard ? 'Yes' : 'No'}
+                </button>
+              </div>
+
+              {/* Religious Minority */}
+              <div className="p-4 sm:p-5 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/50 dark:bg-[#182E29] flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                    Belong to a Notified Religious Minority?
+                  </h3>
+                  <p className="text-xs text-stone-500 dark:text-stone-400">
                     Muslim, Christian, Sikh, Buddhist, Jain, or Parsi
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setAnswers({ ...answers, isMinority: !answers.isMinority })}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors ${
                     answers.isMinority
                       ? 'bg-[#064E3B] text-white'
                       : 'bg-white dark:bg-[#142420] border border-stone-200 dark:border-[#1E3A33] text-stone-700 dark:text-stone-300'
@@ -678,26 +727,26 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
           </div>
         )}
 
-        {/* Buttons */}
+        {/* Navigation Buttons: Back & Continue */}
         <div className="mt-8 pt-6 border-t border-stone-100 dark:border-[#1E3A33] flex items-center justify-between gap-4">
           <button
             type="button"
             onClick={handlePrev}
             disabled={currentStep === 1}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-colors ${
+            className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-colors ${
               currentStep === 1
                 ? 'opacity-0 pointer-events-none'
                 : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-[#182E29]'
             }`}
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Previous</span>
+            <span>Back</span>
           </button>
 
           <button
             type="button"
             onClick={handleNext}
-            className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 font-bold text-xs sm:text-sm shadow-md shadow-[#064E3B]/20 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 font-bold text-xs sm:text-sm shadow-md shadow-[#064E3B]/20 transition-all focus:outline-none focus:ring-2 focus:ring-[#065F46]"
           >
             <span>{currentStep === totalSteps ? 'Find My Scholarships' : 'Continue'}</span>
             <ArrowRight className="w-4 h-4 text-amber-400" />

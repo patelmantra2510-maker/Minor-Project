@@ -154,7 +154,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({
           </div>
 
           <h1 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight font-editorial">
-            We found scholarships for you
+            We Found Scholarships for You
           </h1>
           <p className="text-sm sm:text-base text-stone-200 mt-2 leading-relaxed font-normal">
             Based on the information provided ({answers.location} · {answers.educationLevel} · {answers.category}), we found{' '}

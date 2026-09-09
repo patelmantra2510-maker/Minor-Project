@@ -45,6 +45,8 @@ export const DirectoryView: React.FC<DirectoryViewProps> = ({
   const [incomeCeilingFilter, setIncomeCeilingFilter] = useState<string>('all');
   const [sortOption, setSortOption] = useState<'recommended' | 'deadline' | 'updated' | 'benefit'>('recommended');
 
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
   const handleResetFilters = () => {
     setSearchTerm('');
     setLocationTab('all');
@@ -189,9 +191,9 @@ export const DirectoryView: React.FC<DirectoryViewProps> = ({
       <div className="flex items-center gap-2 mb-6 border-b border-[#E8E2D7] dark:border-[#1E3A33] pb-3">
         {(
           [
-            { key: 'all', label: 'All Opportunities' },
-            { key: 'Gujarat', label: 'Gujarat Scholarships' },
-            { key: 'All India', label: 'All India Scholarships' },
+            { key: 'all', label: 'All' },
+            { key: 'Gujarat', label: 'Gujarat' },
+            { key: 'All India', label: 'All India' },
           ] as { key: 'all' | 'Gujarat' | 'All India'; label: string }[]
         ).map((tab) => (
           <button
@@ -216,8 +218,8 @@ export const DirectoryView: React.FC<DirectoryViewProps> = ({
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search scholarships by name, course (e.g. computer, engineering, medical), provider, or keyword..."
-          className="w-full pl-12 pr-10 py-3.5 rounded-2xl bg-white dark:bg-[#142420] border border-[#E8E2D7] dark:border-[#1E3A33] text-slate-900 dark:text-white placeholder-stone-400 text-xs sm:text-sm font-medium shadow-2xs focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
+          placeholder="Search scholarships..."
+          className="w-full pl-12 pr-10 py-3.5 rounded-2xl bg-white dark:bg-[#142420] border border-[#E8E2D7] dark:border-[#1E3A33] text-slate-900 dark:text-white placeholder-stone-400 text-xs sm:text-sm font-medium shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#065F46] transition-all"
         />
         {searchTerm && (
           <button
@@ -229,8 +231,35 @@ export const DirectoryView: React.FC<DirectoryViewProps> = ({
         )}
       </div>
 
+      {/* Mobile Filter Toggle Button */}
+      <div className="lg:hidden flex items-center justify-between mb-4">
+        <button
+          type="button"
+          onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-[#142420] border border-[#E8E2D7] dark:border-[#1E3A33] text-xs font-bold text-[#064E3B] dark:text-emerald-400 shadow-2xs"
+        >
+          <Filter className="w-3.5 h-3.5" />
+          <span>{mobileFiltersOpen ? 'Hide Filters' : 'Filter & Sort Scholarships'}</span>
+          {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />}
+        </button>
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={handleResetFilters}
+            className="text-xs font-semibold text-stone-500 hover:text-[#064E3B] dark:hover:text-emerald-400 hover:underline flex items-center gap-1"
+          >
+            <RotateCcw className="w-3 h-3" />
+            <span>Reset</span>
+          </button>
+        )}
+      </div>
+
       {/* Filter and Sorting Controls */}
-      <div className="bg-white dark:bg-[#142420] rounded-2xl p-4 sm:p-5 border border-[#E8E2D7] dark:border-[#1E3A33] shadow-2xs mb-8 space-y-4">
+      <div
+        className={`${
+          mobileFiltersOpen ? 'block' : 'hidden lg:block'
+        } bg-white dark:bg-[#142420] rounded-2xl p-4 sm:p-5 border border-[#E8E2D7] dark:border-[#1E3A33] shadow-2xs mb-8 space-y-4 animate-in fade-in duration-200`}
+      >
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
             <Filter className="w-3.5 h-3.5 text-[#065F46]" />

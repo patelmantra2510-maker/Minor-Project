@@ -12,9 +12,10 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>(() => {
-    const saved = localStorage.getItem('edvora_theme') || localStorage.getItem('vidyasetu_theme');
+    const saved = localStorage.getItem('edvora_theme');
     if (saved === 'dark' || saved === 'light') return saved;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    // Explicitly default to warm light mode as required
+    return 'light';
   });
 
   useEffect(() => {

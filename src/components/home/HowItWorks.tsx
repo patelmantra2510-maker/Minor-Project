@@ -8,88 +8,105 @@ interface HowItWorksProps {
 export const HowItWorks: React.FC<HowItWorksProps> = ({ onStart }) => {
   const steps = [
     {
-      number: '01',
-      icon: HelpCircle,
-      title: 'Answer',
+      num: '01',
+      title: '01 — Answer',
       description: 'Tell us about your education and eligibility.',
-      tag: 'Quick & Guided',
+      icon: HelpCircle,
     },
     {
-      number: '02',
+      num: '02',
+      title: '02 — Get Matched',
+      description: 'Edvora compares your information with scholarship criteria.',
       icon: Sparkles,
-      title: 'Get Matched',
-      description: 'We evaluate your answers against scholarship criteria.',
-      tag: 'Transparent Logic',
     },
     {
-      number: '03',
+      num: '03',
+      title: '03 — Explore & Apply',
+      description: 'Review the scholarship and continue to the official application source.',
       icon: ExternalLink,
-      title: 'Explore & Apply',
-      description: 'Review the details and apply through the official source.',
-      tag: 'Direct Official Link',
     },
   ];
 
   return (
-    <section className="py-20 bg-[#FAF8F5] dark:bg-[#0C1513] transition-colors">
+    <section className="py-20 bg-white dark:bg-[#0E1A17] border-t border-[#E8E2D7] dark:border-[#1A2E28] transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-xs font-bold uppercase tracking-wider text-[#065F46] dark:text-emerald-400">
-            How It Works
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#064E3B] dark:text-emerald-400 font-editorial mt-1">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#065F46] dark:text-emerald-400">
             Simple 3-Step Journey
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-stone-100 font-editorial mt-2 tracking-tight">
+            How Edvora Works
           </h2>
-          <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-2">
-            Discover verified scholarships without filling complicated portals or creating accounts.
+          <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-2.5">
+            Discover verified scholarships tailored to you without complex forms or permanent profiles.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-          {/* Subtle journey connecting path line */}
-          <div className="hidden md:block absolute top-1/3 left-1/6 right-1/6 h-0.5 bg-gradient-to-r from-emerald-200 via-amber-300 to-emerald-200 dark:from-[#1E3A33] dark:via-amber-800 dark:to-[#1E3A33] z-0" />
+        <div className="relative">
+          {/* Subtle curved connecting path SVG (Desktop only) */}
+          <div className="hidden md:block absolute top-12 left-1/12 right-1/12 h-16 pointer-events-none z-0">
+            <svg
+              className="w-full h-full"
+              viewBox="0 0 1000 60"
+              fill="none"
+              preserveAspectRatio="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M 120 30 C 300 0, 400 60, 500 30 C 600 0, 700 60, 880 30"
+                stroke="#065F46"
+                strokeWidth="2"
+                strokeDasharray="6 6"
+                strokeOpacity="0.3"
+              />
+              <path
+                d="M 120 30 C 300 0, 400 60, 500 30 C 600 0, 700 60, 880 30"
+                stroke="#D97706"
+                strokeWidth="1.2"
+                strokeDasharray="3 5"
+                strokeOpacity="0.35"
+              />
+            </svg>
+          </div>
 
-          {steps.map((step, idx) => {
-            const Icon = step.icon;
-            return (
-              <div
-                key={idx}
-                className="relative z-10 p-8 rounded-3xl bg-white dark:bg-[#142420] border border-[#E8E2D7] dark:border-[#1E3A33] shadow-2xs hover:shadow-md transition-all duration-200 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <span className="text-3xl font-black text-stone-200 dark:text-[#1E3A33] font-editorial">
-                      {step.number}
-                    </span>
-                    <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-[#1C3630] text-[#065F46] dark:text-emerald-400 flex items-center justify-center border border-emerald-100 dark:border-[#1E3A33] shadow-xs">
-                      <Icon className="w-6 h-6" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+            {steps.map((step) => {
+              const Icon = step.icon;
+              return (
+                <div
+                  key={step.num}
+                  className="group p-8 rounded-3xl bg-[#FAF8F5] dark:bg-[#142420] border border-[#E8E2D7] dark:border-[#1E3A33] hover:border-[#065F46] dark:hover:border-emerald-600 transition-all duration-200 hover:-translate-y-1 shadow-2xs hover:shadow-md flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-[#1C3630] text-[#064E3B] dark:text-emerald-400 flex items-center justify-center border border-emerald-100 dark:border-[#1E3A33] group-hover:scale-105 transition-transform shadow-2xs">
+                        <Icon className="w-6 h-6 stroke-[2]" />
+                      </div>
+                      <span className="text-2xl font-black font-editorial text-stone-300 dark:text-stone-700">
+                        {step.num}
+                      </span>
                     </div>
+
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-stone-100 mb-2 group-hover:text-[#064E3B] dark:group-hover:text-emerald-400 transition-colors">
+                      {step.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 leading-relaxed font-normal">
+                      {step.description}
+                    </p>
                   </div>
-
-                  <span className="inline-block text-[11px] font-bold text-[#065F46] dark:text-emerald-400 bg-emerald-50 dark:bg-[#1C3630] px-2.5 py-1 rounded-md mb-3 border border-emerald-100/60 dark:border-[#1E3A33]">
-                    {step.tag}
-                  </span>
-
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
-                    {step.title}
-                  </h3>
-
-                  <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-                    {step.description}
-                  </p>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
 
         {/* Start Questionnaire CTA */}
         <div className="text-center mt-12">
           <button
             onClick={onStart}
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 font-bold text-sm sm:text-base shadow-lg shadow-[#064E3B]/20 transition-all hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 font-bold text-sm sm:text-base shadow-lg shadow-[#064E3B]/20 hover:shadow-[#064E3B]/30 hover:-translate-y-0.5 transition-all focus:outline-none focus:ring-2 focus:ring-[#065F46]"
           >
-            <span>Start Scholarship Questionnaire</span>
+            <span>Find My Scholarships</span>
             <ArrowRight className="w-4 h-4 text-amber-400" />
           </button>
         </div>

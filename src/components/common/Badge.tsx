@@ -63,12 +63,24 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
 }) => {
   const info = calculateDeadlineStatus(deadline, startDate, overrideStatus);
 
+  const statusLabel =
+    info.status === 'Open' ? 'OPEN' : info.status === 'Opening Soon' ? 'OPENING SOON' : 'CLOSED';
+
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${info.badgeColorClass} ${className}`}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase border ${info.badgeColorClass} ${className}`}
     >
-      <Clock className="w-3.5 h-3.5" />
-      <span>{info.displayText}</span>
+      {info.status === 'Open' && (
+        <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400 shrink-0" />
+      )}
+      {info.status === 'Opening Soon' && <Clock className="w-3.5 h-3.5 shrink-0 text-amber-600 dark:text-amber-400" />}
+      {info.status === 'Closed' && <XCircle className="w-3.5 h-3.5 shrink-0 text-rose-600 dark:text-rose-400" />}
+      <span>{statusLabel}</span>
+      {info.status === 'Open' && info.daysRemaining > 0 && (
+        <span className="font-normal opacity-80 normal-case">
+          ({info.daysRemaining}d left)
+        </span>
+      )}
     </span>
   );
 };

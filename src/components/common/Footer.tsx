@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ExternalLink, ShieldCheck, Heart } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { EdvoraLogo } from './EdvoraLogo';
 
 interface FooterProps {
   onNavigate: (route: string) => void;
@@ -34,14 +35,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           <div className="md:col-span-2 space-y-4">
             <div
               onClick={() => onNavigate('home')}
-              className="flex items-center gap-3 cursor-pointer inline-flex group"
+              className="cursor-pointer inline-flex group"
             >
-              <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-900 bg-[#122420] flex items-center justify-center">
-                <img src="/edvora-logo.png" alt="Edvora" className="w-full h-full object-cover" />
-              </div>
-              <span className="text-2xl font-black tracking-tight text-white font-editorial">
-                Edvora
-              </span>
+              <EdvoraLogo variant="navbar" showTagline={false} />
             </div>
             <p className="text-sm text-stone-400 max-w-md leading-relaxed font-normal">
               Making scholarship discovery simpler for students across India. We evaluate criteria transparently so you know exactly which opportunities are open to you.

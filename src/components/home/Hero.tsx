@@ -1,6 +1,15 @@
 import React from 'react';
 import { DiscoveryDeskComposition } from './DiscoveryDeskComposition';
-import { ArrowRight, Check, Compass, Sparkles, ShieldCheck, ExternalLink } from 'lucide-react';
+import {
+  ArrowRight,
+  Search,
+  ShieldCheck,
+  Users,
+  Target,
+  FileCheck2,
+  Bookmark,
+  GitCompare,
+} from 'lucide-react';
 
 interface HeroProps {
   onFindScholarships: () => void;
@@ -12,82 +21,79 @@ export const Hero: React.FC<HeroProps> = ({
   onExploreScholarships,
 }) => {
   return (
-    <div>
-      {/* Main Hero Section */}
-      <section className="relative overflow-hidden pt-12 sm:pt-16 pb-16 lg:pb-20 bg-[#FAF8F5] dark:bg-[#0C1513] transition-colors border-b border-[#E8E2D7]/70 dark:border-[#1A2E28]">
-        {/* Subtle Background Botanical Silhouettes, Constellation & Gentle Depth */}
-        <div className="absolute inset-0 pointer-events-none opacity-40 dark:opacity-20 overflow-hidden">
-          <svg
-            className="w-full h-full"
-            viewBox="0 0 1440 640"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {/* Subtle curved pathway lines */}
-            <path
-              d="M-80 430C220 460 380 280 680 330C980 380 1140 190 1520 260"
-              stroke="#065F46"
-              strokeWidth="1.2"
-              strokeDasharray="6 8"
-              strokeOpacity="0.2"
-            />
-            <path
-              d="M-30 460C280 490 430 310 730 360C1030 410 1180 220 1580 290"
-              stroke="#D97706"
-              strokeWidth="0.8"
-              strokeDasharray="4 6"
-              strokeOpacity="0.2"
-            />
-
-            {/* Left Edge: Faint Sage Botanical Silhouette */}
-            <g opacity="0.18" transform="translate(-20, 180)">
-              <path d="M40 220 C60 170 80 140 110 90" stroke="#065F46" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M60 180 C80 170 100 180 115 170 C95 190 75 190 60 180 Z" fill="#065F46" />
-              <path d="M85 140 C105 130 125 140 140 130 C120 150 100 150 85 140 Z" fill="#065F46" />
-              <path d="M105 95 C120 85 135 90 145 85 C130 100 115 100 105 95 Z" fill="#065F46" />
-            </g>
-
-            {/* Right Edge: Faint Sage Botanical Silhouette */}
-            <g opacity="0.16" transform="translate(1360, 240)">
-              <path d="M40 200 C20 150 0 120 -30 80" stroke="#065F46" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M20 160 C0 150 -20 160 -35 150 C-15 170 5 170 20 160 Z" fill="#065F46" />
-              <path d="M-5 120 C-25 110 -45 120 -60 110 C-40 130 -20 130 -5 120 Z" fill="#065F46" />
-            </g>
-
-            {/* Faint Paper Plane Silhouette in Top-Right */}
-            <g opacity="0.22" transform="translate(1180, 80) rotate(15)">
-              <path d="M0 12 L28 0 L10 24 L8 14 Z" fill="none" stroke="#065F46" strokeWidth="1.2" strokeLinejoin="round" />
-              <path d="M28 0 L8 14" stroke="#D97706" strokeWidth="1" strokeLinecap="round" />
-              {/* Flight trail */}
-              <path d="M-30 22 C-15 20 -5 16 0 12" stroke="#D97706" strokeWidth="0.8" strokeDasharray="2 3" strokeOpacity="0.7" />
-            </g>
-
-            {/* Soft constellation dots */}
-            <circle cx="180" cy="100" r="2.5" fill="#D97706" fillOpacity="0.35" />
-            <circle cx="480" cy="70" r="2" fill="#065F46" fillOpacity="0.25" />
-            <circle cx="820" cy="120" r="2" fill="#D97706" fillOpacity="0.35" />
-            <circle cx="1060" cy="60" r="2.5" fill="#065F46" fillOpacity="0.25" />
-            <circle cx="1320" cy="140" r="2" fill="#D97706" fillOpacity="0.35" />
+    <div className="relative overflow-hidden bg-[#FAF8F5] dark:bg-[#0C1513] transition-colors pb-12 sm:pb-16">
+      {/* ========================================================================= */}
+      {/* BACKGROUND BOTANICAL CORNER WATERCOLOR LEAVES (Matching Reference Image)  */}
+      {/* ========================================================================= */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+        {/* Top-Left Sage Foliage */}
+        <div className="absolute -top-10 -left-10 w-48 sm:w-64 h-48 sm:h-64 opacity-25 dark:opacity-15">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+            <path d="M20 20 C60 50 80 110 50 170 C10 140 0 80 20 20 Z" fill="#047857" />
+            <path d="M40 20 C90 30 130 80 120 140 C80 120 50 70 40 20 Z" fill="#065F46" />
+            <path d="M20 50 C70 80 100 130 90 190 C50 170 30 120 20 50 Z" fill="#10B981" />
           </svg>
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            {/* Left Hero Content (~58% on desktop) */}
-            <div className="lg:col-span-7 xl:col-span-7 space-y-6 sm:space-y-7 text-center lg:text-left pr-0 lg:pr-6">
-              {/* Small Eyebrow */}
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-stone-100/90 dark:bg-[#142420] border border-[#E8E2D7] dark:border-emerald-900/60 text-[#065F46] dark:text-emerald-300 text-[11px] font-bold tracking-widest uppercase">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+        {/* Top-Right Sage Foliage */}
+        <div className="absolute -top-12 -right-12 w-48 sm:w-64 h-48 sm:h-64 opacity-25 dark:opacity-15 rotate-90">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+            <path d="M20 20 C60 50 80 110 50 170 C10 140 0 80 20 20 Z" fill="#047857" />
+            <path d="M40 20 C90 30 130 80 120 140 C80 120 50 70 40 20 Z" fill="#065F46" />
+          </svg>
+        </div>
+
+        {/* Bottom-Right Sage Foliage */}
+        <div className="absolute -bottom-10 -right-10 w-44 sm:w-56 h-44 sm:h-56 opacity-25 dark:opacity-15 rotate-180">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+            <path d="M20 20 C60 50 80 110 50 170 C10 140 0 80 20 20 Z" fill="#047857" />
+            <path d="M40 20 C90 30 130 80 120 140 C80 120 50 70 40 20 Z" fill="#065F46" />
+          </svg>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* MAIN TWO-COLUMN HERO SECTION                                              */}
+      {/* ========================================================================= */}
+      <section className="relative pt-8 sm:pt-12 lg:pt-14 pb-8 sm:pb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+            {/* Left Hero Content (~50-52% on desktop) */}
+            <div className="lg:col-span-6 xl:col-span-6 space-y-5 sm:space-y-6 text-center lg:text-left">
+              {/* Eyebrow Badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-stone-100/90 dark:bg-[#142420] border border-[#E8E2D7] dark:border-emerald-900/60 text-[#065F46] dark:text-emerald-300 text-[11px] font-bold tracking-wider">
+                <span className="w-2 h-2 rounded-full bg-amber-500" />
                 <span>SCHOLARSHIPS MADE SIMPLE</span>
               </div>
 
-              {/* Main Heading: First line strong modern typography, second line restrained editorial serif/italic */}
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.6rem] font-extrabold text-[#0F172A] dark:text-stone-100 tracking-tight leading-[1.12]">
-                Find Scholarships <br className="hidden sm:inline" />
-                <span className="font-editorial italic font-normal text-[#064E3B] dark:text-emerald-400 block mt-1.5">
-                  That Fit You
-                </span>
-              </h1>
+              {/* Main Heading */}
+              <div className="space-y-1">
+                <h1 className="text-4xl sm:text-5xl lg:text-[3.8rem] font-extrabold text-[#0F172A] dark:text-stone-100 tracking-tight leading-[1.1]">
+                  Find Scholarships
+                </h1>
+                <div className="inline-block relative">
+                  <span
+                    className="font-editorial italic font-normal text-4xl sm:text-5xl lg:text-[3.8rem] text-[#064E3B] dark:text-emerald-400 block leading-[1.1]"
+                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                  >
+                    That Fit You
+                  </span>
+                  {/* Subtle golden curved underline swoosh under "That Fit You" */}
+                  <svg
+                    className="w-full h-3 mt-1 text-amber-500"
+                    viewBox="0 0 300 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M3 8 C80 2, 180 11, 297 5"
+                      stroke="#D97706"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </div>
+              </div>
 
               {/* Description */}
               <p className="text-base sm:text-lg text-stone-600 dark:text-stone-300 max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal">
@@ -95,10 +101,10 @@ export const Hero: React.FC<HeroProps> = ({
               </p>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-1">
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
                 <button
                   onClick={onFindScholarships}
-                  className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 font-bold text-sm sm:text-base shadow-md shadow-[#064E3B]/20 hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2.5 focus:outline-none focus:ring-2 focus:ring-[#065F46]"
+                  className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 font-bold text-sm sm:text-base shadow-md shadow-[#064E3B]/20 hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2.5 focus:outline-none focus:ring-2 focus:ring-[#065F46] cursor-pointer"
                 >
                   <span>Find My Scholarships</span>
                   <ArrowRight className="w-4 h-4 text-amber-400" />
@@ -106,76 +112,127 @@ export const Hero: React.FC<HeroProps> = ({
 
                 <button
                   onClick={onExploreScholarships}
-                  className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white dark:bg-[#142420] hover:bg-stone-50 dark:hover:bg-[#1C3630] text-stone-800 dark:text-stone-200 font-semibold text-sm sm:text-base border border-[#E2DACB] dark:border-[#1E3A33] shadow-2xs hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#065F46]"
+                  className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white dark:bg-[#142420] hover:bg-stone-50 dark:hover:bg-[#1C3630] text-stone-800 dark:text-stone-200 font-semibold text-sm sm:text-base border border-[#E2DACB] dark:border-[#1E3A33] shadow-2xs hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#065F46] cursor-pointer"
                 >
-                  <Compass className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+                  <Search className="w-4 h-4 text-stone-500 dark:text-stone-400" />
                   <span>Explore Scholarships</span>
                 </button>
               </div>
 
-              {/* Subtle & Elegant Trust Points below buttons */}
-              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 sm:gap-6 text-xs text-stone-600 dark:text-stone-300 font-medium">
+              {/* Three Trust Points below Buttons (with matching icons from Reference) */}
+              <div className="pt-3 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 sm:gap-6 text-xs text-stone-700 dark:text-stone-300 font-semibold">
+                {/* Point 1: Leaf */}
                 <div className="inline-flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-[#065F46] dark:text-emerald-400 shrink-0 stroke-[2.5]" />
+                  <div className="w-4 h-4 flex items-center justify-center text-[#064E3B] dark:text-emerald-400">
+                    🍃
+                  </div>
                   <span>No registration required</span>
                 </div>
 
+                {/* Point 2: Shield */}
                 <div className="inline-flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-[#065F46] dark:text-emerald-400 shrink-0 stroke-[2.5]" />
+                  <ShieldCheck className="w-4 h-4 text-[#064E3B] dark:text-emerald-400 stroke-[2.5]" />
                   <span>Clear eligibility information</span>
                 </div>
 
+                {/* Point 3: Users */}
                 <div className="inline-flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-[#065F46] dark:text-emerald-400 shrink-0 stroke-[2.5]" />
+                  <Users className="w-4 h-4 text-[#064E3B] dark:text-emerald-400 stroke-[2.5]" />
                   <span>Scholarships across India</span>
                 </div>
               </div>
             </div>
 
-            {/* Right Hero: Scholarship Discovery 3D Composition (~42% on desktop, laptop occupies ~35-40% of hero width) */}
-            <div className="lg:col-span-5 xl:col-span-5 flex justify-center lg:justify-end relative">
+            {/* Right Hero: Scholarship Discovery Desk Composition (~48-50% on desktop) */}
+            <div className="lg:col-span-6 xl:col-span-6 flex justify-center relative">
               <DiscoveryDeskComposition onFindScholarships={onFindScholarships} />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Trust & Statement Strip — Visually separates Hero from the rest of the page */}
-      <section className="bg-[#F5EFE6]/80 dark:bg-[#12221D]/90 border-b border-[#E8E2D7] dark:border-[#1A2E28] py-4 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8">
-            {/* Statement */}
-            <div className="flex items-center gap-2.5">
-              <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
-              <p className="font-editorial italic text-base sm:text-lg text-stone-800 dark:text-stone-200 font-semibold tracking-wide">
-                Scholarship discovery, simplified.
-              </p>
+      {/* ========================================================================= */}
+      {/* DOCKED HORIZONTAL FEATURE STRIP (Directly from Reference Mockup Image)    */}
+      {/* ========================================================================= */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 sm:mt-6">
+        <div className="bg-white/95 dark:bg-[#142420]/95 backdrop-blur-md rounded-3xl border border-[#E8E2D7] dark:border-[#1E3A33] shadow-md shadow-stone-900/5 p-6 sm:p-7">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+            {/* Left Header Title with Vertical Accent Bar */}
+            <div className="lg:col-span-3 flex items-start gap-3 border-b lg:border-b-0 lg:border-r border-stone-200/80 dark:border-[#1E3A33] pb-4 lg:pb-0 pr-0 lg:pr-4">
+              <div className="w-1.5 h-10 rounded-full bg-[#065F46] shrink-0 mt-0.5" />
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-stone-100 font-editorial leading-tight">
+                Everything You Need <br />
+                <span className="font-sans font-normal text-stone-700 dark:text-stone-300 text-sm sm:text-base">
+                  to Find the Right Scholarship
+                </span>
+              </h3>
             </div>
 
-            {/* Three clean items */}
-            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs sm:text-sm font-semibold text-stone-700 dark:text-stone-300">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-[#065F46] dark:text-emerald-400" />
-                <span>Personalized matching</span>
+            {/* Right 4 Features with Circular Green Icon Badges */}
+            <div className="lg:col-span-9 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 sm:gap-6">
+              {/* Feature 1: Personalized Matches */}
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-full bg-[#EAF3EE] dark:bg-emerald-950/80 text-[#065F46] dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 border border-emerald-200/60 dark:border-emerald-800/60">
+                  <Target className="w-4 h-4 stroke-[2.5]" />
+                </div>
+                <div>
+                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-stone-100">
+                    Personalized Matches
+                  </h4>
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-snug mt-0.5">
+                    Answer a few questions and discover scholarships relevant to you.
+                  </p>
+                </div>
               </div>
 
-              <span className="text-stone-300 dark:text-stone-700 hidden sm:inline">•</span>
-
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-[#065F46] dark:text-emerald-400" />
-                <span>Clear eligibility</span>
+              {/* Feature 2: Clear Eligibility */}
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-full bg-[#EAF3EE] dark:bg-emerald-950/80 text-[#065F46] dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 border border-emerald-200/60 dark:border-emerald-800/60">
+                  <FileCheck2 className="w-4 h-4 stroke-[2.5]" />
+                </div>
+                <div>
+                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-stone-100">
+                    Clear Eligibility
+                  </h4>
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-snug mt-0.5">
+                    Understand why a scholarship matches your information.
+                  </p>
+                </div>
               </div>
 
-              <span className="text-stone-300 dark:text-stone-700 hidden sm:inline">•</span>
+              {/* Feature 3: Save for Later */}
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-full bg-[#EAF3EE] dark:bg-emerald-950/80 text-[#065F46] dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 border border-emerald-200/60 dark:border-emerald-800/60">
+                  <Bookmark className="w-4 h-4 stroke-[2.5]" />
+                </div>
+                <div>
+                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-stone-100">
+                    Save for Later
+                  </h4>
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-snug mt-0.5">
+                    Bookmark scholarships without creating an account.
+                  </p>
+                </div>
+              </div>
 
-              <div className="flex items-center gap-2">
-                <ExternalLink className="w-4 h-4 text-[#065F46] dark:text-emerald-400" />
-                <span>Official application sources</span>
+              {/* Feature 4: Compare Options */}
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-full bg-[#EAF3EE] dark:bg-emerald-950/80 text-[#065F46] dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 border border-emerald-200/60 dark:border-emerald-800/60">
+                  <GitCompare className="w-4 h-4 stroke-[2.5]" />
+                </div>
+                <div>
+                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-stone-100">
+                    Compare Options
+                  </h4>
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-snug mt-0.5">
+                    Compare up to three scholarships side by side.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

@@ -9,7 +9,6 @@ import { Footer } from './components/common/Footer';
 import { Hero } from './components/home/Hero';
 import { ExploreByCategory } from './components/home/ExploreByCategory';
 import { FeaturedScholarships } from './components/home/FeaturedScholarships';
-import { Features } from './components/home/Features';
 import { HowItWorks } from './components/home/HowItWorks';
 import { QuestionnaireWizard } from './components/questionnaire/QuestionnaireWizard';
 import { ResultsView } from './components/results/ResultsView';
@@ -163,7 +162,6 @@ export function AppContent() {
               onFindScholarships={() => navigateTo('find')}
               onExploreScholarships={() => navigateTo('explore')}
             />
-            <Features />
             <HowItWorks onStart={() => navigateTo('find')} />
             <ExploreByCategory onSelectCategory={handleCategorySelect} />
             <FeaturedScholarships

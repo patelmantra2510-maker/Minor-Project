@@ -1,6 +1,5 @@
 import React from 'react';
-import { Cap3D, Star3D } from '../common/Educational3DObjects';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Check } from 'lucide-react';
 
 interface DiscoveryDeskCompositionProps {
   onFindScholarships?: () => void;
@@ -10,269 +9,509 @@ export const DiscoveryDeskComposition: React.FC<DiscoveryDeskCompositionProps> =
   onFindScholarships,
 }) => {
   return (
-    <div className="relative w-full max-w-md lg:max-w-lg mx-auto select-none py-4 sm:py-6">
-      {/* 1. Subtle Background Organic Halo */}
+    <div className="relative w-full max-w-[420px] sm:max-w-[450px] mx-auto select-none py-6 sm:py-8">
+      {/* ========================================================================= */}
+      {/* 1. SUBTLE BACKGROUND HALO & SAGE TEXTURE */}
+      {/* ========================================================================= */}
       <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-        <div className="w-80 sm:w-96 h-80 sm:h-96 rounded-full bg-gradient-to-tr from-[#FAF8F5] via-[#F3EDE2]/60 to-[#E8E2D7]/30 blur-2xl dark:from-[#0C1513] dark:via-[#142420]/40 dark:to-transparent" />
+        <div className="w-80 sm:w-96 h-80 sm:h-96 rounded-full bg-gradient-to-tr from-[#FAF8F5] via-[#F3EDE2]/50 to-[#E8E2D7]/25 blur-3xl dark:from-[#0C1513] dark:via-[#142420]/30 dark:to-transparent" />
       </div>
 
-      {/* 2. Elegant Curved Journey Line (Behind/around the laptop) */}
+      {/* ========================================================================= */}
+      {/* 2. SUBTLE CURVED JOURNEY LINE (Passing BEHIND hero objects) */}
+      {/* Single elegant curved dotted line with tiny integrated typographic markers */}
+      {/* ========================================================================= */}
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible"
-        viewBox="0 0 520 440"
+        viewBox="0 0 450 380"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
       >
         <defs>
-          <linearGradient id="journeyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#065F46" stopOpacity="0.35" />
-            <stop offset="50%" stopColor="#D97706" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="#064E3B" stopOpacity="0.35" />
+          <linearGradient id="journeyDottedGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#065F46" stopOpacity="0.32" />
+            <stop offset="50%" stopColor="#D97706" stopOpacity="0.36" />
+            <stop offset="100%" stopColor="#064E3B" stopOpacity="0.32" />
           </linearGradient>
         </defs>
 
-        {/* Delicate curving trajectory */}
+        {/* Delicate sweeping curved path */}
         <path
-          d="M 60 260 C 50 130, 160 55, 270 55 C 380 55, 465 110, 465 210 C 465 310, 395 400, 270 405 C 180 410, 100 375, 75 330"
-          stroke="url(#journeyGrad)"
-          strokeWidth="1.4"
+          d="M 45 130 C 55 45, 175 25, 270 30 C 375 35, 430 110, 420 205 C 410 295, 330 365, 220 360 C 150 355, 80 330, 60 275"
+          stroke="url(#journeyDottedGrad)"
+          strokeWidth="1.3"
           strokeDasharray="4 6"
         />
 
-        {/* Milestone Node 1: EXPLORE (Top-Left) */}
-        <g transform="translate(105, 80)">
-          <circle cx="0" cy="0" r="3.5" fill="#065F46" />
-          <circle cx="0" cy="0" r="1.5" fill="#FAF8F5" />
-          <text x="-4" y="-8" fontSize="9.5" fontWeight="700" fill="#065F46" letterSpacing="0.08em" textAnchor="end" className="dark:fill-emerald-400">
-            EXPLORE 🔎
+        {/* Marker 1: Explore (Top-Left, along the path) */}
+        <g transform="translate(100, 38)">
+          <circle cx="0" cy="0" r="2.5" fill="#065F46" />
+          <text
+            x="8"
+            y="3"
+            fontSize="9.5"
+            fontWeight="600"
+            fill="#065F46"
+            letterSpacing="0.08em"
+            className="dark:fill-emerald-400 select-none"
+          >
+            Explore →
           </text>
         </g>
 
-        {/* Milestone Node 2: MATCH (Top-Right) */}
-        <g transform="translate(390, 75)">
-          <circle cx="0" cy="0" r="3.5" fill="#D97706" />
-          <circle cx="0" cy="0" r="1.5" fill="#FAF8F5" />
-          <text x="6" y="-8" fontSize="9.5" fontWeight="700" fill="#B45309" letterSpacing="0.08em" textAnchor="start" className="dark:fill-amber-400">
-            📄 MATCH
+        {/* Marker 2: Match (Top-Right, along the path) */}
+        <g transform="translate(365, 58)">
+          <circle cx="0" cy="0" r="2.5" fill="#D97706" />
+          <text
+            x="8"
+            y="3"
+            fontSize="9.5"
+            fontWeight="600"
+            fill="#B45309"
+            letterSpacing="0.08em"
+            className="dark:fill-amber-400 select-none"
+          >
+            Match →
           </text>
         </g>
 
-        {/* Milestone Node 3: SCHOLARSHIP (Mid-Right) */}
-        <g transform="translate(465, 210)">
-          <circle cx="0" cy="0" r="3.5" fill="#D97706" />
-          <circle cx="0" cy="0" r="1.5" fill="#FAF8F5" />
-          <text x="8" y="3" fontSize="9.5" fontWeight="700" fill="#B45309" letterSpacing="0.08em" textAnchor="start" className="dark:fill-amber-400">
-            ⭐ SCHOLARSHIP
+        {/* Marker 3: Scholarship (Mid-Right, along the path) */}
+        <g transform="translate(422, 195)">
+          <circle cx="0" cy="0" r="2.5" fill="#D97706" />
+          <text
+            x="8"
+            y="3"
+            fontSize="9.5"
+            fontWeight="600"
+            fill="#B45309"
+            letterSpacing="0.08em"
+            className="dark:fill-amber-400 select-none"
+          >
+            Scholarship →
           </text>
         </g>
 
-        {/* Milestone Node 4: FUTURE (Bottom) */}
-        <g transform="translate(230, 406)">
-          <circle cx="0" cy="0" r="3.5" fill="#065F46" />
-          <circle cx="0" cy="0" r="1.5" fill="#FAF8F5" />
-          <text x="0" y="16" fontSize="9.5" fontWeight="700" fill="#065F46" letterSpacing="0.08em" textAnchor="middle" className="dark:fill-emerald-400">
-            ⚑ FUTURE
+        {/* Marker 4: Future (Bottom-Center, along the path) */}
+        <g transform="translate(200, 362)">
+          <circle cx="0" cy="0" r="2.5" fill="#065F46" />
+          <text
+            x="8"
+            y="3"
+            fontSize="9.5"
+            fontWeight="600"
+            fill="#065F46"
+            letterSpacing="0.08em"
+            className="dark:fill-emerald-400 select-none"
+          >
+            Future
           </text>
         </g>
       </svg>
 
-      {/* Supporting Accent 1: Graduation Cap (Top Left) */}
-      <div className="absolute -top-2 left-2 sm:left-4 z-20 animate-float" title="Graduation Cap">
-        <Cap3D size={48} />
-      </div>
-
-      {/* Supporting Accent 2: Polished 3D Stack of 3 Books (Deep green, cream, muted gold) */}
-      <div className="absolute bottom-6 -left-2 sm:-left-3 z-20 animate-float-alt" title="Edvora Study Volumes">
-        <svg width="68" height="54" viewBox="0 0 68 54" fill="none" xmlns="http://www.w3.org/2000/svg" className="filter drop-shadow-md">
-          {/* Bottom Book: Deep Forest Green with Gold Spine Foil */}
-          <rect x="6" y="34" width="56" height="13" rx="2.5" fill="#064E3B" />
-          <path d="M10 36 H60 V44 H10 Z" fill="#FAF8F5" />
-          <rect x="4" y="33.5" width="8" height="14" rx="2" fill="#033527" />
-          <line x1="8" y1="35" x2="8" y2="46" stroke="#F59E0B" strokeWidth="1" />
-
-          {/* Middle Book: Warm Ivory/Cream with Sage Trim */}
-          <rect x="10" y="20" width="50" height="12" rx="2" fill="#FAF8F5" stroke="#E2DACB" strokeWidth="0.8" />
-          <path d="M14 22 H58 V29 H14 Z" fill="#F3EDE2" />
-          <rect x="8" y="19.5" width="7" height="13" rx="1.5" fill="#D8CFBF" />
-
-          {/* Top Book: Muted Gold/Amber with Ribbon Bookmark */}
-          <rect x="14" y="7" width="44" height="11" rx="2" fill="#D97706" />
-          <path d="M18 9 H56 V15 H18 Z" fill="#FAF8F5" />
-          <rect x="12" y="6.5" width="6" height="12" rx="1.5" fill="#B45309" />
-          {/* Gold Bookmark Ribbon hanging down */}
-          <path d="M34 6 V22 L37 19 L40 22 V6 H34 Z" fill="#F59E0B" />
+      {/* ========================================================================= */}
+      {/* 3. GRADUATION CAP (Small, elegant, floating above/behind the laptop) */}
+      {/* ========================================================================= */}
+      <div
+        className="absolute -top-3 left-[18%] z-15 animate-float pointer-events-none"
+        title="Graduation Cap"
+      >
+        <svg
+          width="44"
+          height="44"
+          viewBox="0 0 100 100"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="drop-shadow-md"
+        >
+          {/* Skull cap underside */}
+          <path
+            d="M32 50C32 64 40 74 50 74C60 74 68 64 68 50C68 49 60 52 50 52C40 52 32 49 32 50Z"
+            fill="#043E2F"
+          />
+          {/* Mortarboard Diamond (Deep forest green with subtle lighting) */}
+          <path
+            d="M50 20L88 38L50 56L12 38L50 20Z"
+            fill="#064E3B"
+            stroke="#10B981"
+            strokeWidth="0.8"
+            strokeOpacity="0.4"
+          />
+          {/* Center Golden Button */}
+          <ellipse cx="50" cy="38" rx="4" ry="2.5" fill="#F59E0B" />
+          {/* Flowing Gold Tassel */}
+          <path
+            d="M50 38C62 38 72 44 74 54L76 66"
+            stroke="#F59E0B"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            fill="none"
+          />
+          <path
+            d="M72 66C72 64 80 64 80 66L78 76C78 78 74 78 74 76L72 66Z"
+            fill="#D97706"
+          />
         </svg>
       </div>
 
-      {/* Supporting Accent 3: Subtle Gold Star / Spark (Top Right) */}
-      <div className="absolute top-4 right-6 sm:right-8 z-20 animate-float-alt" title="Academic Spark">
-        <Star3D size={28} />
-      </div>
-
-      {/* Supporting Accent 4: One Dimensional Botanical Plant in Terracotta Ceramic Pot */}
-      <div className="absolute bottom-5 right-2 sm:right-4 z-20" title="Botanical Growth Plant">
-        <svg width="44" height="56" viewBox="0 0 44 56" fill="none" xmlns="http://www.w3.org/2000/svg" className="filter drop-shadow-sm">
-          {/* Pot Shadow */}
-          <ellipse cx="22" cy="52" rx="12" ry="2.5" fill="#000000" fillOpacity="0.12" />
-          {/* Terracotta Pot Body */}
-          <path d="M11 36 L14 50 H30 L33 36 H11 Z" fill="#C26A20" stroke="#9A4E11" strokeWidth="1" />
-          {/* Pot Rim */}
-          <rect x="9" y="34" width="26" height="4" rx="2" fill="#D97706" stroke="#9A4E11" strokeWidth="0.8" />
-          {/* Plant Central Stem */}
-          <path d="M22 34 V16" stroke="#064E3B" strokeWidth="2" strokeLinecap="round" />
-          {/* Left Leaf (Deep Green) */}
-          <path d="M22 25 C14 23 10 18 12 12 C16 12 20 19 22 25 Z" fill="#065F46" />
-          {/* Right Leaf (Deep Green with Gold Highlight) */}
-          <path d="M22 22 C30 20 34 14 32 8 C28 8 24 16 22 22 Z" fill="#047857" />
-          <path d="M22 22 C26 18 29 14 28 10 C26 11 23 16 22 22 Z" fill="#F59E0B" />
-          {/* Top Growth Leaf */}
-          <path d="M22 16 C20 10 22 4 22 4 C22 4 24 10 22 16 Z" fill="#10B981" />
+      {/* ========================================================================= */}
+      {/* 4. GOLD SPARK 1 (Small 4-pointed sparkle near graduation cap) */}
+      {/* ========================================================================= */}
+      <div className="absolute top-1 left-[38%] z-15 pointer-events-none">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M12 0C12 7 17 12 24 12C17 12 12 17 12 24C12 17 7 12 0 12C7 12 12 7 12 0Z"
+            fill="#F59E0B"
+            opacity="0.85"
+          />
         </svg>
       </div>
 
-      {/* CENTRAL OBJECT: Realistic-but-Stylized Laptop (10-15% smaller, refined depth) */}
-      <div className="relative z-10 mx-auto max-w-[325px] sm:max-w-[350px] transition-transform duration-300 hover:-translate-y-1">
-        {/* Laptop Display Chassis with Realistic Bezel & Soft Depth */}
-        <div className="rounded-t-2xl bg-gradient-to-b from-[#1E293B] to-[#0F172A] p-2 sm:p-2.5 pt-2 pb-1.5 shadow-xl border border-slate-700/80">
-          {/* Screen Top Bar: Camera & Window Controls */}
-          <div className="flex items-center justify-between px-1.5 mb-1 text-[8.5px] text-slate-400">
-            <div className="flex items-center gap-1.2">
-              <span className="w-1.8 h-1.8 rounded-full bg-rose-500/80 inline-block" />
-              <span className="w-1.8 h-1.8 rounded-full bg-amber-500/80 inline-block" />
-              <span className="w-1.8 h-1.8 rounded-full bg-emerald-500/80 inline-block" />
+      {/* ========================================================================= */}
+      {/* 5. GOLD SPARK 2 (Tiny 4-pointed sparkle near mid-right) */}
+      {/* ========================================================================= */}
+      <div className="absolute top-[48%] -right-2 z-15 pointer-events-none">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M12 0C12 7 17 12 24 12C17 12 12 17 12 24C12 17 7 12 0 12C7 12 12 7 12 0Z"
+            fill="#D97706"
+            opacity="0.7"
+          />
+        </svg>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 6. BOOKS STACK (Small stack of 3 3D books to the LEFT of the laptop) */}
+      {/* References Edvora logo colors: deep green, cream, muted gold. NO text. */}
+      {/* ========================================================================= */}
+      <div
+        className="absolute bottom-7 -left-4 sm:-left-6 z-25 pointer-events-none"
+        title="Edvora Study Volumes"
+      >
+        <svg
+          width="74"
+          height="60"
+          viewBox="0 0 74 60"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="filter drop-shadow-md"
+        >
+          {/* Shadow under books */}
+          <ellipse cx="37" cy="56" rx="30" ry="3.5" fill="#064E3B" fillOpacity="0.12" />
+
+          {/* Book 1 (Bottom): Deep Forest Green with Gold Spine Foil Line */}
+          <g transform="translate(3, 38)">
+            {/* Book Body */}
+            <rect x="5" y="0" width="58" height="13" rx="2" fill="#064E3B" />
+            {/* Paper Pages Side */}
+            <path d="M10 2 H61 V11 H10 Z" fill="#FAF8F5" />
+            {/* Spine */}
+            <rect x="3" y="0" width="8" height="13" rx="2" fill="#033527" />
+            <line x1="7" y1="2" x2="7" y2="11" stroke="#F59E0B" strokeWidth="0.8" opacity="0.8" />
+          </g>
+
+          {/* Book 2 (Middle): Warm Ivory / Cream Volume */}
+          <g transform="translate(8, 23)">
+            {/* Book Body */}
+            <rect x="4" y="0" width="54" height="12" rx="2" fill="#FAF8F5" stroke="#E2DACB" strokeWidth="0.7" />
+            {/* Paper Pages */}
+            <path d="M9 2 H56 V10 H9 Z" fill="#F3EDE2" />
+            {/* Spine */}
+            <rect x="2" y="0" width="8" height="12" rx="1.5" fill="#E8E2D7" />
+            <line x1="6" y1="2" x2="6" y2="10" stroke="#065F46" strokeWidth="0.7" opacity="0.4" />
+          </g>
+
+          {/* Book 3 (Top): Muted Gold / Amber Volume with Ribbon Bookmark */}
+          <g transform="translate(13, 9)">
+            {/* Book Body */}
+            <rect x="4" y="0" width="48" height="11" rx="2" fill="#D97706" />
+            {/* Paper Pages */}
+            <path d="M8 2 H50 V9 H8 Z" fill="#FAF8F5" />
+            {/* Spine */}
+            <rect x="2" y="0" width="7" height="11" rx="1.5" fill="#B45309" />
+            {/* Fine Silk Bookmark Ribbon hanging out */}
+            <path d="M28 0 V16 L31 13 L34 16 V0 H28 Z" fill="#F59E0B" />
+          </g>
+        </svg>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 7. CENTRAL VISUAL: PREMIUM 3D LAPTOP */}
+      {/* With 3D perspective, visible keyboard/base, soft realistic shadow, */}
+      {/* screen showing Edvora interface (NO fake claims / NO 100% verified) */}
+      {/* ========================================================================= */}
+      <div
+        className="relative z-10 mx-auto max-w-[335px] sm:max-w-[355px]"
+        style={{
+          perspective: '1200px',
+        }}
+      >
+        <div
+          className="transition-transform duration-500 ease-out hover:-translate-y-1"
+          style={{
+            transform: 'rotateY(-5deg) rotateX(4deg)',
+            transformStyle: 'preserve-3d',
+          }}
+        >
+          {/* --- DISPLAY LID & SCREEN --- */}
+          <div className="rounded-t-xl bg-gradient-to-b from-[#1E293B] via-[#0F172A] to-[#0A0F1D] p-2 pt-1.5 pb-1 shadow-2xl border border-slate-700/70">
+            {/* Screen Bezel Top Bar: Web Camera & Indicators */}
+            <div className="flex items-center justify-between px-1.5 mb-1 text-[8px] text-slate-400">
+              <div className="flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500/80 inline-block" />
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500/80 inline-block" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/80 inline-block" />
+              </div>
+              {/* Webcam Lens */}
+              <span className="w-1.5 h-1.5 rounded-full bg-slate-600 inline-block ring-1 ring-slate-800" />
+              <span className="text-[7.5px] font-mono opacity-50">edvora.in</span>
             </div>
-            {/* Center camera dot */}
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-600 inline-block ring-1 ring-slate-800" />
-            <span className="text-[7.5px] font-mono opacity-50">edvora.in</span>
-          </div>
 
-          {/* Screen Display Content */}
-          <div className="relative overflow-hidden bg-[#FAF8F5] dark:bg-[#0C1513] rounded-lg p-3.5 sm:p-4 border border-[#E8E2D7] dark:border-[#1E3A33] text-stone-900 dark:text-stone-100 transition-colors shadow-inner">
-            {/* Glass subtle light reflection streak */}
-            <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-bl from-white/12 to-transparent rotate-45 pointer-events-none" />
+            {/* Screen Interior Display Surface */}
+            <div className="relative overflow-hidden bg-[#FAF8F5] dark:bg-[#0C1513] rounded-lg p-3 sm:p-3.5 border border-[#E8E2D7] dark:border-[#1E3A33] text-stone-900 dark:text-stone-100 shadow-inner">
+              {/* Natural Glass Gloss Reflection */}
+              <div className="absolute -top-12 -right-12 w-44 h-44 bg-gradient-to-bl from-white/14 via-white/4 to-transparent rotate-45 pointer-events-none" />
 
-            {/* Window Header with Edvora Emblem */}
-            <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-[#E8E2D7] dark:border-[#1E3A33]">
-              <div className="flex items-center gap-1.5">
-                <img
-                  src="/edvora-emblem.png"
-                  alt="Edvora"
-                  className="w-4 h-4 object-contain"
-                />
-                <span className="text-[11px] font-black font-editorial text-[#064E3B] dark:text-emerald-400">
-                  Edvora Finder
+              {/* Window Header with Edvora Emblem (Clean, zero fake percentages) */}
+              <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-[#E8E2D7] dark:border-[#1E3A33]">
+                <div className="flex items-center gap-1.5">
+                  <img
+                    src="/edvora-emblem.png"
+                    alt="Edvora"
+                    className="w-4 h-4 object-contain"
+                  />
+                  <span className="text-[11px] font-extrabold font-editorial text-[#064E3B] dark:text-emerald-400 tracking-tight">
+                    Edvora
+                  </span>
+                </div>
+                <span className="text-[8px] font-semibold text-stone-500 dark:text-stone-400">
+                  Scholarship Discovery
                 </span>
               </div>
-              <span className="text-[8.5px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.2 rounded border border-emerald-200/60 dark:border-emerald-800/60">
-                100% Verified
-              </span>
-            </div>
 
-            {/* Matching Interface */}
-            <div className="space-y-2 text-left">
-              <h4 className="text-xs font-bold text-slate-900 dark:text-stone-100 font-editorial leading-tight">
-                Find scholarships for you
-              </h4>
+              {/* Simplified Edvora Interface */}
+              <div className="space-y-1.5 text-left">
+                <h4 className="text-[11px] font-bold text-slate-900 dark:text-stone-100 font-editorial leading-tight">
+                  Find scholarships for you
+                </h4>
 
-              {/* Field 1: Course */}
-              <div>
-                <span className="text-[8.5px] font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider block">
-                  What are you studying?
-                </span>
-                <div className="mt-0.5 px-2 py-1 rounded-md bg-white dark:bg-[#142420] border border-[#E2DACB] dark:border-[#1E3A33] text-[10px] font-semibold text-stone-800 dark:text-stone-200 flex items-center justify-between">
-                  <span>Diploma</span>
-                  <span className="text-[8.5px] text-[#065F46] dark:text-emerald-400 font-bold">✓</span>
+                {/* Field 1: Course */}
+                <div>
+                  <span className="text-[8px] font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider block">
+                    What are you studying?
+                  </span>
+                  <div className="mt-0.5 px-2 py-1 rounded bg-white dark:bg-[#142420] border border-[#E2DACB] dark:border-[#1E3A33] text-[9.5px] font-semibold text-stone-800 dark:text-stone-200 flex items-center justify-between">
+                    <span>Diploma</span>
+                    <span className="text-[8.5px] text-[#065F46] dark:text-emerald-400 font-bold">✓</span>
+                  </div>
+                </div>
+
+                {/* Field 2: Income */}
+                <div>
+                  <span className="text-[8px] font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider block">
+                    Annual family income
+                  </span>
+                  <div className="mt-0.5 px-2 py-1 rounded bg-white dark:bg-[#142420] border border-[#E2DACB] dark:border-[#1E3A33] text-[9.5px] font-semibold text-stone-800 dark:text-stone-200">
+                    <span>Below ₹2.5 Lakh</span>
+                  </div>
+                </div>
+
+                {/* Field 3: Location */}
+                <div>
+                  <span className="text-[8px] font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider block">
+                    State / Location
+                  </span>
+                  <div className="mt-0.5 px-2 py-1 rounded bg-white dark:bg-[#142420] border border-[#E2DACB] dark:border-[#1E3A33] text-[9.5px] font-semibold text-stone-800 dark:text-stone-200 flex items-center justify-between">
+                    <span>Gujarat</span>
+                    <span className="text-[8px] text-stone-400 font-normal">State</span>
+                  </div>
+                </div>
+
+                {/* CTA Button inside Screen */}
+                <div className="pt-0.5">
+                  <button
+                    type="button"
+                    onClick={onFindScholarships}
+                    className="w-full py-1.5 px-2.5 rounded bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 text-[9.5px] font-bold shadow-xs flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <span>Find Matches</span>
+                    <ArrowRight className="w-2.5 h-2.5 text-amber-400" />
+                  </button>
+                </div>
+
+                {/* Result: 3 Scholarships Found */}
+                <div className="px-2 py-1 rounded bg-emerald-50 dark:bg-[#142420] border border-[#065F46]/20 dark:border-emerald-800/60 text-[9px] text-[#064E3B] dark:text-emerald-300 font-bold flex items-center justify-between">
+                  <span className="flex items-center gap-1">
+                    <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400 stroke-[3]" />
+                    <span>3 Scholarships Found</span>
+                  </span>
+                  <span className="text-[8px] text-stone-500 dark:text-stone-400 font-medium">
+                    Matches
+                  </span>
                 </div>
               </div>
-
-              {/* Field 2: Income */}
-              <div>
-                <span className="text-[8.5px] font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider block">
-                  Annual family income
-                </span>
-                <div className="mt-0.5 px-2 py-1 rounded-md bg-white dark:bg-[#142420] border border-[#E2DACB] dark:border-[#1E3A33] text-[10px] font-semibold text-stone-800 dark:text-stone-200 flex items-center justify-between">
-                  <span>Below ₹2.5 Lakh</span>
-                  <span className="text-[8px] text-amber-700 dark:text-amber-400 font-bold">Eligible</span>
-                </div>
-              </div>
-
-              {/* Field 3: Location */}
-              <div>
-                <span className="text-[8.5px] font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider block">
-                  State / Location
-                </span>
-                <div className="mt-0.5 px-2 py-1 rounded-md bg-white dark:bg-[#142420] border border-[#E2DACB] dark:border-[#1E3A33] text-[10px] font-semibold text-stone-800 dark:text-stone-200 flex items-center justify-between">
-                  <span>Gujarat</span>
-                  <span className="text-[8.5px] text-stone-400">Domicile</span>
-                </div>
-              </div>
-
-              {/* Action Button inside Laptop */}
-              <div className="pt-0.5">
-                <button
-                  type="button"
-                  onClick={onFindScholarships}
-                  className="w-full py-1.5 px-2.5 rounded-md bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 text-[10px] font-bold shadow-xs flex items-center justify-center gap-1 transition-colors cursor-pointer"
-                >
-                  <span>Find Matches</span>
-                  <ArrowRight className="w-2.5 h-2.5 text-amber-400" />
-                </button>
-              </div>
-
-              {/* Verified Result Banner */}
-              <div className="px-2 py-1 rounded-md bg-emerald-50 dark:bg-[#142420] border border-[#065F46]/20 dark:border-emerald-800 text-[9.5px] text-[#064E3B] dark:text-emerald-300 font-bold flex items-center justify-between">
-                <span className="flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                  <span>3 Scholarships Found</span>
-                </span>
-                <span className="text-[8.5px] text-stone-500 dark:text-stone-400 font-semibold">
-                  MYSY · AICTE
-                </span>
-              </div>
             </div>
           </div>
-        </div>
 
-        {/* Laptop Base Surface with Realistic Bevel & Front Notch */}
-        <div className="relative">
-          <div className="h-3 bg-gradient-to-b from-[#CBD5E1] to-[#94A3B8] dark:from-slate-700 dark:to-slate-800 rounded-b-xl border-t border-slate-300 dark:border-slate-600 flex items-center justify-center shadow-md">
-            <div className="w-12 h-0.8 bg-slate-500 dark:bg-slate-900 rounded-full" />
+          {/* --- LAPTOP KEYBOARD BASE (3D perspective lower deck) --- */}
+          <div className="relative">
+            {/* Metallic Unibody Deck with Keyboard Well and Trackpad */}
+            <svg
+              className="w-full h-auto block -mt-[1px]"
+              viewBox="0 0 360 62"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient id="baseChassisGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#CBD5E1" />
+                  <stop offset="60%" stopColor="#94A3B8" />
+                  <stop offset="100%" stopColor="#64748B" />
+                </linearGradient>
+                <linearGradient id="kbWellGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#0F172A" stopOpacity="0.85" />
+                  <stop offset="100%" stopColor="#1E293B" stopOpacity="0.7" />
+                </linearGradient>
+              </defs>
+
+              {/* Hinge indentation */}
+              <rect x="25" y="0" width="310" height="2" fill="#0A0F1D" />
+
+              {/* Base Deck Surface (projecting forward in perspective) */}
+              <path
+                d="M 12 2 L 348 2 L 360 52 C 360 56, 356 58, 350 58 L 10 58 C 4 58, 0 56, 0 52 Z"
+                fill="url(#baseChassisGrad)"
+              />
+
+              {/* Top metallic highlight chamfer */}
+              <path
+                d="M 12 2 L 348 2"
+                stroke="#F1F5F9"
+                strokeWidth="1.2"
+                strokeOpacity="0.8"
+              />
+
+              {/* Recessed Keyboard Deck Area */}
+              <path
+                d="M 38 6 L 322 6 L 330 32 L 30 32 Z"
+                fill="url(#kbWellGrad)"
+                stroke="#475569"
+                strokeWidth="0.6"
+              />
+
+              {/* Subtle Keycap Rows in Keyboard Deck */}
+              {/* Row 1 */}
+              <rect x="42" y="8" width="276" height="3.5" rx="0.8" fill="#1E293B" stroke="#334155" strokeWidth="0.4" />
+              {/* Row 2 */}
+              <rect x="40" y="13" width="280" height="4" rx="0.8" fill="#1E293B" stroke="#334155" strokeWidth="0.4" />
+              {/* Row 3 */}
+              <rect x="38" y="18.5" width="284" height="4" rx="0.8" fill="#1E293B" stroke="#334155" strokeWidth="0.4" />
+              {/* Row 4 (with spacebar) */}
+              <g transform="translate(36, 24)">
+                <rect x="0" y="0" width="30" height="5" rx="0.8" fill="#1E293B" />
+                <rect x="34" y="0" width="16" height="5" rx="0.8" fill="#1E293B" />
+                <rect x="54" y="0" width="180" height="5" rx="0.8" fill="#0F172A" stroke="#475569" strokeWidth="0.5" />
+                <rect x="238" y="0" width="16" height="5" rx="0.8" fill="#1E293B" />
+                <rect x="258" y="0" width="30" height="5" rx="0.8" fill="#1E293B" />
+              </g>
+
+              {/* Centered Glass Trackpad */}
+              <rect
+                x="142"
+                y="36"
+                width="76"
+                height="17"
+                rx="2"
+                fill="#94A3B8"
+                fillOpacity="0.35"
+                stroke="#64748B"
+                strokeWidth="0.6"
+              />
+
+              {/* Front Lip Chamfer & Center Thumb Notch */}
+              <path
+                d="M 160 52 C 160 54, 164 56, 170 56 L 190 56 C 196 56, 200 54, 200 52 Z"
+                fill="#334155"
+              />
+              <path
+                d="M 0 52 L 360 52"
+                stroke="#475569"
+                strokeWidth="0.8"
+              />
+            </svg>
+
+            {/* Soft Ambient Ground Shadow */}
+            <div className="h-4 w-[92%] mx-auto bg-slate-900/18 dark:bg-black/50 blur-lg rounded-full -mt-2.5" />
           </div>
-          {/* Desk shadow */}
-          <div className="h-3.5 w-[90%] mx-auto bg-emerald-950/15 dark:bg-black/40 blur-md rounded-full -mt-1" />
         </div>
       </div>
 
-      {/* 3. ONLY ONE FLOATING SCHOLARSHIP CARD (Real verified scholarship data from dataset) */}
-      <div className="absolute -bottom-2 -right-3 sm:-right-6 z-30 animate-float max-w-[215px] sm:max-w-[230px]">
-        <div className="bg-white dark:bg-[#142420] rounded-xl p-3 sm:p-3.5 border border-[#E8E2D7] dark:border-[#1E3A33] shadow-lg hover:shadow-xl transition-all">
-          {/* Card Header: 🎓 Scholarship badge + status */}
+      {/* ========================================================================= */}
+      {/* 8. ONE FLOATING SCHOLARSHIP CARD (Overlapping lower-right of the laptop) */}
+      {/* Real verified scholarship data from dataset: Central Sector Scheme (CSSS) */}
+      {/* ========================================================================= */}
+      <div
+        className="absolute bottom-1 -right-2 sm:-right-5 z-30 animate-float max-w-[205px] sm:max-w-[220px]"
+        style={{
+          animationDuration: '6s',
+        }}
+      >
+        <div className="bg-white/95 dark:bg-[#142420]/95 backdrop-blur-md rounded-xl p-3 sm:p-3.5 border border-[#E8E2D7] dark:border-[#1E3A33] shadow-xl shadow-stone-900/10 dark:shadow-black/40 hover:shadow-2xl transition-all">
+          {/* Header: Scholarship Tag + Status */}
           <div className="flex items-center justify-between gap-1 mb-1.5">
-            <div className="flex items-center gap-1 text-[9.5px] font-bold text-[#064E3B] dark:text-emerald-400">
-              <span>🎓</span>
-              <span>Scholarship</span>
-            </div>
-            <span className="px-1.5 py-0.2 rounded-full text-[8.5px] font-extrabold bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+            <span className="text-[8.5px] font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
+              Scholarship
+            </span>
+            <span className="px-1.5 py-0.5 rounded-full text-[8px] font-extrabold bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
               ● OPEN
             </span>
           </div>
 
           {/* Real Scholarship Name */}
           <h5 className="text-[11px] font-bold text-slate-900 dark:text-stone-100 font-editorial line-clamp-1">
-            Central Sector Scheme (CSSS)
+            Central Sector Scholarship Scheme
           </h5>
 
-          {/* Real Award Benefit */}
+          {/* Real Benefit Amount */}
           <p className="text-xs font-black text-[#064E3B] dark:text-emerald-400 mt-0.5">
             ₹12,000 <span className="text-[9px] font-normal text-stone-500 dark:text-stone-400">/ year</span>
           </p>
 
-          {/* Level tag */}
-          <div className="mt-2 pt-1.5 border-t border-stone-100 dark:border-[#1E3A33] flex items-center justify-between text-[9px] text-stone-500 dark:text-stone-400 font-semibold">
+          {/* Real Level & Category Tag */}
+          <div className="mt-2 pt-1.5 border-t border-stone-100 dark:border-[#1E3A33] flex items-center justify-between text-[8.5px] text-stone-500 dark:text-stone-400 font-semibold">
             <span>Undergraduate</span>
-            <span className="text-amber-600 dark:text-amber-400 font-bold">Govt. of India</span>
+            <span className="text-amber-700 dark:text-amber-400 font-bold">Govt. of India</span>
           </div>
         </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 9. BOTANICAL ELEMENT (One subtle plant/leaf element near bottom-right edge) */}
+      {/* Very low visual weight, communicates growth. No garden. */}
+      {/* ========================================================================= */}
+      <div
+        className="absolute -bottom-2 right-1 sm:right-2 z-20 pointer-events-none"
+        title="Botanical Growth Accent"
+      >
+        <svg
+          width="36"
+          height="48"
+          viewBox="0 0 36 48"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="filter drop-shadow-xs"
+        >
+          {/* Ground shadow */}
+          <ellipse cx="18" cy="45" rx="8" ry="2" fill="#064E3B" fillOpacity="0.1" />
+          {/* Stem */}
+          <path d="M18 45 C18 36, 17 26, 19 14" stroke="#064E3B" strokeWidth="1.6" strokeLinecap="round" />
+          {/* Lower Leaf Left (Deep Green) */}
+          <path d="M18 33 C11 31, 8 26, 9 20 C13 21, 16 27, 18 33 Z" fill="#065F46" />
+          {/* Middle Leaf Right (Deep Green) */}
+          <path d="M18 25 C25 23, 28 17, 26 11 C23 12, 19 19, 18 25 Z" fill="#047857" />
+          {/* Top Apex Leaf (with Gold highlight like Edvora emblem) */}
+          <path d="M19 14 C17 8, 19 3, 19 3 C19 3, 21 8, 19 14 Z" fill="#F59E0B" />
+        </svg>
       </div>
     </div>
   );

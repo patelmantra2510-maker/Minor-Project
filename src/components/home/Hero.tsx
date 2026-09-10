@@ -73,8 +73,8 @@ export const Hero: React.FC<HeroProps> = ({
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            {/* Left Hero Content (~52% on desktop) */}
-            <div className="lg:col-span-6 xl:col-span-6 space-y-6 sm:space-y-7 text-center lg:text-left">
+            {/* Left Hero Content (~58% on desktop) */}
+            <div className="lg:col-span-7 xl:col-span-7 space-y-6 sm:space-y-7 text-center lg:text-left pr-0 lg:pr-6">
               {/* Small Eyebrow */}
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-stone-100/90 dark:bg-[#142420] border border-[#E8E2D7] dark:border-emerald-900/60 text-[#065F46] dark:text-emerald-300 text-[11px] font-bold tracking-widest uppercase">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
@@ -132,8 +132,8 @@ export const Hero: React.FC<HeroProps> = ({
               </div>
             </div>
 
-            {/* Right Hero: Scholarship Discovery Desk Composition (~48% on desktop) */}
-            <div className="lg:col-span-6 xl:col-span-6 flex justify-center relative">
+            {/* Right Hero: Scholarship Discovery 3D Composition (~42% on desktop, laptop occupies ~35-40% of hero width) */}
+            <div className="lg:col-span-5 xl:col-span-5 flex justify-center lg:justify-end relative">
               <DiscoveryDeskComposition onFindScholarships={onFindScholarships} />
             </div>
           </div>

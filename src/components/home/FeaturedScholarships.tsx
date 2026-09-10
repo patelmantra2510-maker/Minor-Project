@@ -1,5 +1,6 @@
 import React from 'react';
 import { SCHOLARSHIPS_DATA } from '../../data/scholarships';
+import { useScholarships } from '../../context/ScholarshipContext';
 import { FeaturedScholarshipCard } from './FeaturedScholarshipCard';
 import { useLanguage } from '../../context/LanguageContext';
 import { Sparkles, ArrowRight } from 'lucide-react';
@@ -14,6 +15,7 @@ export const FeaturedScholarships: React.FC<FeaturedScholarshipsProps> = ({
   onExploreAll,
 }) => {
   const { t } = useLanguage();
+  const { scholarships = SCHOLARSHIPS_DATA } = useScholarships();
 
   // Curate 4 top popular verified scholarships
   const featuredIds = [
@@ -22,7 +24,7 @@ export const FeaturedScholarships: React.FC<FeaturedScholarshipsProps> = ({
     'pm-usp-csss-national',
     'kotak-kanya-scholarship',
   ];
-  const featuredScholarships = SCHOLARSHIPS_DATA.filter((s) => featuredIds.includes(s.id));
+  const featuredScholarships = scholarships.filter((s) => featuredIds.includes(s.id));
 
   return (
     <section className="py-16 bg-white dark:bg-[#0E1A17] border-t border-[#E8E2D7] dark:border-[#1A2E28] transition-colors">

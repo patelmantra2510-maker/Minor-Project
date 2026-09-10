@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import type { EducationLevel } from '../../types/scholarship';
 import { SCHOLARSHIPS_DATA } from '../../data/scholarships';
+import { useScholarships } from '../../context/ScholarshipContext';
 import { ScholarshipCard } from '../scholarship/ScholarshipCard';
 import {
   Search,
@@ -45,6 +46,7 @@ export const DirectoryView: React.FC<DirectoryViewProps> = ({
 }) => {
   const { t } = useLanguage();
   const { openGlobalAI } = useAI();
+  const { scholarships = SCHOLARSHIPS_DATA } = useScholarships();
 
   const heroEyebrow = t('directory.heroEyebrow', undefined, 'EXPLORE SCHOLARSHIPS');
   const heroHeading = pageTitle || t('directory.heroHeading', undefined, 'Find Scholarships Worth Exploring');
@@ -106,7 +108,7 @@ export const DirectoryView: React.FC<DirectoryViewProps> = ({
   };
 
   const filteredScholarships = useMemo(() => {
-    const list = SCHOLARSHIPS_DATA.filter((s) => {
+    const list = scholarships.filter((s) => {
       // 1. Search Query (Case-insensitive partial matching)
       if (searchTerm.trim()) {
         const query = searchTerm.toLowerCase().trim();
@@ -230,6 +232,7 @@ export const DirectoryView: React.FC<DirectoryViewProps> = ({
     typeFilter,
     statusFilter,
     sortOption,
+    scholarships,
   ]);
 
   // Count active filters (excluding location tab which is shown as main discovery pill)

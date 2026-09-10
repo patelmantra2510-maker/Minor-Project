@@ -5,11 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "server": "node server/server.cjs",
+    "db:seed": "node scripts/seedSqlite.cjs",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.116.0",
+    "@types/better-sqlite3": "^9.6.0",
+    "better-sqlite3": "^13.0.3",
     "canvas-confetti": "^1.9.4",
     "lucide-react": "^1.43.0",
     "react": "^19.2.8",

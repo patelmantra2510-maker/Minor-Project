@@ -24,12 +24,13 @@ import { AIFloatingButton } from './components/ai/AIFloatingButton';
 import { AIChatPanel } from './components/ai/AIChatPanel';
 import { useSaved } from './context/SavedContext';
 
-import { SCHOLARSHIPS_DATA } from './data/scholarships';
+import { ScholarshipProvider, useScholarships } from './context/ScholarshipContext';
 import { evaluateAllScholarships, evaluateScholarship } from './engine/eligibilityEngine';
 import type { StudentAnswers, MatchResult } from './types/scholarship';
 
 export function AppContent() {
   const { t } = useLanguage();
+  const { scholarships } = useScholarships();
 
   // Helper to parse route path and query parameters (e.g. #/ai?scholarshipId=mysy-gujarat)
   const parseRouteHash = (rawHash: string) => {
@@ -122,14 +123,14 @@ export function AppContent() {
   // Evaluate matches if studentAnswers exist
   const matchResults: MatchResult[] = React.useMemo(() => {
     if (!studentAnswers) return [];
-    return evaluateAllScholarships(SCHOLARSHIPS_DATA, studentAnswers);
-  }, [studentAnswers]);
+    return evaluateAllScholarships(scholarships, studentAnswers);
+  }, [studentAnswers, scholarships]);
 
   // Check if current route is a dedicated scholarship detail route e.g. "scholarships/mysy-gujarat"
   const isDetailRoute = currentRoute.startsWith('scholarships/');
   const currentDetailSlug = isDetailRoute ? currentRoute.replace('scholarships/', '') : null;
   const currentScholarship = currentDetailSlug
-    ? SCHOLARSHIPS_DATA.find((s) => s.slug === currentDetailSlug || s.id === currentDetailSlug)
+    ? scholarships.find((s) => s.slug === currentDetailSlug || s.id === currentDetailSlug)
     : null;
   const { savedIds } = useSaved();
   const hasSavedItems = savedIds.length > 0;
@@ -317,11 +318,13 @@ export default function App() {
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <SavedProvider>
-          <CompareProvider>
-            <AppContent />
-          </CompareProvider>
-        </SavedProvider>
+        <ScholarshipProvider>
+          <SavedProvider>
+            <CompareProvider>
+              <AppContent />
+            </CompareProvider>
+          </SavedProvider>
+        </ScholarshipProvider>
       </LanguageProvider>
     </ThemeProvider>
   );

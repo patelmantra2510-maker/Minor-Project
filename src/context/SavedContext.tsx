@@ -7,6 +7,7 @@ interface SavedContextType {
   isSaved: (id: string) => boolean;
   addRecentlyViewed: (id: string) => void;
   clearSaved: () => void;
+  clearRecentlyViewed: () => void;
 }
 
 const SavedContext = createContext<SavedContextType | undefined>(undefined);
@@ -62,6 +63,10 @@ export const SavedProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setSavedIds([]);
   };
 
+  const clearRecentlyViewed = () => {
+    setRecentlyViewedIds([]);
+  };
+
   return (
     <SavedContext.Provider
       value={{
@@ -71,6 +76,7 @@ export const SavedProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         isSaved,
         addRecentlyViewed,
         clearSaved,
+        clearRecentlyViewed,
       }}
     >
       {children}

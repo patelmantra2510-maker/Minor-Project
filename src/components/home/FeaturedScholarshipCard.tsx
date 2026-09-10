@@ -2,6 +2,7 @@ import React from 'react';
 import type { Scholarship } from '../../types/scholarship';
 import { useSaved } from '../../context/SavedContext';
 import { useCompare } from '../../context/CompareContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { calculateDeadlineStatus } from '../../utils/dateUtils';
 import {
   Bookmark,
@@ -50,6 +51,7 @@ export const FeaturedScholarshipCard: React.FC<FeaturedScholarshipCardProps> = (
   scholarship,
   onViewDetails,
 }) => {
+  const { t } = useLanguage();
   const { isSaved, toggleSave } = useSaved();
   const { isComparing, toggleCompare } = useCompare();
 
@@ -102,16 +104,16 @@ export const FeaturedScholarshipCard: React.FC<FeaturedScholarshipCardProps> = (
               />
               <span>
                 {deadlineInfo.status === 'Open'
-                  ? 'OPEN'
+                  ? t('common.open', undefined, 'OPEN')
                   : deadlineInfo.status === 'Opening Soon'
-                  ? 'SOON'
-                  : 'CLOSED'}
+                  ? t('common.openingSoon', undefined, 'SOON')
+                  : t('common.closed', undefined, 'CLOSED')}
               </span>
             </span>
 
             {deadlineInfo.status === 'Open' && deadlineInfo.daysRemaining > 0 && (
               <span className="text-[11px] font-medium text-stone-500 dark:text-stone-400 whitespace-nowrap">
-                {deadlineInfo.daysRemaining}d left
+                {deadlineInfo.daysRemaining}{t('common.dLeft', undefined, 'd left')}
               </span>
             )}
           </div>
@@ -125,9 +127,9 @@ export const FeaturedScholarshipCard: React.FC<FeaturedScholarshipCardProps> = (
                   ? 'bg-[#064E3B] text-amber-100 border-[#064E3B]'
                   : 'bg-stone-50 dark:bg-[#1C3630] border-stone-200 dark:border-[#23453E] text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-[#24463E]'
               }`}
-              title={comparing ? 'Remove from comparison' : 'Add to compare tray'}
+              title={comparing ? t('common.removeFromSaved', undefined, 'Remove from comparison') : t('common.compare', undefined, 'Add to compare tray')}
             >
-              {comparing ? '✓ In Compare' : '+ Compare'}
+              {comparing ? `✓ ${t('common.inCompare', undefined, 'In Compare')}` : t('common.addCompare', undefined, '+ Compare')}
             </button>
             <button
               onClick={() => toggleSave(scholarship.id)}
@@ -136,8 +138,8 @@ export const FeaturedScholarshipCard: React.FC<FeaturedScholarshipCardProps> = (
                   ? 'bg-amber-50 border-amber-300 text-amber-600 dark:bg-amber-950/60 dark:border-amber-800 dark:text-amber-400 scale-105'
                   : 'bg-stone-50 dark:bg-[#1C3630] border-stone-200 dark:border-[#23453E] text-stone-400 hover:text-amber-600 hover:border-amber-300'
               }`}
-              aria-label={saved ? 'Remove from saved' : 'Save scholarship'}
-              title={saved ? 'Saved' : 'Save for later'}
+              aria-label={saved ? t('common.removeFromSaved', undefined, 'Remove from saved') : t('common.save', undefined, 'Save scholarship')}
+              title={saved ? t('common.saved', undefined, 'Saved') : t('common.saveForLater', undefined, 'Save for later')}
             >
               <Bookmark className={`w-3.5 h-3.5 ${saved ? 'fill-amber-500 text-amber-500' : ''}`} />
             </button>
@@ -160,7 +162,7 @@ export const FeaturedScholarshipCard: React.FC<FeaturedScholarshipCardProps> = (
                   : 'text-stone-400 dark:text-stone-500'
               }`}
             />
-            <span>{scholarship.state === 'Gujarat' ? 'Gujarat' : 'All India'}</span>
+            <span>{scholarship.state === 'Gujarat' ? t('common.gujarat', undefined, 'Gujarat') : t('common.allIndia', undefined, 'All India')}</span>
           </span>
         </div>
 
@@ -191,7 +193,7 @@ export const FeaturedScholarshipCard: React.FC<FeaturedScholarshipCardProps> = (
             <div className="flex items-center gap-1.5 mb-1.5">
               <GraduationCap className="w-3.5 h-3.5 text-[#065F46] dark:text-emerald-400 shrink-0" />
               <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
-                EDUCATION
+                {t('common.education', undefined, 'EDUCATION')}
               </span>
             </div>
             <div className="flex flex-col gap-0.5 text-xs font-semibold text-slate-800 dark:text-stone-200 min-w-0">
@@ -202,7 +204,7 @@ export const FeaturedScholarshipCard: React.FC<FeaturedScholarshipCardProps> = (
               ))}
               {scholarship.educationLevels.length > 2 && (
                 <span className="text-[10px] font-medium text-stone-400 dark:text-stone-500">
-                  +{scholarship.educationLevels.length - 2} more
+                  +{scholarship.educationLevels.length - 2} {t('common.more', undefined, 'more')}
                 </span>
               )}
             </div>
@@ -213,7 +215,7 @@ export const FeaturedScholarshipCard: React.FC<FeaturedScholarshipCardProps> = (
             <div className="flex items-center gap-1.5 mb-1.5">
               <IndianRupee className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
               <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
-                BENEFIT
+                {t('common.benefit', undefined, 'BENEFIT')}
               </span>
             </div>
             <div className="min-w-0">
@@ -246,13 +248,13 @@ export const FeaturedScholarshipCard: React.FC<FeaturedScholarshipCardProps> = (
         <span className="inline-flex items-center text-[11px] font-semibold">
           {isGovernment ? (
             <span className="inline-flex items-center gap-1 text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/60 dark:border-emerald-800/60 px-2 py-0.5 rounded-md">
-              <ShieldCheck className="w-3 h-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span>Government</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span>{t('common.government', undefined, 'Government')}</span>
             </span>
           ) : (
             <span className="inline-flex items-center gap-1 text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 border border-amber-200/60 dark:border-amber-800/60 px-2 py-0.5 rounded-md">
-              <Award className="w-3 h-3 text-amber-600 dark:text-amber-400 shrink-0" />
-              <span>Private</span>
+              <Award className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+              <span>{t('common.private', undefined, 'Private')}</span>
             </span>
           )}
         </span>
@@ -261,7 +263,7 @@ export const FeaturedScholarshipCard: React.FC<FeaturedScholarshipCardProps> = (
           onClick={() => onViewDetails(scholarship.slug)}
           className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#064E3B] dark:text-emerald-400 hover:text-[#043E2F] dark:hover:text-emerald-300 transition-colors group/btn"
         >
-          <span>View Details</span>
+          <span>{t('common.viewDetails', undefined, 'View Details')}</span>
           <ArrowRight className="w-4 h-4 text-amber-500 group-hover/btn:translate-x-1 transition-transform duration-200" />
         </button>
       </div>

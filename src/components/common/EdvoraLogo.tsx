@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface EdvoraLogoProps {
   variant?: 'navbar' | 'mobile' | 'full' | 'emblem-only';
@@ -11,6 +12,7 @@ export const EdvoraLogo: React.FC<EdvoraLogoProps> = ({
   className = '',
   showTagline = true,
 }) => {
+  const { t } = useLanguage();
   // Pure transparent official emblem extracted from reference artwork
   const Emblem = ({ height = 42 }: { height?: number }) => (
     <img
@@ -68,7 +70,7 @@ export const EdvoraLogo: React.FC<EdvoraLogoProps> = ({
         </div>
         {showTagline && (
           <p className="text-xs text-stone-600 dark:text-stone-400 font-medium max-w-sm leading-relaxed">
-            Find Scholarships That Fit You. Modern, verified scholarship discovery for students across India.
+            {t('tagline')}. {t('supportingLine')}
           </p>
         )}
       </div>
@@ -88,7 +90,7 @@ export const EdvoraLogo: React.FC<EdvoraLogoProps> = ({
         </div>
         {showTagline && (
           <span className="text-[9.5px] text-stone-500 dark:text-stone-400 font-medium tracking-wide hidden sm:block mt-0.5">
-            Find Scholarships That Fit You
+            {t('tagline')}
           </span>
         )}
       </div>

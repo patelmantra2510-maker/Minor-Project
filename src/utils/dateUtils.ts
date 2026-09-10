@@ -86,3 +86,17 @@ export function formatDate(dateStr: string): string {
     return dateStr;
   }
 }
+
+export function getDaysUntilDeadline(deadlineStr?: string): number | null {
+  if (!deadlineStr) return null;
+  try {
+    const now = new Date();
+    const deadline = new Date(deadlineStr);
+    deadline.setHours(23, 59, 59, 999);
+    const diffMs = deadline.getTime() - now.getTime();
+    return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  } catch {
+    return null;
+  }
+}
+

@@ -151,3 +151,213 @@
   animation: ambientDrift 6s ease-in-out infinite;
 }
 
+/* Path Dash Drift for Scholarship Journey */
+@keyframes pathDrift {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -120;
+  }
+}
+
+.animate-path-drift {
+  animation: pathDrift 24s linear infinite;
+}
+
+/* Subtle Page Transition Fade */
+@keyframes pageFadeIn {
+  from {
+    opacity: 0.85;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-enter {
+  animation: pageFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Scholarship Journey Detail Background Floating Keyframes */
+@keyframes docFloatSlow1 {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) translateX(4px) rotate(1.2deg);
+  }
+}
+
+@keyframes docFloatSlow2 {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) translateX(-5px) rotate(-1.5deg);
+  }
+}
+
+@keyframes docFloatSlow3 {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-14px) translateX(3px) rotate(1deg);
+  }
+}
+
+@keyframes goldGlowSlow {
+  0%, 100% {
+    opacity: 0.18;
+    transform: translateY(0px) scale(0.95);
+  }
+  50% {
+    opacity: 0.55;
+    transform: translateY(-5px) scale(1.08);
+  }
+}
+
+.animate-doc-float-1 {
+  animation: docFloatSlow1 16s ease-in-out infinite;
+}
+
+.animate-doc-float-2 {
+  animation: docFloatSlow2 20s ease-in-out infinite;
+}
+
+.animate-doc-float-3 {
+  animation: docFloatSlow3 14s ease-in-out infinite;
+}
+
+.animate-gold-glow {
+  animation: goldGlowSlow 10s ease-in-out infinite;
+}
+
+/* Results Connections / Matching Background Keyframes */
+@keyframes matchDashSlow {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -160;
+  }
+}
+
+@keyframes nodePulseSlow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes matchFloatSlow {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-8px) translateX(3px);
+  }
+}
+
+.animate-match-dash {
+  animation: matchDashSlow 20s linear infinite;
+}
+
+.animate-node-pulse {
+  animation: nodePulseSlow 5s ease-in-out infinite;
+}
+
+.animate-match-float {
+  animation: matchFloatSlow 14s ease-in-out infinite;
+}
+
+/* Explore Discovery / Floating Documents Keyframes */
+@keyframes exploreDocDrift1 {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) translateX(5px) rotate(1.2deg);
+  }
+}
+
+@keyframes exploreDocDrift2 {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) translateX(-5px) rotate(-1deg);
+  }
+}
+
+@keyframes explorePathDash {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -140;
+  }
+}
+
+.animate-explore-drift-1 {
+  animation: exploreDocDrift1 18s ease-in-out infinite;
+}
+
+.animate-explore-drift-2 {
+  animation: exploreDocDrift2 22s ease-in-out infinite;
+}
+
+.animate-explore-path {
+  animation: explorePathDash 24s linear infinite;
+}
+
+/* Saved Curated Dossier / Personal Archive Background Keyframes */
+@keyframes savedRibbonSwaySlow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1.8deg);
+  }
+}
+
+@keyframes savedDossierFloatSlow {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) translateX(4px) rotate(-1deg);
+  }
+}
+
+@keyframes savedStarShimmerSlow {
+  0%, 100% {
+    opacity: 0.22;
+    transform: scale(0.94) rotate(0deg);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.1) rotate(45deg);
+  }
+}
+
+.animate-saved-ribbon {
+  animation: savedRibbonSwaySlow 16s ease-in-out infinite;
+}
+
+.animate-saved-dossier {
+  animation: savedDossierFloatSlow 20s ease-in-out infinite;
+}
+
+.animate-saved-star {
+  animation: savedStarShimmerSlow 8s ease-in-out infinite;
+}
+
+

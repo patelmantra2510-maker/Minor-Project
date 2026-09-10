@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 import {
   GraduationCap,
   BookOpen,
@@ -29,99 +30,101 @@ interface CategoryItem {
 }
 
 export const ExploreByCategory: React.FC<ExploreByCategoryProps> = ({ onSelectCategory }) => {
+  const { t } = useLanguage();
+
   const categories: CategoryItem[] = [
     {
       id: 'school',
-      name: 'School',
-      description: 'Pre-matric and higher secondary (Classes 9–12)',
+      name: t('categories.school', undefined, 'School'),
+      description: t('categories.schoolDesc', undefined, 'Pre-matric and higher secondary (Classes 9–12)'),
       filterType: 'education',
       filterValue: 'School',
       icon: BookOpen,
     },
     {
       id: 'diploma',
-      name: 'Diploma',
-      description: 'Polytechnic & technical diploma programs',
+      name: t('categories.diploma', undefined, 'Diploma'),
+      description: t('categories.diplomaDesc', undefined, 'Polytechnic & technical diploma programs'),
       filterType: 'education',
       filterValue: 'Diploma',
       icon: Layers,
     },
     {
       id: 'iti',
-      name: 'ITI',
-      description: 'Industrial Training Institutes & vocational trade certificates',
+      name: t('categories.iti', undefined, 'ITI'),
+      description: t('categories.itiDesc', undefined, 'Industrial Training Institutes & vocational trade certificates'),
       filterType: 'education',
       filterValue: 'ITI',
       icon: Cpu,
     },
     {
       id: 'ug',
-      name: 'Undergraduate',
-      description: 'B.E., B.Tech, MBBS, B.Sc, B.Com, B.A. degrees',
+      name: t('categories.ug', undefined, 'Undergraduate'),
+      description: t('categories.ugDesc', undefined, 'B.E., B.Tech, MBBS, B.Sc, B.Com, B.A. degrees'),
       filterType: 'education',
       filterValue: 'Undergraduate',
       icon: GraduationCap,
     },
     {
       id: 'pg',
-      name: 'Postgraduate',
-      description: 'M.Tech, MBA, M.Sc, M.A., MD post-graduate studies',
+      name: t('categories.pg', undefined, 'Postgraduate'),
+      description: t('categories.pgDesc', undefined, 'M.Tech, MBA, M.Sc, M.A., MD post-graduate studies'),
       filterType: 'education',
       filterValue: 'Postgraduate',
       icon: BookmarkCheck,
     },
     {
       id: 'phd',
-      name: 'PhD',
-      description: 'Doctoral research programs and fellowship grants',
+      name: t('categories.phd', undefined, 'PhD'),
+      description: t('categories.phdDesc', undefined, 'Doctoral research programs and fellowship grants'),
       filterType: 'education',
       filterValue: 'PhD',
       icon: Sparkles,
     },
     {
       id: 'technical',
-      name: 'Technical Education',
-      description: 'Engineering, Technology, Architecture, Pharmacy schemes',
+      name: t('categories.technical', undefined, 'Technical Education'),
+      description: t('categories.technicalDesc', undefined, 'Engineering, Technology, Architecture, Pharmacy schemes'),
       filterType: 'type',
       filterValue: 'Government',
       icon: Cpu,
     },
     {
       id: 'girls',
-      name: 'Girls / Women',
-      description: 'Special female student grants (AICTE Pragati, Kanya Kelavani)',
+      name: t('categories.girls', undefined, 'Girls / Women'),
+      description: t('categories.girlsDesc', undefined, 'Special female student grants (AICTE Pragati, Kanya Kelavani)'),
       filterType: 'gender',
       filterValue: 'Female',
       icon: Heart,
     },
     {
       id: 'sc-st',
-      name: 'SC / ST',
-      description: 'Scheduled Caste & Scheduled Tribe post-matric initiatives',
+      name: t('categories.scst', undefined, 'SC / ST'),
+      description: t('categories.scstDesc', undefined, 'Scheduled Caste & Scheduled Tribe post-matric initiatives'),
       filterType: 'category',
       filterValue: 'SC',
       icon: Users,
     },
     {
       id: 'ews-sebc',
-      name: 'EWS / OBC / SEBC',
-      description: 'Economically Weaker & Socially Backward class scholarships',
+      name: t('categories.ewsSebc', undefined, 'EWS / OBC / SEBC'),
+      description: t('categories.ewsSebcDesc', undefined, 'Economically Weaker & Socially Backward class scholarships'),
       filterType: 'category',
       filterValue: 'SEBC/OBC',
       icon: ShieldCheck,
     },
     {
       id: 'merit',
-      name: 'Merit Based',
-      description: 'Academic excellence awards & percentile cutoffs',
+      name: t('categories.merit', undefined, 'Merit Based'),
+      description: t('categories.meritDesc', undefined, 'Academic excellence awards & percentile cutoffs'),
       filterType: 'type',
       filterValue: 'Merit',
       icon: Award,
     },
     {
       id: 'need',
-      name: 'Need Based',
-      description: 'Income ceiling and family financial hardship support',
+      name: t('categories.need', undefined, 'Need Based'),
+      description: t('categories.needDesc', undefined, 'Income ceiling and family financial hardship support'),
       filterType: 'type',
       filterValue: 'Need-based',
       icon: HeartHandshake,
@@ -133,13 +136,13 @@ export const ExploreByCategory: React.FC<ExploreByCategoryProps> = ({ onSelectCa
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="text-xs font-bold uppercase tracking-widest text-[#065F46] dark:text-emerald-400">
-            Education Discovery
+            {t('homePage.categoryEyebrow', undefined, 'Education Discovery')}
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-stone-100 font-editorial mt-2 tracking-tight">
-            Explore by Category
+            {t('homePage.categoryTitle', undefined, 'Explore by Category')}
           </h2>
           <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-2.5">
-            Select an academic tier or scholarship focus to view verified opportunities.
+            {t('homePage.categorySubtitle', undefined, 'Select an academic tier or scholarship focus to view verified opportunities.')}
           </p>
         </div>
 
@@ -155,7 +158,7 @@ export const ExploreByCategory: React.FC<ExploreByCategoryProps> = ({ onSelectCa
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-stone-100 dark:bg-[#1C3630] text-[#065F46] dark:text-emerald-400 flex items-center justify-center group-hover:bg-[#064E3B] group-hover:text-amber-100 transition-colors">
+                    <div className="w-10 h-10 rounded-xl bg-stone-100 dark:bg-[#1C3630] text-[#064E3B] dark:text-emerald-400 flex items-center justify-center group-hover:bg-[#064E3B] group-hover:text-amber-100 transition-colors">
                       <Icon className="w-5 h-5 stroke-[1.75]" />
                     </div>
                   </div>
@@ -169,7 +172,7 @@ export const ExploreByCategory: React.FC<ExploreByCategoryProps> = ({ onSelectCa
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-stone-100 dark:border-[#1C3630] flex items-center justify-between text-[11px] font-semibold text-[#065F46] dark:text-emerald-400">
-                  <span>Explore Schemes</span>
+                  <span>{t('homePage.exploreSchemes', undefined, 'Explore Schemes')}</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </button>

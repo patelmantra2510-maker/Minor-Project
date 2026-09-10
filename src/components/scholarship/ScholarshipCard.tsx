@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { Scholarship, MatchResult } from '../../types/scholarship';
 import { useSaved } from '../../context/SavedContext';
 import { useCompare } from '../../context/CompareContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { StatusBadge, MatchBadge } from '../common/Badge';
 import {
   Bookmark,
@@ -32,6 +33,7 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
   onViewDetails,
   showMatchStatus = true,
 }) => {
+  const { t } = useLanguage();
   const { isSaved, toggleSave } = useSaved();
   const { isComparing, toggleCompare } = useCompare();
   const [showMatchReasons, setShowMatchReasons] = useState(false);
@@ -55,7 +57,7 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
             />
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 dark:bg-[#1C3630] text-stone-700 dark:text-stone-300">
               <MapPin className="w-3 h-3 text-[#065F46] dark:text-emerald-400" />
-              {scholarship.state === 'Gujarat' ? 'Gujarat' : 'All India'}
+              {scholarship.state === 'Gujarat' ? t('common.gujarat', undefined, 'Gujarat') : t('common.allIndia', undefined, 'All India')}
             </span>
           </div>
 
@@ -68,9 +70,9 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
                   ? 'bg-[#064E3B] text-amber-100 border-[#064E3B]'
                   : 'bg-stone-50 dark:bg-[#1C3630] border-stone-200 dark:border-[#23453E] text-stone-700 dark:text-stone-300 hover:bg-stone-100'
               }`}
-              title="Add to comparison tray"
+              title={comparing ? t('common.removeFromSaved', undefined, 'Remove from comparison') : t('common.compare', undefined, 'Add to comparison tray')}
             >
-              {comparing ? '✓ In Compare' : '+ Compare'}
+              {comparing ? `✓ ${t('common.inCompare', undefined, 'In Compare')}` : t('common.addCompare', undefined, '+ Compare')}
             </button>
             <button
               onClick={() => toggleSave(scholarship.id)}
@@ -79,8 +81,8 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
                   ? 'bg-amber-50 border-amber-300 text-amber-600 dark:bg-amber-950/60 dark:border-amber-800 dark:text-amber-400 scale-110'
                   : 'bg-stone-50 dark:bg-[#1C3630] border-stone-200 dark:border-[#23453E] text-stone-400 hover:text-amber-600 hover:border-amber-300'
               }`}
-              aria-label={saved ? 'Remove from saved' : 'Save scholarship'}
-              title={saved ? 'Saved' : 'Save for later'}
+              aria-label={saved ? t('common.removeFromSaved', undefined, 'Remove from saved') : t('common.save', undefined, 'Save scholarship')}
+              title={saved ? t('common.saved', undefined, 'Saved') : t('common.saveForLater', undefined, 'Save for later')}
             >
               <Bookmark className={`w-4 h-4 ${saved ? 'fill-amber-500 text-amber-500' : ''}`} />
             </button>
@@ -104,10 +106,10 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
           <div className="flex items-start gap-2 min-w-0">
             <GraduationCap className="w-4 h-4 text-[#065F46] dark:text-emerald-400 shrink-0 mt-0.5" />
             <div className="min-w-0 flex-1">
-              <span className="text-stone-400 block text-[10px] uppercase font-bold">Education</span>
+              <span className="text-stone-400 block text-[10px] uppercase font-bold">{t('common.education', undefined, 'Education')}</span>
               <span className="font-semibold text-slate-800 dark:text-stone-200 truncate block">
                 {scholarship.educationLevels.slice(0, 2).join(' · ')}
-                {scholarship.educationLevels.length > 2 && ' +more'}
+                {scholarship.educationLevels.length > 2 && ` +${t('common.more', undefined, 'more')}`}
               </span>
             </div>
           </div>
@@ -115,7 +117,7 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
           <div className="flex items-start gap-2 min-w-0">
             <IndianRupee className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
             <div className="min-w-0 flex-1">
-              <span className="text-stone-400 block text-[10px] uppercase font-bold">Benefits</span>
+              <span className="text-stone-400 block text-[10px] uppercase font-bold">{t('common.benefits', undefined, 'Benefits')}</span>
               <span className="font-semibold text-[#065F46] dark:text-emerald-400 line-clamp-1">
                 {scholarship.benefits.amountDescription}
               </span>
@@ -138,7 +140,7 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
           >
             <span className="flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              <span>Why this matches me?</span>
+              <span>{t('whyThisMatchesMe')}</span>
             </span>
             {showMatchReasons ? (
               <ChevronUp className="w-3.5 h-3.5" />
@@ -199,7 +201,7 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
           onClick={() => onViewDetails(scholarship.slug)}
           className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#065F46] dark:text-emerald-400 hover:text-[#043E2F] dark:hover:text-emerald-300 focus:outline-none"
         >
-          <span>View Details</span>
+          <span>{t('common.viewDetails', undefined, 'View Details')}</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-amber-500" />
         </button>
       </div>

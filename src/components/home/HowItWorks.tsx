@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 import { HelpCircle, Sparkles, ExternalLink, ArrowRight } from 'lucide-react';
 
 interface HowItWorksProps {
@@ -6,26 +7,28 @@ interface HowItWorksProps {
 }
 
 export const HowItWorks: React.FC<HowItWorksProps> = ({ onStart }) => {
+  const { t } = useLanguage();
+
   const steps = [
     {
       num: '01',
-      title: 'Answer',
-      subtitle: 'Share your background',
-      description: 'Select your course, category, state, and academic percentage in a quick 7-step guided flow.',
+      title: t('homePage.step1Title', undefined, 'Answer'),
+      subtitle: t('homePage.step1Sub', undefined, 'Share your background'),
+      description: t('homePage.step1Desc', undefined, 'Select your course, category, state, and academic percentage in a quick 7-step guided flow.'),
       icon: HelpCircle,
     },
     {
       num: '02',
-      title: 'Get Matched',
-      subtitle: 'Rule-based evaluation',
-      description: 'Edvora instantly checks official criteria to find scholarships you qualify for.',
+      title: t('homePage.step2Title', undefined, 'Get Matched'),
+      subtitle: t('homePage.step2Sub', undefined, 'Rule-based evaluation'),
+      description: t('homePage.step2Desc', undefined, 'Edvora instantly checks official criteria to find scholarships you qualify for.'),
       icon: Sparkles,
     },
     {
       num: '03',
-      title: 'Explore & Apply',
-      subtitle: 'Direct official access',
-      description: 'Review your personalized match checklist and apply directly through verified government portals.',
+      title: t('homePage.step3Title', undefined, 'Explore & Apply'),
+      subtitle: t('homePage.step3Sub', undefined, 'Direct official access'),
+      description: t('homePage.step3Desc', undefined, 'Review your personalized match checklist and apply directly through verified government portals.'),
       icon: ExternalLink,
     },
   ];
@@ -35,13 +38,13 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onStart }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-[#065F46] dark:text-emerald-400">
-            Simple 3-Step Journey
+            {t('homePage.howItWorksEyebrow', undefined, 'Simple 3-Step Journey')}
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-stone-100 font-editorial mt-2 tracking-tight">
-            How Edvora Works
+            {t('homePage.howItWorksTitle', undefined, 'How Edvora Works')}
           </h2>
           <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-2.5">
-            Discover verified scholarships tailored to you without complex forms or permanent profiles.
+            {t('homePage.howItWorksSubtitle', undefined, 'Discover verified scholarships tailored to you without complex forms or permanent profiles.')}
           </p>
         </div>
 
@@ -114,7 +117,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onStart }) => {
             onClick={onStart}
             className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 font-bold text-sm sm:text-base shadow-lg shadow-[#064E3B]/20 hover:shadow-[#064E3B]/30 hover:-translate-y-0.5 transition-all focus:outline-none focus:ring-2 focus:ring-[#065F46]"
           >
-            <span>Find My Scholarships</span>
+            <span>{t('homePage.ctaFind', undefined, 'Find My Scholarships')}</span>
             <ArrowRight className="w-4 h-4 text-amber-400" />
           </button>
         </div>

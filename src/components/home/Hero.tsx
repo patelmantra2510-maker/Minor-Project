@@ -1,5 +1,6 @@
 import React from 'react';
 import { DiscoveryDeskComposition } from './DiscoveryDeskComposition';
+import { useLanguage } from '../../context/LanguageContext';
 import {
   ArrowRight,
   Search,
@@ -14,12 +15,15 @@ import {
 interface HeroProps {
   onFindScholarships: () => void;
   onExploreScholarships: () => void;
+  onAskAI?: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({
   onFindScholarships,
   onExploreScholarships,
+  onAskAI,
 }) => {
+  const { t } = useLanguage();
   return (
     <div className="relative overflow-hidden bg-[#FAF8F5] dark:bg-[#0C1513] transition-colors pb-8 sm:pb-12">
       {/* ========================================================================= */}
@@ -88,23 +92,34 @@ export const Hero: React.FC<HeroProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center">
             {/* Left Hero Content (~50% on desktop) */}
             <div className="lg:col-span-6 xl:col-span-6 space-y-4 sm:space-y-4.5 text-center lg:text-left">
-              {/* Eyebrow Badge */}
-              <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-stone-100/90 dark:bg-[#142420] border border-[#E8E2D7] dark:border-emerald-900/60 text-[#065F46] dark:text-emerald-300 text-[10.5px] font-bold tracking-wider">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                <span>SCHOLARSHIPS MADE SIMPLE</span>
+              {/* Eyebrow Badge & AI Pill */}
+              <div className="flex items-center justify-center lg:justify-start gap-2 flex-wrap">
+                <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-stone-100/90 dark:bg-[#142420] border border-[#E8E2D7] dark:border-emerald-900/60 text-[#065F46] dark:text-emerald-300 text-[10.5px] font-bold tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  <span>{t('homePage.badge', undefined, 'SCHOLARSHIPS MADE SIMPLE')}</span>
+                </div>
+                {onAskAI && (
+                  <button
+                    onClick={onAskAI}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-300/80 dark:border-amber-800 text-amber-900 dark:text-amber-300 text-[10.5px] font-bold tracking-wide hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors"
+                  >
+                    <span>✨ {t('nav.ai', undefined, 'Ask Edvora AI')}</span>
+                    <span className="text-[9px] opacity-75">→</span>
+                  </button>
+                )}
               </div>
 
               {/* Main Heading */}
               <div className="space-y-0.5">
                 <h1 className="text-3xl sm:text-4xl lg:text-[3.25rem] font-extrabold text-[#0F172A] dark:text-stone-100 tracking-tight leading-[1.12]">
-                  Find Scholarships
+                  {t('homePage.titleMain', undefined, 'Find Scholarships')}
                 </h1>
                 <div className="inline-block relative">
                   <span
                     className="font-editorial italic font-normal text-3xl sm:text-4xl lg:text-[3.25rem] text-[#064E3B] dark:text-emerald-400 block leading-[1.12]"
                     style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
                   >
-                    That Fit You
+                    {t('homePage.titleItalic', undefined, 'That Fit You')}
                   </span>
                   {/* Subtle golden curved underline swoosh under "That Fit You" */}
                   <svg
@@ -125,7 +140,7 @@ export const Hero: React.FC<HeroProps> = ({
 
               {/* Description */}
               <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal">
-                Discover scholarships matched to your education, eligibility and goals across India.
+                {t('homePage.description', undefined, 'Discover scholarships matched to your education, eligibility and goals across India.')}
               </p>
 
               {/* Action Buttons */}
@@ -134,7 +149,7 @@ export const Hero: React.FC<HeroProps> = ({
                   onClick={onFindScholarships}
                   className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 font-bold text-sm sm:text-base shadow-md shadow-[#064E3B]/20 hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#065F46] cursor-pointer group"
                 >
-                  <span>Find My Scholarships</span>
+                  <span>{t('homePage.ctaFind', undefined, 'Find My Scholarships')}</span>
                   <ArrowRight className="w-4 h-4 text-amber-400 group-hover:translate-x-0.5 transition-transform" />
                 </button>
 
@@ -143,7 +158,7 @@ export const Hero: React.FC<HeroProps> = ({
                   className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white dark:bg-[#142420] hover:bg-stone-50 dark:hover:bg-[#1C3630] text-stone-800 dark:text-stone-200 font-semibold text-sm sm:text-base border border-[#E2DACB] dark:border-[#1E3A33] shadow-2xs hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#065F46] cursor-pointer"
                 >
                   <Search className="w-4 h-4 text-stone-500 dark:text-stone-400" />
-                  <span>Explore Scholarships</span>
+                  <span>{t('homePage.ctaExplore', undefined, 'Explore Scholarships')}</span>
                 </button>
               </div>
 
@@ -153,17 +168,17 @@ export const Hero: React.FC<HeroProps> = ({
                   <div className="w-3.5 h-3.5 flex items-center justify-center text-[#064E3B] dark:text-emerald-400">
                     🍃
                   </div>
-                  <span>No registration required</span>
+                  <span>{t('homePage.trust1', undefined, 'No registration required')}</span>
                 </div>
 
                 <div className="inline-flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#064E3B] dark:text-emerald-400 stroke-[2.5]" />
-                  <span>Clear eligibility information</span>
+                  <span>{t('homePage.trust2', undefined, 'Clear eligibility information')}</span>
                 </div>
 
                 <div className="inline-flex items-center gap-1.5">
                   <Users className="w-3.5 h-3.5 text-[#064E3B] dark:text-emerald-400 stroke-[2.5]" />
-                  <span>Scholarships across India</span>
+                  <span>{t('homePage.trust3', undefined, 'Scholarships across India')}</span>
                 </div>
               </div>
             </div>
@@ -186,9 +201,9 @@ export const Hero: React.FC<HeroProps> = ({
             <div className="lg:col-span-3 flex items-start gap-2.5 border-b lg:border-b-0 lg:border-r border-stone-200/80 dark:border-[#1E3A33] pb-3 lg:pb-0 pr-0 lg:pr-3">
               <div className="w-1.5 h-8 rounded-full bg-[#065F46] shrink-0 mt-0.5" />
               <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-stone-100 font-editorial leading-tight">
-                Everything You Need <br />
+                {t('homePage.featuresHeaderTitle', undefined, 'Everything You Need')} <br />
                 <span className="font-sans font-normal text-stone-700 dark:text-stone-300 text-xs sm:text-sm">
-                  to Find the Right Scholarship
+                  {t('homePage.featuresHeaderSub', undefined, 'to Find the Right Scholarship')}
                 </span>
               </h3>
             </div>
@@ -202,10 +217,10 @@ export const Hero: React.FC<HeroProps> = ({
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-slate-900 dark:text-stone-100 group-hover:text-[#064E3B] dark:group-hover:text-emerald-400 transition-colors">
-                    Personalized Matches
+                    {t('homePage.feature1Title', undefined, 'Personalized Matches')}
                   </h4>
                   <p className="text-[10.5px] text-stone-500 dark:text-stone-400 leading-snug mt-0.5">
-                    Answer a few questions and discover scholarships relevant to you.
+                    {t('homePage.feature1Desc', undefined, 'Answer a few questions and discover scholarships relevant to you.')}
                   </p>
                 </div>
               </div>
@@ -217,10 +232,10 @@ export const Hero: React.FC<HeroProps> = ({
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-slate-900 dark:text-stone-100 group-hover:text-[#064E3B] dark:group-hover:text-emerald-400 transition-colors">
-                    Clear Eligibility
+                    {t('homePage.feature2Title', undefined, 'Clear Eligibility')}
                   </h4>
                   <p className="text-[10.5px] text-stone-500 dark:text-stone-400 leading-snug mt-0.5">
-                    Understand why a scholarship matches your criteria.
+                    {t('homePage.feature2Desc', undefined, 'Understand why a scholarship matches your criteria.')}
                   </p>
                 </div>
               </div>
@@ -232,10 +247,10 @@ export const Hero: React.FC<HeroProps> = ({
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-slate-900 dark:text-stone-100 group-hover:text-[#064E3B] dark:group-hover:text-emerald-400 transition-colors">
-                    Save for Later
+                    {t('homePage.feature3Title', undefined, 'Save for Later')}
                   </h4>
                   <p className="text-[10.5px] text-stone-500 dark:text-stone-400 leading-snug mt-0.5">
-                    Bookmark scholarships without creating an account.
+                    {t('homePage.feature3Desc', undefined, 'Bookmark scholarships without creating an account.')}
                   </p>
                 </div>
               </div>
@@ -247,10 +262,10 @@ export const Hero: React.FC<HeroProps> = ({
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-slate-900 dark:text-stone-100 group-hover:text-[#064E3B] dark:group-hover:text-emerald-400 transition-colors">
-                    Compare Options
+                    {t('homePage.feature4Title', undefined, 'Compare Options')}
                   </h4>
                   <p className="text-[10.5px] text-stone-500 dark:text-stone-400 leading-snug mt-0.5">
-                    Compare up to three scholarships side by side.
+                    {t('homePage.feature4Desc', undefined, 'Compare up to three scholarships side by side.')}
                   </p>
                 </div>
               </div>

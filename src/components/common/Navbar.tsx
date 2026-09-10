@@ -52,18 +52,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
     }
   }, [langDropdownOpen]);
 
-  // Exact required navigation: Home, Find Scholarships, Explore Scholarships, Saved, About
+  // Navigation: Home, Find Scholarships, Explore Scholarships, ✨ AI, Saved, About
   const navLinks = [
-    { key: 'home', label: t('home'), route: 'home' },
-    { key: 'find', label: t('findScholarships'), route: 'find' },
-    { key: 'explore', label: t('exploreScholarships'), route: 'explore' },
+    { key: 'home', label: t('nav.home', undefined, 'Home'), route: 'home' },
+    { key: 'find', label: t('nav.findScholarships', undefined, 'Find Scholarships'), route: 'find' },
+    { key: 'explore', label: t('nav.exploreScholarships', undefined, 'Explore Scholarships'), route: 'explore' },
+    { key: 'ai', label: '✨ ' + t('nav.ai', undefined, 'AI'), route: 'ai' },
     {
       key: 'saved',
-      label: t('saved'),
+      label: t('nav.saved', undefined, 'Saved'),
       route: 'saved',
       badgeCount: savedIds.length,
     },
-    { key: 'about', label: t('about'), route: 'about' },
+    { key: 'about', label: t('nav.about', undefined, 'About'), route: 'about' },
   ];
 
   const handleLinkClick = (route: string) => {
@@ -84,6 +85,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
     ) {
       return 'explore';
     }
+    if (currentRoute === 'ai' || currentRoute.startsWith('ai')) return 'ai';
     if (currentRoute === 'saved') return 'saved';
     if (currentRoute === 'about') return 'about';
     return 'home';

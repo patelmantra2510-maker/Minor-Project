@@ -1,30 +1,32 @@
 import React from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 import { Cap3D, Certificate3D, Notebook3D, Medal3D } from '../common/Educational3DObjects';
 
 export const Features: React.FC = () => {
+  const { t } = useLanguage();
   const featureList = [
     {
       num: '01',
-      title: 'Personalized Matches',
-      description: 'Answer a few questions and discover scholarships matched to your education and category.',
+      title: t('homePage.feature1Title', undefined, 'Personalized Matches'),
+      description: t('homePage.feature1Desc', undefined, 'Answer a few questions and discover scholarships matched to your education and category.'),
       renderObject: () => <Cap3D size={40} className="group-hover:scale-110 transition-transform" />,
     },
     {
       num: '02',
-      title: 'Clear Eligibility',
-      description: 'Understand exactly why a scholarship matches your criteria with transparent rules.',
+      title: t('homePage.feature2Title', undefined, 'Clear Eligibility'),
+      description: t('homePage.feature2Desc', undefined, 'Understand exactly why a scholarship matches your criteria with transparent rules.'),
       renderObject: () => <Certificate3D size={40} className="group-hover:scale-110 transition-transform" />,
     },
     {
       num: '03',
-      title: 'Save for Later',
-      description: 'Bookmark scholarships to your personal session tray without registering an account.',
+      title: t('homePage.feature3Title', undefined, 'Save for Later'),
+      description: t('homePage.feature3Desc', undefined, 'Bookmark scholarships to your personal session tray without registering an account.'),
       renderObject: () => <Notebook3D size={38} className="group-hover:scale-110 transition-transform" />,
     },
     {
       num: '04',
-      title: 'Compare Options',
-      description: 'Compare awards, deadlines, and benefits side-by-side to choose the right opportunity.',
+      title: t('homePage.feature4Title', undefined, 'Compare Options'),
+      description: t('homePage.feature4Desc', undefined, 'Compare awards, deadlines, and benefits side-by-side to choose the right opportunity.'),
       renderObject: () => <Medal3D size={40} className="group-hover:scale-110 transition-transform" />,
     },
   ];
@@ -34,13 +36,13 @@ export const Features: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-14">
           <span className="text-xs font-bold uppercase tracking-widest text-[#065F46] dark:text-emerald-400">
-            Why Edvora
+            {t('homePage.featuresHeaderTitle')}
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-stone-100 font-editorial mt-2 tracking-tight">
-            Everything You Need to Find the Right Scholarship
+            {t('homePage.featuresHeaderTitle')} {t('homePage.featuresHeaderSub')}
           </h2>
           <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-2.5">
-            Designed for clarity, privacy, and ease of use. No accounts, no clutter, no guesswork.
+            {t('homePage.description')}
           </p>
         </div>
 

@@ -42,18 +42,18 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <EdvoraLogo variant="navbar" showTagline={false} />
             </div>
             <p className="text-sm text-stone-400 max-w-md leading-relaxed font-normal">
-              Making scholarship discovery simpler for students across India. We evaluate criteria transparently so you know exactly which opportunities are open to you.
+              {t('footer.tagline')}
             </p>
             <div className="flex items-center gap-2 text-xs text-emerald-400 bg-[#063326] border border-emerald-800/60 px-3.5 py-1.5 rounded-xl w-fit">
               <ShieldCheck className="w-4 h-4 text-amber-400" />
-              <span>100% Free · Zero student accounts or login required</span>
+              <span>{t('footer.freeBadge')}</span>
             </div>
           </div>
 
           {/* Quick Links strictly as requested */}
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-amber-400 mb-4">
-              Navigation
+              {t('footer.navigation')}
             </h3>
             <ul className="space-y-2.5 text-sm">
               <li>
@@ -61,7 +61,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   onClick={() => onNavigate('home')}
                   className="hover:text-emerald-400 transition-colors text-left"
                 >
-                  Home
+                  {t('nav.home')}
                 </button>
               </li>
               <li>
@@ -69,7 +69,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   onClick={() => onNavigate('find')}
                   className="hover:text-amber-400 transition-colors text-left font-semibold text-emerald-400"
                 >
-                  Find Scholarships →
+                  {t('nav.findScholarships')} →
                 </button>
               </li>
               <li>
@@ -77,7 +77,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   onClick={() => onNavigate('explore')}
                   className="hover:text-emerald-400 transition-colors text-left"
                 >
-                  Explore Scholarships
+                  {t('nav.exploreScholarships')}
                 </button>
               </li>
               <li>
@@ -85,7 +85,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   onClick={() => onNavigate('saved')}
                   className="hover:text-emerald-400 transition-colors text-left"
                 >
-                  Saved Scholarships
+                  {t('nav.saved')}
                 </button>
               </li>
               <li>
@@ -93,7 +93,15 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   onClick={() => onNavigate('about')}
                   className="hover:text-emerald-400 transition-colors text-left"
                 >
-                  About Edvora
+                  {t('nav.about')}
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onNavigate('ai')}
+                  className="hover:text-amber-400 transition-colors text-left flex items-center gap-1 text-amber-300 font-semibold"
+                >
+                  <span>✨ {t('nav.ai', undefined, 'Ask Edvora AI')}</span>
                 </button>
               </li>
             </ul>
@@ -102,7 +110,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           {/* Official Portals & Legal */}
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-amber-400 mb-4">
-              Official Portals
+              {t('footer.officialPortals')}
             </h3>
             <ul className="space-y-2.5 text-sm">
               <li>
@@ -112,7 +120,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   rel="noopener noreferrer"
                   className="hover:text-emerald-400 transition-colors flex items-center gap-1.5"
                 >
-                  <span>MYSY Portal</span>
+                  <span>{t('footer.mysyPortal')}</span>
                   <ExternalLink className="w-3 h-3 text-stone-500" />
                 </a>
               </li>
@@ -123,7 +131,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   rel="noopener noreferrer"
                   className="hover:text-emerald-400 transition-colors flex items-center gap-1.5"
                 >
-                  <span>Digital Gujarat</span>
+                  <span>{t('footer.digitalGujarat')}</span>
                   <ExternalLink className="w-3 h-3 text-stone-500" />
                 </a>
               </li>
@@ -134,7 +142,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   rel="noopener noreferrer"
                   className="hover:text-emerald-400 transition-colors flex items-center gap-1.5"
                 >
-                  <span>National Scholarship Portal (NSP)</span>
+                  <span>{t('footer.nsp')}</span>
                   <ExternalLink className="w-3 h-3 text-stone-500" />
                 </a>
               </li>
@@ -143,14 +151,14 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   onClick={() => openLegalModal('privacy')}
                   className="hover:text-amber-400 transition-colors underline"
                 >
-                  Privacy Policy
+                  {t('footer.privacyPolicy')}
                 </button>
                 <span>·</span>
                 <button
                   onClick={() => openLegalModal('terms')}
                   className="hover:text-amber-400 transition-colors underline"
                 >
-                  Terms of Use
+                  {t('footer.termsOfUse')}
                 </button>
               </li>
             </ul>
@@ -160,7 +168,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
         {/* Mandatory Disclaimer */}
         <div className="py-6 border-b border-[#162B25] text-xs text-stone-400 leading-relaxed space-y-2">
           <p>
-            <strong className="text-stone-200">Important Disclaimer:</strong> {t('disclaimer')}
+            <strong className="text-stone-200">{t('footer.importantDisclaimer')}</strong> {t('disclaimer')}
           </p>
           <p className="text-stone-500">
             Edvora is an independent educational discovery tool and does not process applications or disburse funds directly. Always verify current notifications on respective official government and organizational portals.
@@ -169,9 +177,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
-          <p>© {new Date().getFullYear()} Edvora. Learn · Explore · Grow.</p>
+          <p>{t('footer.copyright', { year: String(new Date().getFullYear()) })}</p>
           <p className="flex items-center gap-1">
-            Empowering students across India <Heart className="w-3.5 h-3.5 text-amber-500 fill-amber-500 inline" />
+            {t('footer.empowering')} <Heart className="w-3.5 h-3.5 text-amber-500 fill-amber-500 inline" />
           </p>
         </div>
       </div>
@@ -191,7 +199,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 onClick={() => setModalContent(null)}
                 className="px-5 py-2 rounded-xl bg-[#064E3B] text-amber-50 text-xs font-bold"
               >
-                Close
+                {t('common.close')}
               </button>
             </div>
           </div>

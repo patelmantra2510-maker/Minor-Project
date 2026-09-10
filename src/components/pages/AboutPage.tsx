@@ -7,25 +7,28 @@ import {
   MapPin,
   Lock,
 } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface AboutPageProps {
   onStartFinder: () => void;
 }
 
 export const AboutPage: React.FC<AboutPageProps> = ({ onStartFinder }) => {
+  const { t } = useLanguage();
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 animate-in fade-in duration-300 space-y-12">
       {/* Hero Header */}
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-[#142420] border border-emerald-200 dark:border-emerald-800 text-[#065F46] dark:text-emerald-300 text-xs font-bold">
           <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-          <span>About Edvora</span>
+          <span>{t('aboutPage.badge')}</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white font-editorial tracking-tight">
-          Find Scholarships That Fit You
+          {t('aboutPage.title')}
         </h1>
         <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 max-w-2xl mx-auto leading-relaxed">
-          Edvora is a modern scholarship discovery platform built for students across India. We eliminate the frustration of navigating dozens of scattered government portals and private trust websites.
+          {t('aboutPage.subtitle')}
         </p>
       </div>
 
@@ -36,10 +39,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onStartFinder }) => {
             <Lock className="w-5 h-5" />
           </div>
           <h2 className="text-base font-bold text-slate-900 dark:text-white font-editorial">
-            Zero Registration
+            {t('aboutPage.zeroRegTitle')}
           </h2>
           <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
-            No accounts, passwords, email verification, or permanent student records. Your answers stay strictly in your current browser session.
+            {t('aboutPage.zeroRegDesc')}
           </p>
         </div>
 
@@ -48,10 +51,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onStartFinder }) => {
             <ShieldCheck className="w-5 h-5" />
           </div>
           <h2 className="text-base font-bold text-slate-900 dark:text-white font-editorial">
-            Transparent Rules
+            {t('aboutPage.transparentTitle')}
           </h2>
           <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
-            No artificial black-box scores. Our engine displays the exact reason why each criterion passed, requires verification, or failed.
+            {t('aboutPage.transparentDesc')}
           </p>
         </div>
 
@@ -60,10 +63,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onStartFinder }) => {
             <Globe2 className="w-5 h-5" />
           </div>
           <h2 className="text-base font-bold text-slate-900 dark:text-white font-editorial">
-            Across India
+            {t('aboutPage.acrossIndiaTitle')}
           </h2>
           <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
-            Covers prominent state schemes (like Gujarat MYSY, CMSS) alongside major Central Sector, AICTE, and premier philanthropic programs.
+            {t('aboutPage.acrossIndiaDesc')}
           </p>
         </div>
       </div>
@@ -80,13 +83,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onStartFinder }) => {
           </div>
           <div className="text-center sm:text-left space-y-1">
             <span className="text-[10.5px] font-bold uppercase tracking-widest text-[#065F46] dark:text-emerald-400">
-              Brand Identity & Meaning
+              {t('aboutPage.emblemBadge')}
             </span>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-editorial">
-              The Story Behind the Edvora Emblem
+              {t('aboutPage.emblemTitle')}
             </h2>
             <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 leading-relaxed max-w-xl">
-              Every detail of the Edvora emblem was crafted to embody the educational journey of Indian students.
+              {t('aboutPage.emblemSubtitle')}
             </p>
           </div>
         </div>
@@ -97,10 +100,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onStartFinder }) => {
               📖
             </div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-white font-editorial">
-              Book · Education
+              {t('aboutPage.bookTitle')}
             </h3>
             <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
-              Knowledge and transparent access to scholarship discovery for all students.
+              {t('aboutPage.bookDesc')}
             </p>
           </div>
 
@@ -109,10 +112,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onStartFinder }) => {
               🌿
             </div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-white font-editorial">
-              Leaves · Growth
+              {t('aboutPage.leafTitle')}
             </h3>
             <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
-              Continuous academic advancement, upward mobility, and flourishing potential.
+              {t('aboutPage.leafDesc')}
             </p>
           </div>
 
@@ -121,10 +124,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onStartFinder }) => {
               🎓
             </div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-white font-editorial">
-              Cap · Achievement
+              {t('aboutPage.capTitle')}
             </h3>
             <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
-              Degrees attained, milestones unlocked, and academic ambitions realized.
+              {t('aboutPage.capDesc')}
             </p>
           </div>
 
@@ -133,10 +136,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onStartFinder }) => {
               ✨
             </div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-white font-editorial">
-              Gold · Opportunity
+              {t('aboutPage.starTitle')}
             </h3>
             <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
-              The shining spark that illuminates paths to scholarships and career futures.
+              {t('aboutPage.starDesc')}
             </p>
           </div>
         </div>
@@ -145,13 +148,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onStartFinder }) => {
       {/* Scope Section */}
       <div className="bg-white dark:bg-[#142420] rounded-3xl p-8 border border-[#E8E2D7] dark:border-[#1E3A33] shadow-2xs space-y-6">
         <h2 className="text-xl font-bold text-[#064E3B] dark:text-white font-editorial">
-          What Does Edvora Cover?
+          {t('aboutPage.whatCoveredTitle')}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs sm:text-sm">
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-[#065F46] dark:text-emerald-400 font-bold">
               <MapPin className="w-4 h-4" />
-              <span>State Government Initiatives</span>
+              <span>{t('aboutPage.stateGovTitle')}</span>
             </div>
             <ul className="space-y-1.5 text-stone-600 dark:text-stone-300">
               <li>• Mukhyamantri Yuva Swavalamban Yojana (MYSY)</li>
@@ -166,7 +169,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onStartFinder }) => {
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-bold">
               <Globe2 className="w-4 h-4" />
-              <span>National & Philanthropic Grants</span>
+              <span>{t('aboutPage.nationalGrantsTitle')}</span>
             </div>
             <ul className="space-y-1.5 text-stone-600 dark:text-stone-300">
               <li>• PM-USP CSSS (Ministry of Education / NSP)</li>
@@ -185,13 +188,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onStartFinder }) => {
       <div className="p-6 rounded-3xl bg-amber-50/70 dark:bg-[#201C12] border border-amber-200 dark:border-amber-900/60 text-xs sm:text-sm text-amber-900 dark:text-amber-200 space-y-2">
         <div className="flex items-center gap-2 font-bold text-amber-800 dark:text-amber-300">
           <AlertTriangle className="w-4 h-4 text-amber-600" />
-          <span>Important Notice & Application Policy</span>
+          <span>{t('aboutPage.noticeTitle')}</span>
         </div>
         <p className="leading-relaxed">
-          Edvora is an independent discovery platform. We do <strong>NOT</strong> process, evaluate, or approve applications, nor do we disburse government or private funds. All applications must be submitted directly through the respective authorized official websites.
+          {t('aboutPage.noticeP1')}
         </p>
         <p className="leading-relaxed">
-          Eligibility evaluations on this platform are indicative estimations based solely on available criteria. Final eligibility, document verification, and selection are determined exclusively by the respective scholarship authority.
+          {t('aboutPage.noticeP2')}
         </p>
       </div>
 
@@ -201,7 +204,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onStartFinder }) => {
           onClick={onStartFinder}
           className="px-8 py-3.5 rounded-xl bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 font-bold text-xs sm:text-sm shadow-md shadow-[#064E3B]/20 transition-all hover:scale-105"
         >
-          Find My Scholarships Now →
+          {t('aboutPage.findMyScholarshipsBtn')}
         </button>
       </div>
     </div>

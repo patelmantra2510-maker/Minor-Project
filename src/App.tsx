@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { SavedProvider } from './context/SavedContext';
 import { CompareProvider } from './context/CompareContext';
-import { LanguageProvider } from './context/LanguageContext';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
 
 import { Navbar } from './components/common/Navbar';
 import { Footer } from './components/common/Footer';
@@ -15,19 +15,36 @@ import { ResultsView } from './components/results/ResultsView';
 import { DirectoryView } from './components/directory/DirectoryView';
 import { SavedScholarshipsPage } from './components/pages/SavedScholarshipsPage';
 import { AboutPage } from './components/pages/AboutPage';
+import { AIPage } from './components/pages/AIPage';
 import { ScholarshipDetailPage } from './components/scholarship/ScholarshipDetailPage';
 import { ComparisonModal, FloatingCompareBar } from './components/scholarship/ComparisonModal';
+import { EdvoraBackground, type BackgroundVariant } from './components/background/EdvoraBackground';
+import { AIProvider } from './context/AIContext';
+import { AIFloatingButton } from './components/ai/AIFloatingButton';
+import { AIChatPanel } from './components/ai/AIChatPanel';
+import { useSaved } from './context/SavedContext';
 
 import { SCHOLARSHIPS_DATA } from './data/scholarships';
 import { evaluateAllScholarships, evaluateScholarship } from './engine/eligibilityEngine';
 import type { StudentAnswers, MatchResult } from './types/scholarship';
 
 export function AppContent() {
-  // Hash-based client route state
-  const [currentRoute, setCurrentRoute] = useState<string>(() => {
-    const hash = window.location.hash.replace(/^#\/?/, '');
-    return hash || 'home';
-  });
+  const { t } = useLanguage();
+
+  // Helper to parse route path and query parameters (e.g. #/ai?scholarshipId=mysy-gujarat)
+  const parseRouteHash = (rawHash: string) => {
+    const clean = rawHash.replace(/^#\/?/, '');
+    const [pathPart, queryPart] = clean.split('?');
+    const params = new URLSearchParams(queryPart || '');
+    return {
+      route: pathPart || 'home',
+      scholarshipId: params.get('scholarshipId') || undefined,
+    };
+  };
+
+  const [routeInfo, setRouteInfo] = useState(() => parseRouteHash(window.location.hash));
+  const currentRoute = routeInfo.route;
+  const currentAIScholarshipId = routeInfo.scholarshipId;
 
   // Directory filter state when navigated from home category cards
   const [directoryFilters, setDirectoryFilters] = useState<{
@@ -64,8 +81,7 @@ export function AppContent() {
   // Sync hash changes with state
   useEffect(() => {
     const handleHashChange = () => {
-      const hash = window.location.hash.replace(/^#\/?/, '');
-      setCurrentRoute(hash || 'home');
+      setRouteInfo(parseRouteHash(window.location.hash));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -74,8 +90,8 @@ export function AppContent() {
   }, []);
 
   const navigateTo = (route: string) => {
-    window.location.hash = `#/${route}`;
-    setCurrentRoute(route);
+    window.location.hash = route.startsWith('/') ? `#${route}` : `#/${route}`;
+    setRouteInfo(parseRouteHash(window.location.hash));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -115,12 +131,35 @@ export function AppContent() {
   const currentScholarship = currentDetailSlug
     ? SCHOLARSHIPS_DATA.find((s) => s.slug === currentDetailSlug || s.id === currentDetailSlug)
     : null;
+  const { savedIds } = useSaved();
+  const hasSavedItems = savedIds.length > 0;
+
+  const backgroundVariant: BackgroundVariant = isDetailRoute
+    ? 'detail'
+    : currentRoute === 'home' || currentRoute === ''
+    ? 'home'
+    : currentRoute === 'find' || currentRoute === 'results'
+    ? studentAnswers && matchResults.length > 0
+      ? 'results'
+      : 'find'
+    : currentRoute === 'explore' || currentRoute === 'all-scholarships' || currentRoute === 'gujarat' || currentRoute === 'all-india'
+    ? 'explore'
+    : currentRoute === 'saved'
+    ? 'saved'
+    : currentRoute === 'about'
+    ? 'about'
+    : currentRoute === 'ai'
+    ? 'ai'
+    : 'home';
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-[#0C1513] text-stone-900 dark:text-stone-100 transition-colors">
-      <Navbar currentRoute={currentRoute} onNavigate={navigateTo} />
+    <AIProvider studentAnswers={studentAnswers} currentPage={currentRoute}>
+      <div className="min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-[#0C1513] text-stone-900 dark:text-stone-100 transition-colors relative">
+        <Navbar currentRoute={currentRoute} onNavigate={navigateTo} />
 
-      <main className="flex-1">
+      <main className="flex-1 relative overflow-hidden">
+        <EdvoraBackground variant={backgroundVariant} hasSavedItems={hasSavedItems} />
+        <div key={currentRoute} className="animate-page-enter">
         {/* DEDICATED SCHOLARSHIP DETAIL ROUTE */}
         {isDetailRoute && currentScholarship ? (
           <ScholarshipDetailPage
@@ -130,6 +169,8 @@ export function AppContent() {
                 ? evaluateScholarship(currentScholarship, studentAnswers)
                 : undefined
             }
+            studentAnswers={studentAnswers}
+            onNavigate={navigateTo}
             onBack={() => {
               if (window.history.length > 1) {
                 window.history.back();
@@ -141,16 +182,16 @@ export function AppContent() {
         ) : isDetailRoute && !currentScholarship ? (
           <div className="max-w-md mx-auto py-20 text-center px-4">
             <h2 className="text-xl font-bold font-editorial text-[#064E3B] dark:text-emerald-400">
-              Scholarship Not Found
+              {t('common.notFoundTitle', undefined, 'Scholarship Not Found')}
             </h2>
             <p className="text-xs sm:text-sm text-stone-500 mt-2">
-              The scholarship you requested does not exist or may have been updated.
+              {t('common.notFoundDesc', undefined, 'The scholarship you requested does not exist or may have been updated.')}
             </p>
             <button
               onClick={() => navigateTo('explore')}
               className="mt-4 px-4 py-2 rounded-xl bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 text-xs font-semibold shadow-xs transition-colors"
             >
-              Browse All Scholarships
+              {t('common.browseAll', undefined, 'Browse All Scholarships')}
             </button>
           </div>
         ) : null}
@@ -161,6 +202,7 @@ export function AppContent() {
             <Hero
               onFindScholarships={() => navigateTo('find')}
               onExploreScholarships={() => navigateTo('explore')}
+              onAskAI={() => navigateTo('ai')}
             />
             <HowItWorks onStart={() => navigateTo('find')} />
             <ExploreByCategory onSelectCategory={handleCategorySelect} />
@@ -172,7 +214,7 @@ export function AppContent() {
         )}
 
         {/* FIND SCHOLARSHIPS ROUTE */}
-        {!isDetailRoute && currentRoute === 'find' && (
+        {!isDetailRoute && (currentRoute === 'find' || currentRoute === 'results') && (
           <div>
             {studentAnswers && matchResults.length > 0 ? (
               <ResultsView
@@ -206,6 +248,7 @@ export function AppContent() {
             pageTitle="Explore Scholarships"
             pageSubtitle="The single directory for scholarships across Gujarat and India. Search, filter, and discover verified opportunities."
             onViewScholarshipDetails={(slug) => navigateTo(`scholarships/${slug}`)}
+            onNavigate={navigateTo}
           />
         )}
 
@@ -213,9 +256,10 @@ export function AppContent() {
         {!isDetailRoute && currentRoute === 'gujarat' && (
           <DirectoryView
             initialLocationTab="Gujarat"
-            pageTitle="Gujarat State Scholarships"
-            pageSubtitle="Explore state government initiatives including MYSY, Digital Gujarat Post-Matric, CMSS, Kanya Kelavani, and SHODH."
+            pageTitle={t('directory.gujaratPageTitle', undefined, 'Gujarat State Scholarships')}
+            pageSubtitle={t('directory.gujaratPageSub', undefined, 'Explore state government initiatives including MYSY, Digital Gujarat Post-Matric, CMSS, Kanya Kelavani, and SHODH.')}
             onViewScholarshipDetails={(slug) => navigateTo(`scholarships/${slug}`)}
+            onNavigate={navigateTo}
           />
         )}
 
@@ -223,9 +267,10 @@ export function AppContent() {
         {!isDetailRoute && currentRoute === 'all-india' && (
           <DirectoryView
             initialLocationTab="All India"
-            pageTitle="Popular All India Scholarships"
-            pageSubtitle="Discover selected national scholarships by Ministry of Education, AICTE, DST INSPIRE, and premier philanthropic trusts."
+            pageTitle={t('directory.allIndiaPageTitle', undefined, 'Popular All India Scholarships')}
+            pageSubtitle={t('directory.allIndiaPageSub', undefined, 'Discover selected national scholarships by Ministry of Education, AICTE, DST INSPIRE, and premier philanthropic trusts.')}
             onViewScholarshipDetails={(slug) => navigateTo(`scholarships/${slug}`)}
+            onNavigate={navigateTo}
           />
         )}
 
@@ -234,6 +279,7 @@ export function AppContent() {
           <SavedScholarshipsPage
             onViewScholarshipDetails={(slug) => navigateTo(`scholarships/${slug}`)}
             onExplore={() => navigateTo('explore')}
+            onNavigate={navigateTo}
           />
         )}
 
@@ -241,6 +287,16 @@ export function AppContent() {
         {!isDetailRoute && currentRoute === 'about' && (
           <AboutPage onStartFinder={() => navigateTo('find')} />
         )}
+
+        {/* DEDICATED AI PAGE */}
+        {!isDetailRoute && currentRoute === 'ai' && (
+          <AIPage
+            onNavigate={navigateTo}
+            studentAnswers={studentAnswers}
+            initialScholarshipId={currentAIScholarshipId}
+          />
+        )}
+        </div>
       </main>
 
       <Footer onNavigate={navigateTo} />
@@ -248,7 +304,12 @@ export function AppContent() {
       {/* Global Modals & Floating Tools */}
       <ComparisonModal />
       <FloatingCompareBar />
+
+      {/* Global AI Assistant System */}
+      <AIFloatingButton currentRoute={currentRoute} />
+      <AIChatPanel onNavigate={navigateTo} />
     </div>
+  </AIProvider>
   );
 }
 

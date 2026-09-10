@@ -6,6 +6,7 @@ import type {
   Gender,
 } from '../../types/scholarship';
 import { STREAMS_BY_EDUCATION } from '../../data/streams';
+import { useLanguage } from '../../context/LanguageContext';
 import {
   MapPin,
   GraduationCap,
@@ -24,6 +25,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
   onComplete,
   initialAnswers,
 }) => {
+  const { t } = useLanguage();
   const [currentStep, setCurrentStep] = useState(1);
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
   const totalSteps = 7;
@@ -120,13 +122,23 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
   };
 
   const stepTitles = [
-    'Where do you study or reside?',
-    'What are you studying?',
-    'Course / Stream & Current Year',
-    'Social Category & Gender',
-    'Annual Family Income',
-    'Academic Percentage',
-    'Additional Circumstances',
+    t('questionnaire.stepTitles.0', undefined, 'Where do you study or reside?'),
+    t('questionnaire.stepTitles.1', undefined, 'What are you studying?'),
+    t('questionnaire.stepTitles.2', undefined, 'Course / Stream & Current Year'),
+    t('questionnaire.stepTitles.3', undefined, 'Social Category & Gender'),
+    t('questionnaire.stepTitles.4', undefined, 'Annual Family Income'),
+    t('questionnaire.stepTitles.5', undefined, 'Academic Percentage'),
+    t('questionnaire.stepTitles.6', undefined, 'Additional Circumstances'),
+  ];
+
+  const stepLabels = [
+    t('questionnaire.stepLabels.0', undefined, 'Location'),
+    t('questionnaire.stepLabels.1', undefined, 'Level'),
+    t('questionnaire.stepLabels.2', undefined, 'Stream'),
+    t('questionnaire.stepLabels.3', undefined, 'Category'),
+    t('questionnaire.stepLabels.4', undefined, 'Income'),
+    t('questionnaire.stepLabels.5', undefined, 'Score'),
+    t('questionnaire.stepLabels.6', undefined, 'Profile'),
   ];
 
   return (
@@ -143,13 +155,13 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
       <div className="mb-8 sm:mb-10 text-center">
         <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-50 dark:bg-[#142420] text-[#064E3B] dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800 text-xs font-bold mb-2 shadow-2xs">
           <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block" />
-          <span>Step 0{currentStep} of 0{totalSteps}</span>
+          <span>{t('questionnaire.stepOf', { current: currentStep, total: totalSteps }, `Step 0${currentStep} of 0${totalSteps}`)}</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#064E3B] dark:text-emerald-400 font-editorial tracking-tight">
           {stepTitles[currentStep - 1]}
         </h1>
         <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
-          Zero login · Answers evaluated only for this session
+          {t('questionnaire.sessionNote', undefined, 'Zero login · Answers evaluated only for this session')}
         </p>
 
         {/* Progress Bar with Editorial Journey-Line */}
@@ -195,7 +207,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
             })}
           </div>
           <div className="flex justify-between text-[10px] sm:text-[11px] font-medium text-stone-500 dark:text-stone-400 mt-2.5 px-0.5">
-            {['Location', 'Level', 'Stream', 'Category', 'Income', 'Score', 'Profile'].map((lbl, i) => (
+            {stepLabels.map((lbl, i) => (
               <span
                 key={i}
                 className={`transition-colors duration-300 ${
@@ -232,10 +244,10 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
             <div className="space-y-5">
               <div className="text-center sm:text-left mb-6">
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                  Where do you study or reside?
+                  {t('questionnaire.step1.title', undefined, 'Where do you study or reside?')}
                 </h2>
                 <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                  Gujarat government schemes require state domicile or study in Gujarat institutions.
+                  {t('questionnaire.step1.subtitle', undefined, 'Gujarat government schemes require state domicile or study in Gujarat institutions.')}
                 </p>
               </div>
 
@@ -261,10 +273,10 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                   </div>
                   <div>
                     <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                      Gujarat
+                      {t('questionnaire.step1.gujaratTitle', undefined, 'Gujarat')}
                     </h3>
                     <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">
-                      Eligible for Gujarat State Scholarships (MYSY, Digital Gujarat, CMSS) plus All-India programs.
+                      {t('questionnaire.step1.gujaratDesc', undefined, 'Eligible for Gujarat State Scholarships (MYSY, Digital Gujarat, CMSS) plus All-India programs.')}
                     </p>
                   </div>
                 </button>
@@ -290,10 +302,10 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                   </div>
                   <div>
                     <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                      Other Indian State
+                      {t('questionnaire.step1.otherStateTitle', undefined, 'Other Indian State')}
                     </h3>
                     <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">
-                      Eligible for Central Sector, AICTE, DST INSPIRE, and popular nationwide schemes.
+                      {t('questionnaire.step1.otherStateDesc', undefined, 'Eligible for Central Sector, AICTE, DST INSPIRE, and popular nationwide schemes.')}
                     </p>
                   </div>
                 </button>
@@ -306,22 +318,22 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
             <div className="space-y-5">
               <div className="text-center sm:text-left mb-6">
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                  What are you currently studying?
+                  {t('questionnaire.step2.title', undefined, 'What are you currently studying?')}
                 </h2>
                 <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                  Select your current level of education or the course you are taking admission into.
+                  {t('questionnaire.step2.subtitle', undefined, 'Select your current level of education or the course you are taking admission into.')}
                 </p>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
                 {(
                   [
-                    { level: 'School', desc: 'Class 9th to 12th' },
-                    { level: 'Diploma', desc: 'Polytechnic Diploma' },
-                    { level: 'ITI', desc: 'Industrial Trades' },
-                    { level: 'Undergraduate', desc: 'B.E., B.Tech, MBBS, B.Sc, B.Com, B.A.' },
-                    { level: 'Postgraduate', desc: 'M.Tech, MBA, M.Sc, M.A., MD' },
-                    { level: 'PhD', desc: 'Doctoral Fellowships' },
+                    { level: 'School', desc: t('questionnaire.step2.schoolDesc', undefined, 'Class 9th to 12th') },
+                    { level: 'Diploma', desc: t('questionnaire.step2.diplomaDesc', undefined, 'Polytechnic Diploma') },
+                    { level: 'ITI', desc: t('questionnaire.step2.itiDesc', undefined, 'Industrial Trades') },
+                    { level: 'Undergraduate', desc: t('questionnaire.step2.ugDesc', undefined, 'B.E., B.Tech, MBBS, B.Sc, B.Com, B.A.') },
+                    { level: 'Postgraduate', desc: t('questionnaire.step2.pgDesc', undefined, 'M.Tech, MBA, M.Sc, M.A., MD') },
+                    { level: 'PhD', desc: t('questionnaire.step2.phdDesc', undefined, 'Doctoral Fellowships') },
                   ] as { level: EducationLevel; desc: string }[]
                 ).map((item) => {
                   const isSelected = answers.educationLevel === item.level;
@@ -362,10 +374,10 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                  Course Stream & Academic Year
+                  {t('questionnaire.step3.title', undefined, 'Course Stream & Academic Year')}
                 </h2>
                 <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                  Showing courses dynamically populated for{' '}
+                  {t('questionnaire.step3.subtitle', undefined, 'Showing courses dynamically populated for')}{' '}
                   <strong className="text-[#065F46] dark:text-emerald-400">{answers.educationLevel}</strong>.
                 </p>
               </div>
@@ -373,7 +385,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
               {/* Dynamic Stream Options */}
               <div className="space-y-2">
                 <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
-                  Select Your Course / Stream
+                  {t('questionnaire.step3.selectStream', undefined, 'Select Your Course / Stream')}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-64 overflow-y-auto pr-1">
                   {(STREAMS_BY_EDUCATION[answers.educationLevel] || ['Other']).map((streamName) => {
@@ -404,7 +416,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
               {/* Academic Year */}
               <div className="space-y-2 pt-2 border-t border-stone-100 dark:border-[#1E3A33]">
                 <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
-                  Current Year of Study
+                  {t('questionnaire.step3.currentYear', undefined, 'Current Year of Study')}
                 </label>
                 <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                   {['1st Year', '2nd Year', '3rd Year', '4th Year', 'Final Year', 'Other'].map(
@@ -436,17 +448,17 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                  Social Category & Gender
+                  {t('questionnaire.step4.title', undefined, 'Social Category & Gender')}
                 </h2>
                 <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                  Certain government scholarships provide dedicated affirmative reservations or support for girl students.
+                  {t('questionnaire.step4.subtitle', undefined, 'Certain government scholarships provide dedicated affirmative reservations or support for girl students.')}
                 </p>
               </div>
 
               {/* Category */}
               <div className="space-y-2">
                 <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
-                  Social Category
+                  {t('questionnaire.step4.categoryLabel', undefined, 'Social Category')}
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                   {(
@@ -474,7 +486,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
               {/* Gender */}
               <div className="space-y-2 pt-2 border-t border-stone-100 dark:border-[#1E3A33]">
                 <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
-                  Gender
+                  {t('questionnaire.step4.genderLabel', undefined, 'Gender')}
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                   {(['Male', 'Female', 'Other', 'Prefer not to say'] as Gender[]).map((g) => {
@@ -504,16 +516,16 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white font-editorial">
-                  Annual Family Income
+                  {t('questionnaire.step5.title', undefined, 'Annual Family Income')}
                 </h2>
                 <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                  Many government, state, and private scholarships have specific household income ceilings.
+                  {t('questionnaire.step5.subtitle', undefined, 'Many government, state, and private scholarships have specific household income ceilings.')}
                 </p>
               </div>
 
               <div className="space-y-4">
                 <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
-                  Total Family Income (₹ per annum)
+                  {t('questionnaire.step5.inputLabel', undefined, 'Total Family Income (₹ per annum)')}
                 </label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-500 dark:text-stone-400 font-bold text-base">
@@ -531,7 +543,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                 {/* Quick Preset Chips */}
                 <div className="pt-2">
                   <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider block mb-2">
-                    Common Thresholds
+                    {t('questionnaire.step5.thresholdsLabel', undefined, 'Common Thresholds')}
                   </span>
                   <div className="flex flex-wrap gap-2">
                     {[
@@ -565,16 +577,16 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white font-editorial">
-                  Academic Percentage
+                  {t('questionnaire.step6.title', undefined, 'Academic Percentage')}
                 </h2>
                 <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                  Enter your score from your latest qualifying exam (Class 10th, 12th, Diploma, or recent semester).
+                  {t('questionnaire.step6.subtitle', undefined, 'Enter your score from your latest qualifying exam (Class 10th, 12th, Diploma, or recent semester).')}
                 </p>
               </div>
 
               <div className="space-y-4">
                 <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
-                  Percentage Score (0 - 100%)
+                  {t('questionnaire.step6.inputLabel', undefined, 'Percentage Score (0 - 100%)')}
                 </label>
                 <div className="relative">
                   <input
@@ -595,7 +607,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                 {/* Quick Percent Chips */}
                 <div className="pt-2">
                   <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider block mb-2">
-                    Common Benchmarks
+                    {t('questionnaire.step6.benchmarksLabel', undefined, 'Common Benchmarks')}
                   </span>
                   <div className="flex flex-wrap gap-2">
                     {[
@@ -629,13 +641,13 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white font-editorial">
-                  Additional Circumstances
+                  {t('questionnaire.step7.title', undefined, 'Additional Circumstances')}
                 </h2>
                 <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 font-medium mt-1">
-                  Optional — select any circumstances that apply to you.
+                  {t('questionnaire.step7.subtitle', undefined, 'Optional — select any circumstances that apply to you.')}
                 </p>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">
-                  These details help us identify additional scholarship opportunities.
+                  {t('questionnaire.step7.helper', undefined, 'These details help us identify additional scholarship opportunities.')}
                 </p>
               </div>
 
@@ -645,10 +657,10 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
-                        Person with Disability (Divyangjan)?
+                        {t('questionnaire.step7.pwdTitle', undefined, 'Person with Disability (Divyangjan)?')}
                       </h3>
                       <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
-                        Unlocks AICTE Saksham grant
+                        {t('questionnaire.step7.pwdSub', undefined, 'Unlocks AICTE Saksham grant')}
                       </p>
                     </div>
 
@@ -668,7 +680,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                             ✓
                           </span>
                         )}
-                        <span>Yes</span>
+                        <span>{t('questionnaire.step7.yes', undefined, 'Yes')}</span>
                       </button>
 
                       <button
@@ -686,7 +698,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                             ✓
                           </span>
                         )}
-                        <span>No</span>
+                        <span>{t('questionnaire.step7.no', undefined, 'No')}</span>
                       </button>
                     </div>
                   </div>
@@ -694,7 +706,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                   {answers.isDisability && (
                     <div className="pt-3 border-t border-stone-200/80 dark:border-[#1E3A33] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 animate-in fade-in duration-200">
                       <span className="text-xs font-semibold text-stone-700 dark:text-stone-300">
-                        Disability Percentage on Medical Certificate:
+                        {t('questionnaire.step7.pwdPercent', undefined, 'Disability Percentage on Medical Certificate:')}
                       </span>
                       <div className="flex items-center gap-1.5 w-28">
                         <input
@@ -720,10 +732,10 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                 <div className="p-4 sm:p-5 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/40 dark:bg-[#182E29]/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 transition-all duration-200">
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
-                      Orphan / Wards of COVID-19?
+                      {t('questionnaire.step7.orphanTitle', undefined, 'Orphan / Wards of COVID-19?')}
                     </h3>
                     <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
-                      Unlocks AICTE Swanath scheme
+                      {t('questionnaire.step7.orphanSub', undefined, 'Unlocks AICTE Swanath scheme')}
                     </p>
                   </div>
 
@@ -743,7 +755,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                           ✓
                         </span>
                       )}
-                      <span>Yes</span>
+                      <span>{t('questionnaire.step7.yes', undefined, 'Yes')}</span>
                     </button>
 
                     <button
@@ -761,7 +773,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                           ✓
                         </span>
                       )}
-                      <span>No</span>
+                      <span>{t('questionnaire.step7.no', undefined, 'No')}</span>
                     </button>
                   </div>
                 </div>
@@ -770,10 +782,10 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                 <div className="p-4 sm:p-5 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/40 dark:bg-[#182E29]/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 transition-all duration-200">
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
-                      Ward of Armed Forces / CAPF?
+                      {t('questionnaire.step7.defenceTitle', undefined, 'Ward of Armed Forces / CAPF?')}
                     </h3>
                     <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
-                      Unlocks AICTE Swanath & defence welfare assistance
+                      {t('questionnaire.step7.defenceSub', undefined, 'Unlocks AICTE Swanath & defence welfare assistance')}
                     </p>
                   </div>
 
@@ -793,7 +805,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                           ✓
                         </span>
                       )}
-                      <span>Yes</span>
+                      <span>{t('questionnaire.step7.yes', undefined, 'Yes')}</span>
                     </button>
 
                     <button
@@ -811,7 +823,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                           ✓
                         </span>
                       )}
-                      <span>No</span>
+                      <span>{t('questionnaire.step7.no', undefined, 'No')}</span>
                     </button>
                   </div>
                 </div>
@@ -820,10 +832,10 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                 <div className="p-4 sm:p-5 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/40 dark:bg-[#182E29]/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 transition-all duration-200">
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
-                      Belong to a Notified Religious Minority?
+                      {t('questionnaire.step7.minorityTitle', undefined, 'Belong to a Notified Religious Minority?')}
                     </h3>
                     <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
-                      Muslim, Christian, Sikh, Buddhist, Jain, or Parsi
+                      {t('questionnaire.step7.minoritySub', undefined, 'Muslim, Christian, Sikh, Buddhist, Jain, or Parsi')}
                     </p>
                   </div>
 
@@ -843,7 +855,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                           ✓
                         </span>
                       )}
-                      <span>Yes</span>
+                      <span>{t('questionnaire.step7.yes', undefined, 'Yes')}</span>
                     </button>
 
                     <button
@@ -861,7 +873,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                           ✓
                         </span>
                       )}
-                      <span>No</span>
+                      <span>{t('questionnaire.step7.no', undefined, 'No')}</span>
                     </button>
                   </div>
                 </div>
@@ -883,7 +895,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
             }`}
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-200" />
-            <span>Back</span>
+            <span>{t('questionnaire.back', undefined, 'Back')}</span>
           </button>
 
           <button
@@ -891,7 +903,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
             onClick={handleNext}
             className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 font-bold text-xs sm:text-sm shadow-md shadow-[#064E3B]/20 hover:shadow-lg hover:shadow-[#064E3B]/25 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-[#065F46] focus:ring-offset-2 cursor-pointer"
           >
-            <span>{currentStep === totalSteps ? 'Find My Scholarships' : 'Continue'}</span>
+            <span>{currentStep === totalSteps ? t('questionnaire.findBtn', undefined, 'Find My Scholarships') : t('questionnaire.continue', undefined, 'Continue')}</span>
             <ArrowRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 group-active:translate-x-1.5 transition-transform duration-200 ease-out shrink-0" />
           </button>
         </div>

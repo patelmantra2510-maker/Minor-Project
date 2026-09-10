@@ -28,7 +28,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   };
 
   return (
-    <footer className="bg-[#0A1613] text-stone-300 border-t border-[#162B25] mt-20 pt-16 pb-12 transition-colors">
+    <footer className="bg-[#0A1613] text-stone-300 relative border-t border-[#162B25] mt-20 pt-16 pb-12 transition-colors">
+      {/* Editorial Top Accent Line: Forest green to gold to forest green */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#064E3B] via-[#D97706] to-[#064E3B] opacity-75" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-[#162B25]">
           {/* Brand Col */}

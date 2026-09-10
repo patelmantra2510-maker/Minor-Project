@@ -6,293 +6,163 @@ interface StudentIllustrationProps {
 }
 
 export const StudentIllustration: React.FC<StudentIllustrationProps> = ({
-  variant = 'hero',
   className = '',
 }) => {
-  if (variant === 'empty') {
-    return (
-      <svg
-        viewBox="0 0 400 300"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className={`w-full max-w-xs mx-auto ${className}`}
-        aria-label="No scholarships saved illustration"
-      >
-        <defs>
-          <radialGradient id="emptyHalo" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#F5EFE6" stopOpacity="0.9" />
-            <stop offset="80%" stopColor="#FAF8F5" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="#FAF8F5" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-
-        {/* Soft warm halo */}
-        <circle cx="200" cy="150" r="120" fill="url(#emptyHalo)" />
-        <ellipse cx="200" cy="240" rx="90" ry="12" fill="#E8E2D7" fillOpacity="0.6" />
-
-        {/* Minimalist open book */}
-        <path
-          d="M130 200C130 185 165 190 198 198V230C165 220 130 220 130 200Z"
-          fill="#FFFFFF"
-          stroke="#D8CFBF"
-          strokeWidth="1.5"
-        />
-        <path
-          d="M270 200C270 185 235 190 202 198V230C235 220 270 220 270 200Z"
-          fill="#FFFFFF"
-          stroke="#D8CFBF"
-          strokeWidth="1.5"
-        />
-        <line x1="200" y1="195" x2="200" y2="230" stroke="#065F46" strokeWidth="2" strokeLinecap="round" />
-
-        {/* Bookmark ribbon */}
-        <path d="M198 175L200 202L202 175" stroke="#D97706" strokeWidth="2.5" strokeLinecap="round" />
-
-        {/* Bookmark icon in center */}
-        <rect x="175" y="105" width="50" height="60" rx="8" fill="#064E3B" />
-        <path d="M190 120H210V152L200 144L190 152V120Z" fill="#F59E0B" />
-        <circle cx="200" cy="85" r="3" fill="#D97706" />
-      </svg>
-    );
-  }
-
-  // Hero: Highly polished editorial education illustration
-  // Proportions: Sophisticated, realistic, dignified student figure
-  // Surrounded by soft warm organic halo & subtle discovery pathway
   return (
     <svg
-      viewBox="0 0 520 480"
+      viewBox="0 0 320 240"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={`w-full max-w-md lg:max-w-lg mx-auto ${className}`}
-      aria-label="Editorial illustration of an Indian student discovering scholarship opportunities on Edvora"
+      className={`w-full max-w-[260px] mx-auto ${className}`}
+      aria-label="Edvora academic motif: Book, Bookmark, and Gold Spark"
     >
       <defs>
-        {/* Soft, warm organic halo (NO giant dark glow) */}
-        <radialGradient id="editorialHalo" cx="50%" cy="45%" r="55%">
-          <stop offset="0%" stopColor="#F5EFE6" stopOpacity="0.9" />
-          <stop offset="60%" stopColor="#F9F5EE" stopOpacity="0.5" />
+        {/* Soft warm halo gradient */}
+        <radialGradient id="motifHalo" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#F5EFE6" stopOpacity="0.95" />
+          <stop offset="70%" stopColor="#FAF8F5" stopOpacity="0.4" />
           <stop offset="100%" stopColor="#FAF8F5" stopOpacity="0" />
         </radialGradient>
 
-        {/* Subtle warm gold aura */}
-        <radialGradient id="goldAura" cx="50%" cy="40%" r="50%">
-          <stop offset="0%" stopColor="#FDE68A" stopOpacity="0.25" />
-          <stop offset="70%" stopColor="#FAF8F5" stopOpacity="0" />
-        </radialGradient>
-
-        <linearGradient id="nehruJacket" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="bookCoverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#065F46" />
-          <stop offset="70%" stopColor="#064E3B" />
           <stop offset="100%" stopColor="#043E2F" />
         </linearGradient>
 
-        <linearGradient id="skinToneGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#FED7AA" />
-          <stop offset="100%" stopColor="#FDBA74" />
+        <linearGradient id="pageGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="100%" stopColor="#F8F6F0" />
         </linearGradient>
 
-        <linearGradient id="bookCoverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#D97706" />
-          <stop offset="100%" stopColor="#B45309" />
-        </linearGradient>
-
-        <linearGradient id="tabletGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#1E293B" />
-          <stop offset="100%" stopColor="#0F172A" />
+        <linearGradient id="goldRibbon" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#F59E0B" />
+          <stop offset="100%" stopColor="#D97706" />
         </linearGradient>
       </defs>
 
-      {/* 1. Warm Organic Background Shapes (Subtle, light, atmospheric) */}
-      <path
-        d="M260 40C370 40 450 120 450 240C450 360 360 430 250 430C140 430 80 340 80 230C80 120 150 40 260 40Z"
-        fill="url(#editorialHalo)"
-      />
-      <circle cx="260" cy="220" r="170" fill="url(#goldAura)" />
+      {/* 1. Background Halo & Ground Shadow */}
+      <circle cx="160" cy="120" r="105" fill="url(#motifHalo)" />
+      <ellipse cx="160" cy="195" rx="80" ry="10" fill="#E8E2D7" fillOpacity="0.5" />
 
-      {/* Delicate Architectural Arches / Compass Orbit lines */}
+      {/* 2. Soft Orbit Ring */}
       <circle
-        cx="260"
-        cy="230"
-        r="185"
+        cx="160"
+        cy="120"
+        r="95"
         stroke="#065F46"
         strokeWidth="1"
         strokeDasharray="4 6"
-        strokeOpacity="0.2"
-      />
-      <circle
-        cx="260"
-        cy="230"
-        r="150"
-        stroke="#D97706"
-        strokeWidth="0.8"
-        strokeDasharray="3 5"
-        strokeOpacity="0.25"
+        strokeOpacity="0.15"
       />
 
-      {/* 2. Visual Metaphor Pathway: STUDENT → DISCOVERY → SCHOLARSHIP → FUTURE */}
-      {/* Dynamic upward curved vector pathway */}
-      <path
-        d="M60 410 C140 410, 170 340, 260 340 C350 340, 390 260, 460 210"
-        stroke="#065F46"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeOpacity="0.4"
-      />
-      <path
-        d="M60 410 C140 410, 170 340, 260 340 C350 340, 390 260, 460 210"
-        stroke="#D97706"
-        strokeWidth="1.2"
-        strokeDasharray="5 7"
-        strokeLinecap="round"
-        strokeOpacity="0.7"
-      />
-
-      {/* Pathway Milestones */}
-      {/* Node 1: Student Origin */}
-      <circle cx="95" cy="406" r="4.5" fill="#065F46" />
-      <circle cx="95" cy="406" r="2" fill="#FAF8F5" />
-      <text x="95" y="425" textAnchor="middle" fontSize="9" fontWeight="700" fill="#065F46" letterSpacing="0.05em" opacity="0.85">STUDENT</text>
-
-      {/* Node 2: Discovery */}
-      <circle cx="215" cy="355" r="4" fill="#D97706" />
-      <circle cx="215" cy="355" r="1.5" fill="#FAF8F5" />
-      <text x="215" y="375" textAnchor="middle" fontSize="9" fontWeight="700" fill="#B45309" letterSpacing="0.05em" opacity="0.85">DISCOVERY</text>
-
-      {/* Node 3: Scholarship */}
-      <circle cx="335" cy="300" r="4" fill="#065F46" />
-      <circle cx="335" cy="300" r="1.5" fill="#FAF8F5" />
-      <text x="335" y="320" textAnchor="middle" fontSize="9" fontWeight="700" fill="#065F46" letterSpacing="0.05em" opacity="0.85">SCHOLARSHIP</text>
-
-      {/* Node 4: Future */}
-      <circle cx="445" cy="222" r="5" fill="#F59E0B" />
-      <circle cx="445" cy="222" r="2.5" fill="#FAF8F5" />
-      <text x="445" y="242" textAnchor="middle" fontSize="9" fontWeight="800" fill="#B45309" letterSpacing="0.05em">FUTURE</text>
-
-      {/* Ground soft shadow */}
-      <ellipse cx="260" cy="425" rx="110" ry="10" fill="#E4DCD0" fillOpacity="0.6" />
-
-      {/* 3. The Editorial Student Figure */}
-      {/* Dignified, mature Indian student standing naturally, looking toward opportunity */}
-      <g id="studentFigure">
-        {/* Trousers (Deep charcoal tailored pants) */}
-        <path d="M236 315 L232 415 H252 L256 315 Z" fill="#1E293B" />
-        <path d="M264 315 L268 415 H288 L284 315 Z" fill="#1E293B" />
-
-        {/* Refined classic leather oxford shoes */}
+      {/* 3. Open Book Motif */}
+      <g id="openBook" transform="translate(0, 5)">
+        {/* Book Outer Cover / Binding */}
         <path
-          d="M226 414 C226 410 240 409 252 410 L254 418 H222 C222 414 224 414 226 414 Z"
-          fill="#334155"
-        />
-        <path
-          d="M266 414 C266 410 280 409 292 410 L294 418 H262 C262 414 264 414 266 414 Z"
-          fill="#334155"
+          d="M80 155 C120 142 155 147 160 158 C165 147 200 142 240 155 L242 165 C200 152 165 157 160 168 C155 157 120 152 78 165 Z"
+          fill="url(#bookCoverGrad)"
         />
 
-        {/* Crisp Ivory Kurta Hem extending below jacket */}
+        {/* Left Page Base */}
         <path
-          d="M228 300 H292 V322 C292 325 288 327 285 327 H235 C232 327 228 325 228 322 V300 Z"
-          fill="#FAF8F5"
-          stroke="#E8E2D7"
+          d="M82 150 C118 138 152 142 158 154 L158 122 C152 110 118 106 82 118 Z"
+          fill="url(#pageGrad)"
+          stroke="#E2DACB"
+          strokeWidth="1.2"
+        />
+        {/* Left Page Top Layer */}
+        <path
+          d="M85 146 C120 135 152 139 158 151 L158 119 C152 107 120 103 85 114 Z"
+          fill="#FFFFFF"
+          stroke="#EDE6D8"
           strokeWidth="1"
         />
 
-        {/* Tailored Deep Forest Green Nehru / Bandhgala Waistcoat */}
+        {/* Right Page Base */}
         <path
-          d="M224 175 C224 165 244 160 260 160 C276 160 296 165 296 175 V312 H224 V175 Z"
-          fill="url(#nehruJacket)"
+          d="M238 150 C202 138 168 142 162 154 L162 122 C168 110 202 106 238 118 Z"
+          fill="url(#pageGrad)"
+          stroke="#E2DACB"
+          strokeWidth="1.2"
+        />
+        {/* Right Page Top Layer */}
+        <path
+          d="M235 146 C200 135 168 139 162 151 L162 119 C168 107 200 103 235 114 Z"
+          fill="#FFFFFF"
+          stroke="#EDE6D8"
+          strokeWidth="1"
         />
 
-        {/* Bandhgala Mandarin Collar */}
-        <path
-          d="M246 156 H274 V165 H246 V156 Z"
-          fill="#043E2F"
-          stroke="#D97706"
-          strokeWidth="0.8"
-        />
+        {/* Book Center Spine Line */}
+        <line x1="160" y1="118" x2="160" y2="162" stroke="#064E3B" strokeWidth="2" strokeLinecap="round" />
 
-        {/* Clean Central Button Placket */}
-        <line x1="260" y1="165" x2="260" y2="310" stroke="#043E2F" strokeWidth="2" />
-        {/* Subtle Muted Gold Buttons */}
-        <circle cx="260" cy="180" r="2.2" fill="#F59E0B" />
-        <circle cx="260" cy="200" r="2.2" fill="#F59E0B" />
-        <circle cx="260" cy="220" r="2.2" fill="#F59E0B" />
-        <circle cx="260" cy="240" r="2.2" fill="#F59E0B" />
-        <circle cx="260" cy="260" r="2.2" fill="#F59E0B" />
-        <circle cx="260" cy="280" r="2.2" fill="#F59E0B" />
+        {/* Decorative Editorial Lines on Left Page */}
+        <line x1="98" y1="126" x2="145" y2="123" stroke="#D1C7B7" strokeWidth="1.5" strokeLinecap="round" />
+        <line x1="98" y1="133" x2="145" y2="130" stroke="#D1C7B7" strokeWidth="1.5" strokeLinecap="round" />
+        <line x1="98" y1="140" x2="130" y2="138" stroke="#D1C7B7" strokeWidth="1.5" strokeLinecap="round" />
 
-        {/* Pocket Square in Warm Saffron */}
-        <path d="M236 195 L242 190 L248 195 Z" fill="#D97706" />
-
-        {/* Neck */}
-        <rect x="253" y="142" width="14" height="18" rx="3" fill="url(#skinToneGradient)" />
-
-        {/* Head */}
-        <ellipse cx="260" cy="120" rx="21" ry="24" fill="url(#skinToneGradient)" />
-
-        {/* Modern styled hair */}
-        <path
-          d="M239 116 C238 95 250 86 266 86 C282 86 286 96 284 114 C278 108 268 106 256 107 C248 108 242 112 239 116 Z"
-          fill="#0F172A"
-        />
-
-        {/* Sleek wire-frame spectacles */}
-        <rect x="247" y="115" width="10" height="7.5" rx="2" stroke="#0F172A" strokeWidth="1.6" fill="#FFFFFF" fillOpacity="0.2" />
-        <rect x="263" y="115" width="10" height="7.5" rx="2" stroke="#0F172A" strokeWidth="1.6" fill="#FFFFFF" fillOpacity="0.2" />
-        <line x1="257" y1="118" x2="263" y2="118" stroke="#0F172A" strokeWidth="1.6" />
-
-        {/* Thoughtful, confident gaze directed toward the right (future & opportunities) */}
-        <circle cx="253" cy="118" r="1.3" fill="#0F172A" />
-        <circle cx="269" cy="118" r="1.3" fill="#0F172A" />
-
-        {/* Subtle smile */}
-        <path d="M255 131 C258 134 264 134 267 131" stroke="#B45309" strokeWidth="1.8" strokeLinecap="round" />
-
-        {/* Arms & Folio / Books / Laptop holding */}
-        {/* Left arm holding academic book */}
-        <path d="M296 180 L318 218 L296 248 L285 220" fill="#043E2F" />
-        {/* Right arm cradling notebook and slim tablet */}
-        <path d="M224 180 L202 222 L228 250 L240 216" fill="#043E2F" />
-
-        {/* Held Objects: Bound Scholarship Folio & Tablet */}
-        {/* Academic Folio (Warm Amber/Gold) */}
-        <g id="studentFolio">
-          <rect
-            x="215"
-            y="226"
-            width="58"
-            height="46"
-            rx="4"
-            fill="url(#bookCoverGrad)"
-            stroke="#FEF3C7"
-            strokeWidth="1.2"
-          />
-          <line x1="222" y1="226" x2="222" y2="272" stroke="#FEF3C7" strokeWidth="2" strokeOpacity="0.8" />
-          {/* Subtle gold ribbon bookmark */}
-          <path d="M236 226 V246 L240 242 L244 246 V226" fill="#FEF3C7" />
-        </g>
-
-        {/* Modern Slim Slate Tablet / Folio */}
-        <g id="studentTablet">
-          <rect
-            x="248"
-            y="238"
-            width="46"
-            height="38"
-            rx="4"
-            fill="url(#tabletGrad)"
-            stroke="#CBD5E1"
-            strokeWidth="1"
-          />
-          <rect x="252" y="242" width="38" height="30" rx="2" fill="#064E3B" fillOpacity="0.6" />
-          <line x1="256" y1="248" x2="276" y2="248" stroke="#34D399" strokeWidth="1.5" strokeLinecap="round" />
-          <line x1="256" y1="254" x2="270" y2="254" stroke="#F59E0B" strokeWidth="1.5" strokeLinecap="round" />
-        </g>
-
-        {/* Hands holding the folio */}
-        <circle cx="218" cy="248" r="7" fill="url(#skinToneGradient)" />
-        <circle cx="294" cy="254" r="7" fill="url(#skinToneGradient)" />
+        {/* Decorative Editorial Lines on Right Page */}
+        <line x1="175" y1="123" x2="222" y2="126" stroke="#D1C7B7" strokeWidth="1.5" strokeLinecap="round" />
+        <line x1="175" y1="130" x2="222" y2="133" stroke="#D1C7B7" strokeWidth="1.5" strokeLinecap="round" />
+        <line x1="175" y1="138" x2="208" y2="140" stroke="#D1C7B7" strokeWidth="1.5" strokeLinecap="round" />
       </g>
+
+      {/* 4. Bookmark Ribbon in Center */}
+      <path
+        d="M158 92 C158 92 155 125 158 140 L160 137 L162 140 C165 125 162 92 162 92 Z"
+        fill="url(#goldRibbon)"
+        filter="drop-shadow(0 2px 3px rgba(217, 119, 6, 0.3))"
+      />
+
+      {/* 5. Floating Bookmark Card Badge */}
+      <g transform="translate(138, 48)">
+        <rect
+          x="0"
+          y="0"
+          width="44"
+          height="52"
+          rx="10"
+          fill="#064E3B"
+          stroke="#0B5441"
+          strokeWidth="1.5"
+          filter="drop-shadow(0 4px 6px rgba(6, 78, 59, 0.2))"
+        />
+        {/* Inner Bookmark Icon */}
+        <path
+          d="M14 14 H30 V38 L22 32 L14 38 Z"
+          fill="#F59E0B"
+        />
+      </g>
+
+      {/* 6. Gold 4-Point Spark at Top Right */}
+      <g transform="translate(210, 48)">
+        <path
+          d="M14 0 C14 7.7 20.3 14 28 14 C20.3 14 14 20.3 14 28 C14 20.3 7.7 14 0 14 C7.7 14 14 7.7 14 0 Z"
+          fill="#D97706"
+        />
+        <circle cx="14" cy="14" r="2.5" fill="#FEF3C7" />
+      </g>
+
+      {/* 7. Subtle Micro Spark at Left */}
+      <g transform="translate(86, 76)">
+        <path
+          d="M8 0 C8 4.4 11.6 8 16 8 C11.6 8 8 11.6 8 16 C8 11.6 4.4 8 0 8 C4.4 8 8 4.4 8 0 Z"
+          fill="#065F46"
+          fillOpacity="0.4"
+        />
+      </g>
+
+      {/* 8. Delicate Botanical Leaf Sprig on Left */}
+      <path
+        d="M74 150 C70 135 80 125 90 120 C85 130 84 142 74 150 Z"
+        fill="#059669"
+        fillOpacity="0.35"
+      />
+      <path
+        d="M68 156 C62 145 68 135 76 132 C74 140 73 148 68 156 Z"
+        fill="#047857"
+        fillOpacity="0.25"
+      />
     </svg>
   );
 };

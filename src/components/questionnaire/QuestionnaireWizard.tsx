@@ -132,7 +132,7 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
       <div className="mb-8 sm:mb-10 text-center">
         <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-50 dark:bg-[#142420] text-[#064E3B] dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800 text-xs font-bold mb-2 shadow-2xs">
           <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block" />
-          <span>Step {currentStep} of {totalSteps}</span>
+          <span>Step 0{currentStep} of 0{totalSteps}</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#064E3B] dark:text-emerald-400 font-editorial tracking-tight">
           {stepTitles[currentStep - 1]}
@@ -141,18 +141,19 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
           Zero login · Answers evaluated only for this session
         </p>
 
-        {/* Progress Bar */}
-        <div className="mt-6 max-w-lg mx-auto">
-          <div className="flex items-center justify-between relative">
-            <div className="absolute top-1/2 left-0 right-0 h-1 bg-stone-200 dark:bg-[#1E3A33] -translate-y-1/2 z-0" />
+        {/* Progress Bar with Editorial Journey-Line */}
+        <div className="mt-6 max-w-xl mx-auto">
+          <div className="flex items-center justify-between relative px-2">
+            <div className="absolute top-1/2 left-4 right-4 h-1 bg-stone-200 dark:bg-[#1E3A33] -translate-y-1/2 z-0" />
             <div
-              className="absolute top-1/2 left-0 h-1 bg-[#064E3B] dark:bg-emerald-500 transition-all duration-300 -translate-y-1/2 z-0"
-              style={{ width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%` }}
+              className="absolute top-1/2 left-4 h-1 bg-[#064E3B] dark:bg-emerald-500 transition-all duration-300 -translate-y-1/2 z-0"
+              style={{ width: `${((currentStep - 1) / (totalSteps - 1)) * 96}%` }}
             />
             {Array.from({ length: totalSteps }).map((_, idx) => {
               const stepNum = idx + 1;
               const isPassed = stepNum < currentStep;
               const isCurrent = stepNum === currentStep;
+              const stepFormatted = `0${stepNum}`;
 
               return (
                 <button
@@ -161,27 +162,29 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                     if (stepNum < currentStep) setCurrentStep(stepNum);
                   }}
                   disabled={stepNum > currentStep}
-                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold relative z-10 transition-all ${
+                  className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-[11px] font-bold relative z-10 transition-all font-mono ${
                     isPassed
-                      ? 'bg-[#064E3B] text-amber-100 cursor-pointer shadow-xs'
+                      ? 'bg-[#064E3B] text-amber-200 cursor-pointer shadow-xs border border-emerald-700'
                       : isCurrent
-                      ? 'bg-[#064E3B] text-amber-100 ring-4 ring-emerald-100 dark:ring-[#1E3A33] scale-110 shadow-sm'
-                      : 'bg-stone-200 dark:bg-[#1C3630] text-stone-500 dark:text-stone-400 cursor-not-allowed'
+                      ? 'bg-[#064E3B] text-amber-300 ring-4 ring-emerald-100 dark:ring-emerald-950 scale-110 shadow-sm border border-amber-400/80 font-extrabold'
+                      : 'bg-stone-100 dark:bg-[#1C3630] text-stone-400 dark:text-stone-500 border border-stone-200 dark:border-[#23453E] cursor-not-allowed'
                   }`}
                   aria-label={`Go to step ${stepNum}`}
                 >
-                  {isPassed ? '✓' : stepNum}
+                  {isPassed ? '✓' : stepFormatted}
                 </button>
               );
             })}
           </div>
-          <div className="flex justify-between text-[10px] sm:text-[11px] font-medium text-stone-500 dark:text-stone-400 mt-2 px-1">
-            <span>Location</span>
-            <span>Level</span>
-            <span>Course</span>
-            <span>Category</span>
-            <span>Income</span>
-            <span>Score</span>
+          <div className="flex justify-between text-[10px] sm:text-[11px] font-medium text-stone-500 dark:text-stone-400 mt-2.5 px-0.5">
+            {['Location', 'Level', 'Stream', 'Category', 'Income', 'Score', 'Profile'].map((lbl, i) => (
+              <span
+                key={i}
+                className={currentStep === i + 1 ? 'font-bold text-[#064E3B] dark:text-emerald-400' : ''}
+              >
+                {lbl}
+              </span>
+            ))}
           </div>
         </div>
       </div>

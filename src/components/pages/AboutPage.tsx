@@ -68,6 +68,80 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onStartFinder }) => {
         </div>
       </div>
 
+      {/* Brand Identity & Emblem Story */}
+      <div className="bg-white dark:bg-[#142420] rounded-3xl p-8 sm:p-10 border border-[#E8E2D7] dark:border-[#1E3A33] shadow-2xs space-y-8">
+        <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-stone-100 dark:border-[#1E3A33]">
+          <div className="w-20 h-20 rounded-2xl bg-[#FAF8F5] dark:bg-[#1C3630] border border-[#E8E2D7] dark:border-[#23453E] p-2.5 flex items-center justify-center shrink-0 shadow-2xs">
+            <img
+              src="/edvora-emblem-transparent.png"
+              alt="Official Edvora Emblem"
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <div className="text-center sm:text-left space-y-1">
+            <span className="text-[10.5px] font-bold uppercase tracking-widest text-[#065F46] dark:text-emerald-400">
+              Brand Identity & Meaning
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-editorial">
+              The Story Behind the Edvora Emblem
+            </h2>
+            <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 leading-relaxed max-w-xl">
+              Every detail of the Edvora emblem was crafted to embody the educational journey of Indian students.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="p-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#182E29] border border-stone-200/80 dark:border-[#23453E] space-y-1.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-[#1C3630] text-[#064E3B] dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
+              📖
+            </div>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white font-editorial">
+              Book · Education
+            </h3>
+            <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+              Knowledge and transparent access to scholarship discovery for all students.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#182E29] border border-stone-200/80 dark:border-[#23453E] space-y-1.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-[#1C3630] text-[#064E3B] dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
+              🌿
+            </div>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white font-editorial">
+              Leaves · Growth
+            </h3>
+            <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+              Continuous academic advancement, upward mobility, and flourishing potential.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#182E29] border border-stone-200/80 dark:border-[#23453E] space-y-1.5">
+            <div className="w-8 h-8 rounded-xl bg-amber-50 dark:bg-[#2A2415] text-amber-700 dark:text-amber-300 flex items-center justify-center font-bold text-sm">
+              🎓
+            </div>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white font-editorial">
+              Cap · Achievement
+            </h3>
+            <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+              Degrees attained, milestones unlocked, and academic ambitions realized.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#182E29] border border-stone-200/80 dark:border-[#23453E] space-y-1.5">
+            <div className="w-8 h-8 rounded-xl bg-amber-50 dark:bg-[#2A2415] text-amber-700 dark:text-amber-300 flex items-center justify-center font-bold text-sm">
+              ✨
+            </div>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white font-editorial">
+              Gold · Opportunity
+            </h3>
+            <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+              The shining spark that illuminates paths to scholarships and career futures.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Scope Section */}
       <div className="bg-white dark:bg-[#142420] rounded-3xl p-8 border border-[#E8E2D7] dark:border-[#1E3A33] shadow-2xs space-y-6">
         <h2 className="text-xl font-bold text-[#064E3B] dark:text-white font-editorial">

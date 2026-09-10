@@ -631,51 +631,68 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white font-editorial">
                   Additional Circumstances
                 </h2>
-                <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                  Optional criteria for exclusive affirmative welfare grants (e.g. AICTE Saksham, Swanath).
+                <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 font-medium mt-1">
+                  Optional — select any circumstances that apply to you.
+                </p>
+                <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">
+                  These details help us identify additional scholarship opportunities.
                 </p>
               </div>
 
-              <div className="space-y-4">
-                {/* Disability */}
-                <div className="p-4 sm:p-5 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/50 dark:bg-[#182E29] space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+              <div className="space-y-3.5">
+                {/* 1. Person with Disability (Divyangjan) */}
+                <div className="p-4 sm:p-5 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/40 dark:bg-[#182E29]/50 flex flex-col gap-3 transition-all duration-200">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
                         Person with Disability (Divyangjan)?
                       </h3>
-                      <p className="text-xs text-stone-500 dark:text-stone-400">
+                      <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
                         Unlocks AICTE Saksham grant
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+
+                    <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto" role="group" aria-label="Person with Disability">
                       <button
                         type="button"
                         onClick={() => setAnswers({ ...answers, isDisability: true })}
-                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
+                        className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border transition-all duration-200 ease-out flex items-center justify-center gap-1.5 cursor-pointer min-w-[76px] sm:min-w-[84px] focus:outline-none focus:ring-2 focus:ring-[#065F46] focus:ring-offset-1 ${
                           answers.isDisability
-                            ? 'bg-[#064E3B] text-white shadow-xs scale-105'
-                            : 'bg-white dark:bg-[#142420] border border-stone-200 dark:border-[#1E3A33] text-stone-700 dark:text-stone-300 hover:border-stone-300'
+                            ? 'border-[#064E3B] dark:border-emerald-500 bg-emerald-50/80 dark:bg-[#1C3630] text-[#064E3B] dark:text-emerald-300 shadow-xs -translate-y-0.5'
+                            : 'border-stone-200 dark:border-[#1E3A33] bg-white dark:bg-[#142420] text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-[#28483F] hover:bg-stone-50 dark:hover:bg-[#182E29] hover:-translate-y-0.5'
                         }`}
+                        aria-pressed={answers.isDisability}
                       >
-                        Yes
+                        {answers.isDisability && (
+                          <span className="w-3.5 h-3.5 flex items-center justify-center animate-checkmark-scale text-[#064E3B] dark:text-emerald-400 text-xs font-black">
+                            ✓
+                          </span>
+                        )}
+                        <span>Yes</span>
                       </button>
+
                       <button
                         type="button"
                         onClick={() => setAnswers({ ...answers, isDisability: false })}
-                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
+                        className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border transition-all duration-200 ease-out flex items-center justify-center gap-1.5 cursor-pointer min-w-[76px] sm:min-w-[84px] focus:outline-none focus:ring-2 focus:ring-[#065F46] focus:ring-offset-1 ${
                           !answers.isDisability
-                            ? 'bg-stone-700 text-white dark:bg-stone-600 shadow-xs scale-105'
-                            : 'bg-white dark:bg-[#142420] border border-stone-200 dark:border-[#1E3A33] text-stone-700 dark:text-stone-300 hover:border-stone-300'
+                            ? 'border-[#064E3B] dark:border-emerald-500 bg-emerald-50/80 dark:bg-[#1C3630] text-[#064E3B] dark:text-emerald-300 shadow-xs -translate-y-0.5'
+                            : 'border-stone-200 dark:border-[#1E3A33] bg-white dark:bg-[#142420] text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-[#28483F] hover:bg-stone-50 dark:hover:bg-[#182E29] hover:-translate-y-0.5'
                         }`}
+                        aria-pressed={!answers.isDisability}
                       >
-                        No
+                        {!answers.isDisability && (
+                          <span className="w-3.5 h-3.5 flex items-center justify-center animate-checkmark-scale text-[#064E3B] dark:text-emerald-400 text-xs font-black">
+                            ✓
+                          </span>
+                        )}
+                        <span>No</span>
                       </button>
                     </div>
                   </div>
 
                   {answers.isDisability && (
-                    <div className="pt-2 border-t border-stone-200 dark:border-[#1E3A33] flex items-center justify-between animate-in fade-in">
+                    <div className="pt-3 border-t border-stone-200/80 dark:border-[#1E3A33] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 animate-in fade-in duration-200">
                       <span className="text-xs font-semibold text-stone-700 dark:text-stone-300">
                         Disability Percentage on Medical Certificate:
                       </span>
@@ -699,73 +716,154 @@ export const QuestionnaireWizard: React.FC<QuestionnaireWizardProps> = ({
                   )}
                 </div>
 
-                {/* Orphan / Single Parent */}
-                <div className="p-4 sm:p-5 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/50 dark:bg-[#182E29] flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                {/* 2. Orphan / Single Parent */}
+                <div className="p-4 sm:p-5 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/40 dark:bg-[#182E29]/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 transition-all duration-200">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
                       Orphan / Wards of COVID-19?
                     </h3>
-                    <p className="text-xs text-stone-500 dark:text-stone-400">
+                    <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
                       Unlocks AICTE Swanath scheme
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setAnswers({ ...answers, isOrphan: !answers.isOrphan })}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
-                      answers.isOrphan
-                        ? 'bg-[#064E3B] text-white shadow-xs scale-105'
-                        : 'bg-white dark:bg-[#142420] border border-stone-200 dark:border-[#1E3A33] text-stone-700 dark:text-stone-300 hover:border-stone-300'
-                    }`}
-                  >
-                    {answers.isOrphan ? 'Yes' : 'No'}
-                  </button>
+
+                  <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto" role="group" aria-label="Orphan or Wards of COVID-19">
+                    <button
+                      type="button"
+                      onClick={() => setAnswers({ ...answers, isOrphan: true })}
+                      className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border transition-all duration-200 ease-out flex items-center justify-center gap-1.5 cursor-pointer min-w-[76px] sm:min-w-[84px] focus:outline-none focus:ring-2 focus:ring-[#065F46] focus:ring-offset-1 ${
+                        answers.isOrphan
+                          ? 'border-[#064E3B] dark:border-emerald-500 bg-emerald-50/80 dark:bg-[#1C3630] text-[#064E3B] dark:text-emerald-300 shadow-xs -translate-y-0.5'
+                          : 'border-stone-200 dark:border-[#1E3A33] bg-white dark:bg-[#142420] text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-[#28483F] hover:bg-stone-50 dark:hover:bg-[#182E29] hover:-translate-y-0.5'
+                      }`}
+                      aria-pressed={answers.isOrphan}
+                    >
+                      {answers.isOrphan && (
+                        <span className="w-3.5 h-3.5 flex items-center justify-center animate-checkmark-scale text-[#064E3B] dark:text-emerald-400 text-xs font-black">
+                          ✓
+                        </span>
+                      )}
+                      <span>Yes</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setAnswers({ ...answers, isOrphan: false })}
+                      className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border transition-all duration-200 ease-out flex items-center justify-center gap-1.5 cursor-pointer min-w-[76px] sm:min-w-[84px] focus:outline-none focus:ring-2 focus:ring-[#065F46] focus:ring-offset-1 ${
+                        !answers.isOrphan
+                          ? 'border-[#064E3B] dark:border-emerald-500 bg-emerald-50/80 dark:bg-[#1C3630] text-[#064E3B] dark:text-emerald-300 shadow-xs -translate-y-0.5'
+                          : 'border-stone-200 dark:border-[#1E3A33] bg-white dark:bg-[#142420] text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-[#28483F] hover:bg-stone-50 dark:hover:bg-[#182E29] hover:-translate-y-0.5'
+                      }`}
+                      aria-pressed={!answers.isOrphan}
+                    >
+                      {!answers.isOrphan && (
+                        <span className="w-3.5 h-3.5 flex items-center justify-center animate-checkmark-scale text-[#064E3B] dark:text-emerald-400 text-xs font-black">
+                          ✓
+                        </span>
+                      )}
+                      <span>No</span>
+                    </button>
+                  </div>
                 </div>
 
-                {/* Armed Forces / Paramilitary Ward */}
-                <div className="p-4 sm:p-5 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/50 dark:bg-[#182E29] flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                {/* 3. Armed Forces / Paramilitary Ward */}
+                <div className="p-4 sm:p-5 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/40 dark:bg-[#182E29]/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 transition-all duration-200">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
                       Ward of Armed Forces / CAPF?
                     </h3>
-                    <p className="text-xs text-stone-500 dark:text-stone-400">
+                    <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
                       Unlocks AICTE Swanath & defence welfare assistance
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setAnswers({ ...answers, isDefenceWard: !answers.isDefenceWard })}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
-                      answers.isDefenceWard
-                        ? 'bg-[#064E3B] text-white shadow-xs scale-105'
-                        : 'bg-white dark:bg-[#142420] border border-stone-200 dark:border-[#1E3A33] text-stone-700 dark:text-stone-300 hover:border-stone-300'
-                    }`}
-                  >
-                    {answers.isDefenceWard ? 'Yes' : 'No'}
-                  </button>
+
+                  <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto" role="group" aria-label="Ward of Armed Forces or CAPF">
+                    <button
+                      type="button"
+                      onClick={() => setAnswers({ ...answers, isDefenceWard: true })}
+                      className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border transition-all duration-200 ease-out flex items-center justify-center gap-1.5 cursor-pointer min-w-[76px] sm:min-w-[84px] focus:outline-none focus:ring-2 focus:ring-[#065F46] focus:ring-offset-1 ${
+                        answers.isDefenceWard
+                          ? 'border-[#064E3B] dark:border-emerald-500 bg-emerald-50/80 dark:bg-[#1C3630] text-[#064E3B] dark:text-emerald-300 shadow-xs -translate-y-0.5'
+                          : 'border-stone-200 dark:border-[#1E3A33] bg-white dark:bg-[#142420] text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-[#28483F] hover:bg-stone-50 dark:hover:bg-[#182E29] hover:-translate-y-0.5'
+                      }`}
+                      aria-pressed={answers.isDefenceWard}
+                    >
+                      {answers.isDefenceWard && (
+                        <span className="w-3.5 h-3.5 flex items-center justify-center animate-checkmark-scale text-[#064E3B] dark:text-emerald-400 text-xs font-black">
+                          ✓
+                        </span>
+                      )}
+                      <span>Yes</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setAnswers({ ...answers, isDefenceWard: false })}
+                      className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border transition-all duration-200 ease-out flex items-center justify-center gap-1.5 cursor-pointer min-w-[76px] sm:min-w-[84px] focus:outline-none focus:ring-2 focus:ring-[#065F46] focus:ring-offset-1 ${
+                        !answers.isDefenceWard
+                          ? 'border-[#064E3B] dark:border-emerald-500 bg-emerald-50/80 dark:bg-[#1C3630] text-[#064E3B] dark:text-emerald-300 shadow-xs -translate-y-0.5'
+                          : 'border-stone-200 dark:border-[#1E3A33] bg-white dark:bg-[#142420] text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-[#28483F] hover:bg-stone-50 dark:hover:bg-[#182E29] hover:-translate-y-0.5'
+                      }`}
+                      aria-pressed={!answers.isDefenceWard}
+                    >
+                      {!answers.isDefenceWard && (
+                        <span className="w-3.5 h-3.5 flex items-center justify-center animate-checkmark-scale text-[#064E3B] dark:text-emerald-400 text-xs font-black">
+                          ✓
+                        </span>
+                      )}
+                      <span>No</span>
+                    </button>
+                  </div>
                 </div>
 
-                {/* Religious Minority */}
-                <div className="p-4 sm:p-5 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/50 dark:bg-[#182E29] flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                {/* 4. Religious Minority */}
+                <div className="p-4 sm:p-5 rounded-2xl border border-stone-200 dark:border-[#1E3A33] bg-stone-50/40 dark:bg-[#182E29]/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 transition-all duration-200">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
                       Belong to a Notified Religious Minority?
                     </h3>
-                    <p className="text-xs text-stone-500 dark:text-stone-400">
+                    <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
                       Muslim, Christian, Sikh, Buddhist, Jain, or Parsi
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setAnswers({ ...answers, isMinority: !answers.isMinority })}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
-                      answers.isMinority
-                        ? 'bg-[#064E3B] text-white shadow-xs scale-105'
-                        : 'bg-white dark:bg-[#142420] border border-stone-200 dark:border-[#1E3A33] text-stone-700 dark:text-stone-300 hover:border-stone-300'
-                    }`}
-                  >
-                    {answers.isMinority ? 'Yes' : 'No'}
-                  </button>
+
+                  <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto" role="group" aria-label="Notified Religious Minority">
+                    <button
+                      type="button"
+                      onClick={() => setAnswers({ ...answers, isMinority: true })}
+                      className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border transition-all duration-200 ease-out flex items-center justify-center gap-1.5 cursor-pointer min-w-[76px] sm:min-w-[84px] focus:outline-none focus:ring-2 focus:ring-[#065F46] focus:ring-offset-1 ${
+                        answers.isMinority
+                          ? 'border-[#064E3B] dark:border-emerald-500 bg-emerald-50/80 dark:bg-[#1C3630] text-[#064E3B] dark:text-emerald-300 shadow-xs -translate-y-0.5'
+                          : 'border-stone-200 dark:border-[#1E3A33] bg-white dark:bg-[#142420] text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-[#28483F] hover:bg-stone-50 dark:hover:bg-[#182E29] hover:-translate-y-0.5'
+                      }`}
+                      aria-pressed={answers.isMinority}
+                    >
+                      {answers.isMinority && (
+                        <span className="w-3.5 h-3.5 flex items-center justify-center animate-checkmark-scale text-[#064E3B] dark:text-emerald-400 text-xs font-black">
+                          ✓
+                        </span>
+                      )}
+                      <span>Yes</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setAnswers({ ...answers, isMinority: false })}
+                      className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border transition-all duration-200 ease-out flex items-center justify-center gap-1.5 cursor-pointer min-w-[76px] sm:min-w-[84px] focus:outline-none focus:ring-2 focus:ring-[#065F46] focus:ring-offset-1 ${
+                        !answers.isMinority
+                          ? 'border-[#064E3B] dark:border-emerald-500 bg-emerald-50/80 dark:bg-[#1C3630] text-[#064E3B] dark:text-emerald-300 shadow-xs -translate-y-0.5'
+                          : 'border-stone-200 dark:border-[#1E3A33] bg-white dark:bg-[#142420] text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-[#28483F] hover:bg-stone-50 dark:hover:bg-[#182E29] hover:-translate-y-0.5'
+                      }`}
+                      aria-pressed={!answers.isMinority}
+                    >
+                      {!answers.isMinority && (
+                        <span className="w-3.5 h-3.5 flex items-center justify-center animate-checkmark-scale text-[#064E3B] dark:text-emerald-400 text-xs font-black">
+                          ✓
+                        </span>
+                      )}
+                      <span>No</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

@@ -100,10 +100,10 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
         </p>
 
         {/* Key Information Matrix */}
-        <div className="grid grid-cols-2 gap-2.5 mt-4 py-3 border-y border-stone-100 dark:border-[#1E3A33] text-xs">
-          <div className="flex items-start gap-2">
+        <div className="grid grid-cols-2 gap-2.5 mt-4 py-3 border-y border-stone-100 dark:border-[#1E3A33] text-xs min-w-0">
+          <div className="flex items-start gap-2 min-w-0">
             <GraduationCap className="w-4 h-4 text-[#065F46] dark:text-emerald-400 shrink-0 mt-0.5" />
-            <div>
+            <div className="min-w-0 flex-1">
               <span className="text-stone-400 block text-[10px] uppercase font-bold">Education</span>
               <span className="font-semibold text-slate-800 dark:text-stone-200 truncate block">
                 {scholarship.educationLevels.slice(0, 2).join(' · ')}
@@ -112,9 +112,9 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
             </div>
           </div>
 
-          <div className="flex items-start gap-2">
+          <div className="flex items-start gap-2 min-w-0">
             <IndianRupee className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-            <div>
+            <div className="min-w-0 flex-1">
               <span className="text-stone-400 block text-[10px] uppercase font-bold">Benefits</span>
               <span className="font-semibold text-[#065F46] dark:text-emerald-400 line-clamp-1">
                 {scholarship.benefits.amountDescription}

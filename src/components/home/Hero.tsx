@@ -15,34 +15,59 @@ export const Hero: React.FC<HeroProps> = ({
     <div>
       {/* Main Hero Section */}
       <section className="relative overflow-hidden pt-12 sm:pt-16 pb-16 lg:pb-20 bg-[#FAF8F5] dark:bg-[#0C1513] transition-colors border-b border-[#E8E2D7]/70 dark:border-[#1A2E28]">
-        {/* Subtle Background Architectural & Geometric Art (No flags, no monuments, no heavy glows) */}
-        <div className="absolute inset-0 pointer-events-none opacity-30 dark:opacity-15 overflow-hidden">
+        {/* Subtle Background Botanical Silhouettes, Constellation & Gentle Depth */}
+        <div className="absolute inset-0 pointer-events-none opacity-40 dark:opacity-20 overflow-hidden">
           <svg
             className="w-full h-full"
-            viewBox="0 0 1440 600"
+            viewBox="0 0 1440 640"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            {/* Subtle curved pathway */}
+            {/* Subtle curved pathway lines */}
             <path
               d="M-80 430C220 460 380 280 680 330C980 380 1140 190 1520 260"
               stroke="#065F46"
               strokeWidth="1.2"
               strokeDasharray="6 8"
-              strokeOpacity="0.25"
+              strokeOpacity="0.2"
             />
             <path
               d="M-30 460C280 490 430 310 730 360C1030 410 1180 220 1580 290"
               stroke="#D97706"
-              strokeWidth="1"
+              strokeWidth="0.8"
               strokeDasharray="4 6"
               strokeOpacity="0.2"
             />
-            {/* Soft constellation points */}
-            <circle cx="200" cy="110" r="2.5" fill="#D97706" fillOpacity="0.35" />
-            <circle cx="500" cy="80" r="2.5" fill="#065F46" fillOpacity="0.25" />
-            <circle cx="840" cy="130" r="2" fill="#D97706" fillOpacity="0.35" />
-            <circle cx="1140" cy="70" r="2.5" fill="#065F46" fillOpacity="0.25" />
+
+            {/* Left Edge: Faint Sage Botanical Silhouette */}
+            <g opacity="0.18" transform="translate(-20, 180)">
+              <path d="M40 220 C60 170 80 140 110 90" stroke="#065F46" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M60 180 C80 170 100 180 115 170 C95 190 75 190 60 180 Z" fill="#065F46" />
+              <path d="M85 140 C105 130 125 140 140 130 C120 150 100 150 85 140 Z" fill="#065F46" />
+              <path d="M105 95 C120 85 135 90 145 85 C130 100 115 100 105 95 Z" fill="#065F46" />
+            </g>
+
+            {/* Right Edge: Faint Sage Botanical Silhouette */}
+            <g opacity="0.16" transform="translate(1360, 240)">
+              <path d="M40 200 C20 150 0 120 -30 80" stroke="#065F46" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M20 160 C0 150 -20 160 -35 150 C-15 170 5 170 20 160 Z" fill="#065F46" />
+              <path d="M-5 120 C-25 110 -45 120 -60 110 C-40 130 -20 130 -5 120 Z" fill="#065F46" />
+            </g>
+
+            {/* Faint Paper Plane Silhouette in Top-Right */}
+            <g opacity="0.22" transform="translate(1180, 80) rotate(15)">
+              <path d="M0 12 L28 0 L10 24 L8 14 Z" fill="none" stroke="#065F46" strokeWidth="1.2" strokeLinejoin="round" />
+              <path d="M28 0 L8 14" stroke="#D97706" strokeWidth="1" strokeLinecap="round" />
+              {/* Flight trail */}
+              <path d="M-30 22 C-15 20 -5 16 0 12" stroke="#D97706" strokeWidth="0.8" strokeDasharray="2 3" strokeOpacity="0.7" />
+            </g>
+
+            {/* Soft constellation dots */}
+            <circle cx="180" cy="100" r="2.5" fill="#D97706" fillOpacity="0.35" />
+            <circle cx="480" cy="70" r="2" fill="#065F46" fillOpacity="0.25" />
+            <circle cx="820" cy="120" r="2" fill="#D97706" fillOpacity="0.35" />
+            <circle cx="1060" cy="60" r="2.5" fill="#065F46" fillOpacity="0.25" />
+            <circle cx="1320" cy="140" r="2" fill="#D97706" fillOpacity="0.35" />
           </svg>
         </div>
 

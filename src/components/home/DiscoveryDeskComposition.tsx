@@ -1,14 +1,10 @@
 import React from 'react';
+import { EdvoraProductLaptop } from './EdvoraProductLaptop';
 import {
   Search,
   FileText,
   Star,
   Flag,
-  ChevronDown,
-  Bookmark,
-  Globe,
-  User,
-  BarChart3,
   ArrowRight,
   GraduationCap,
 } from 'lucide-react';
@@ -103,11 +99,6 @@ export const DiscoveryDeskComposition: React.FC<DiscoveryDeskCompositionProps> =
       {/* 3. COHESIVE 3D SCENE: UNIFIED LIGHTING, PERSPECTIVE & GROUND CONTACT      */}
       {/* ========================================================================= */}
       <div className="relative pt-1">
-        {/* Unified Ground Contact Shadow (Binds Laptop & Books to the same desk plane) */}
-        <div className="absolute bottom-2 left-2 right-2 h-7 pointer-events-none z-0">
-          <div className="w-[94%] h-full mx-auto bg-gradient-to-r from-[#064E3B]/12 via-slate-900/18 to-slate-900/14 dark:from-black/40 dark:via-black/50 dark:to-black/35 blur-xl rounded-full" />
-        </div>
-
         {/* Supporting Left: Stack of 3 Physical Hardcover Books & Plant */}
         <div className="absolute -left-3 sm:-left-6 bottom-4 sm:bottom-6 z-20 pointer-events-none">
           {/* Subtle Foliage behind books with natural dual-tone green */}
@@ -154,188 +145,11 @@ export const DiscoveryDeskComposition: React.FC<DiscoveryDeskCompositionProps> =
           </div>
         </div>
 
-        {/* 3D LAPTOP (Refined Product Render, ~15-20° perspective, fully visible) */}
-        <div
-          className="relative z-10 ml-auto mr-3 sm:mr-6 max-w-[315px] sm:max-w-[340px]"
-          style={{ perspective: '1000px' }}
-        >
-          <div
-            style={{
-              transform: 'rotateY(-7deg) rotateX(5deg)',
-              transformStyle: 'preserve-3d',
-            }}
-            className="transition-transform duration-300 hover:rotate-y-[-4deg] hover:rotate-x-[3deg]"
-          >
-            {/* Screen Lid Shell with Aluminum Top Edge Highlight */}
-            <div className="rounded-t-xl bg-gradient-to-b from-[#1E293B] to-[#0F172A] p-2 pt-1.5 pb-1 shadow-xl border border-slate-700/80">
-              {/* Webcam & Top Bezel Indicator */}
-              <div className="flex items-center justify-center pb-0.5">
-                <span className="w-1.2 h-1.2 rounded-full bg-slate-500 inline-block ring-1 ring-slate-800" />
-              </div>
-
-              {/* Screen Interior Display Surface with Glass Gloss Reflection */}
-              <div className="relative overflow-hidden bg-white dark:bg-[#0C1513] rounded-lg p-2.5 sm:p-3 border border-[#E8E2D7] dark:border-[#1E3A33] shadow-inner">
-                {/* Glass Gloss Sheen Diagonal Reflection */}
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-bl from-white/12 via-white/4 to-transparent rotate-45 pointer-events-none" />
-
-                {/* Top App Bar inside Laptop */}
-                <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-[#E8E2D7] dark:border-[#1E3A33]">
-                  {/* Left: Edvora Brand */}
-                  <div className="flex items-center gap-1">
-                    <img
-                      src="/edvora-emblem.png"
-                      alt="Edvora"
-                      className="w-3.5 h-3.5 object-contain"
-                    />
-                    <span className="text-[10px] font-black font-editorial text-[#064E3B] dark:text-emerald-400">
-                      Edvora
-                    </span>
-                  </div>
-
-                  {/* Right Icons: Bookmark, Language, Avatar */}
-                  <div className="flex items-center gap-1.5 text-stone-500 dark:text-stone-400 text-[8px]">
-                    <Bookmark className="w-2.5 h-2.5 text-stone-400" />
-                    <span className="flex items-center gap-0.5">
-                      <Globe className="w-2.5 h-2.5 text-stone-400" />
-                      <span className="font-semibold text-[7.5px]">EN</span>
-                    </span>
-                    <div className="w-3.5 h-3.5 rounded-full bg-[#065F46] text-white flex items-center justify-center">
-                      <User className="w-2 h-2" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Form on Left + Stats Card on Right */}
-                <div className="grid grid-cols-12 gap-2 text-left items-center">
-                  {/* Left: Scholarship Finder Inputs */}
-                  <div className="col-span-8 space-y-1">
-                    <div>
-                      <h4 className="text-[10px] font-bold text-slate-900 dark:text-stone-100 font-editorial leading-tight">
-                        Find scholarships for you
-                      </h4>
-                      <p className="text-[7px] text-stone-500 dark:text-stone-400 leading-none mt-0.5">
-                        Answer a few questions and get matches
-                      </p>
-                    </div>
-
-                    {/* Field 1: Education */}
-                    <div>
-                      <span className="text-[6.5px] font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider block">
-                        What are you studying?
-                      </span>
-                      <div className="mt-0.5 px-1.5 py-0.5 rounded bg-stone-50 dark:bg-[#142420] border border-[#E2DACB] dark:border-[#1E3A33] text-[8px] font-semibold text-stone-800 dark:text-stone-200 flex items-center justify-between">
-                        <span>Diploma</span>
-                        <ChevronDown className="w-2 h-2 text-stone-400" />
-                      </div>
-                    </div>
-
-                    {/* Field 2: Income */}
-                    <div>
-                      <span className="text-[6.5px] font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider block">
-                        Annual family income
-                      </span>
-                      <div className="mt-0.5 px-1.5 py-0.5 rounded bg-stone-50 dark:bg-[#142420] border border-[#E2DACB] dark:border-[#1E3A33] text-[8px] font-semibold text-stone-800 dark:text-stone-200 flex items-center justify-between">
-                        <span>Below ₹2.5 Lakh</span>
-                        <ChevronDown className="w-2 h-2 text-stone-400" />
-                      </div>
-                    </div>
-
-                    {/* Field 3: Location */}
-                    <div>
-                      <span className="text-[6.5px] font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider block">
-                        State / Location
-                      </span>
-                      <div className="mt-0.5 px-1.5 py-0.5 rounded bg-stone-50 dark:bg-[#142420] border border-[#E2DACB] dark:border-[#1E3A33] text-[8px] font-semibold text-stone-800 dark:text-stone-200 flex items-center justify-between">
-                        <span>Gujarat</span>
-                        <ChevronDown className="w-2 h-2 text-stone-400" />
-                      </div>
-                    </div>
-
-                    {/* Submit Button */}
-                    <button
-                      type="button"
-                      onClick={onFindScholarships}
-                      className="w-full mt-0.5 py-1 px-2 rounded bg-[#064E3B] hover:bg-[#043E2F] text-white text-[8.5px] font-bold shadow-xs flex items-center justify-center gap-1 transition-colors cursor-pointer group"
-                    >
-                      <span>Find Matches</span>
-                      <ArrowRight className="w-2 h-2 text-amber-400 group-hover:translate-x-0.5 transition-transform" />
-                    </button>
-                  </div>
-
-                  {/* Right: Matches Card with Bar Chart */}
-                  <div className="col-span-4 h-full flex items-center">
-                    <div className="w-full py-2.5 px-1 rounded-lg bg-[#F0FDF4] dark:bg-[#142420] border border-emerald-200/80 dark:border-emerald-800/80 text-center flex flex-col items-center justify-center shadow-2xs">
-                      <div className="w-5 h-5 rounded-md bg-[#065F46] text-white flex items-center justify-center mb-0.5">
-                        <BarChart3 className="w-3 h-3 text-amber-300 stroke-[2.5]" />
-                      </div>
-                      <span className="text-xl font-black text-[#064E3B] dark:text-emerald-400 font-editorial leading-none">
-                        3
-                      </span>
-                      <span className="text-[7.5px] font-bold text-stone-700 dark:text-stone-300 mt-0.5 leading-tight">
-                        Scholarships
-                      </span>
-                      <span className="text-[6.5px] text-stone-500 dark:text-stone-400">
-                        Found
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Aluminum Keyboard Base & Trackpad */}
-            <div className="relative">
-              <svg
-                className="w-full h-auto block -mt-[1px]"
-                viewBox="0 0 340 50"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>
-                  <linearGradient id="laptopBaseGradCompact" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#E2E8F0" />
-                    <stop offset="50%" stopColor="#CBD5E1" />
-                    <stop offset="100%" stopColor="#94A3B8" />
-                  </linearGradient>
-                </defs>
-
-                <rect x="15" y="0" width="310" height="2" fill="#0F172A" />
-                <path
-                  d="M 8 2 L 332 2 L 340 44 C 340 47, 336 49, 330 49 L 10 49 C 4 49, 0 47, 0 44 Z"
-                  fill="url(#laptopBaseGradCompact)"
-                />
-                <path d="M 8 2 L 332 2" stroke="#FFFFFF" strokeWidth="0.8" strokeOpacity="0.8" />
-
-                {/* Keyboard Well with Subtle Keycap Relief */}
-                <path d="M 32 5 L 308 5 L 314 26 L 26 26 Z" fill="#0F172A" fillOpacity="0.85" />
-                <rect x="36" y="7" width="268" height="3" rx="0.6" fill="#1E293B" />
-                <rect x="34" y="11" width="272" height="3.5" rx="0.6" fill="#1E293B" />
-                <rect x="32" y="15.5" width="276" height="3.5" rx="0.6" fill="#1E293B" />
-                {/* Spacebar Row */}
-                <g transform="translate(30, 20)">
-                  <rect x="0" y="0" width="26" height="4" rx="0.6" fill="#1E293B" />
-                  <rect x="74" y="0" width="132" height="4" rx="0.6" fill="#0F172A" stroke="#475569" strokeWidth="0.4" />
-                  <rect x="254" y="0" width="26" height="4" rx="0.6" fill="#1E293B" />
-                </g>
-
-                {/* Centered Glass Trackpad */}
-                <rect
-                  x="135"
-                  y="30"
-                  width="70"
-                  height="14"
-                  rx="1.5"
-                  fill="#94A3B8"
-                  fillOpacity="0.4"
-                  stroke="#64748B"
-                  strokeWidth="0.5"
-                />
-
-                {/* Front Lip with Thumb Opening Notch */}
-                <path d="M 152 44 C 152 46, 155 47, 160 47 L 180 47 C 185 47, 188 46, 188 44 Z" fill="#475569" />
-              </svg>
-            </div>
-          </div>
+        {/* ================================================================= */}
+        {/* REPLACED: NEW EDVORA PRODUCT LAPTOP (Warm Champagne Silver Body)   */}
+        {/* ================================================================= */}
+        <div className="relative z-10">
+          <EdvoraProductLaptop onFindScholarships={onFindScholarships} />
         </div>
 
         {/* Floating Graduation Cap (Positioned above/behind upper-right screen rim) */}

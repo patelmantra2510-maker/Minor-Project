@@ -9,20 +9,23 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onStart }) => {
   const steps = [
     {
       num: '01',
-      title: '01 — Answer',
-      description: 'Tell us about your education and eligibility.',
+      title: 'Answer',
+      subtitle: 'Share your background',
+      description: 'Select your course, category, state, and academic percentage in a quick 7-step guided flow.',
       icon: HelpCircle,
     },
     {
       num: '02',
-      title: '02 — Get Matched',
-      description: 'Edvora compares your information with scholarship criteria.',
+      title: 'Get Matched',
+      subtitle: 'Rule-based evaluation',
+      description: 'Edvora instantly checks official criteria to find scholarships you qualify for.',
       icon: Sparkles,
     },
     {
       num: '03',
-      title: '03 — Explore & Apply',
-      description: 'Review the scholarship and continue to the official application source.',
+      title: 'Explore & Apply',
+      subtitle: 'Direct official access',
+      description: 'Review your personalized match checklist and apply directly through verified government portals.',
       icon: ExternalLink,
     },
   ];
@@ -87,9 +90,14 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onStart }) => {
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-stone-100 mb-2 group-hover:text-[#064E3B] dark:group-hover:text-emerald-400 transition-colors">
-                      {step.title}
-                    </h3>
+                    <div className="mb-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 block mb-1">
+                        {step.subtitle}
+                      </span>
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-stone-100 group-hover:text-[#064E3B] dark:group-hover:text-emerald-400 transition-colors">
+                        {step.title}
+                      </h3>
+                    </div>
                     <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 leading-relaxed font-normal">
                       {step.description}
                     </p>

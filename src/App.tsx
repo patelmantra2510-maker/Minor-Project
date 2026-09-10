@@ -163,13 +163,13 @@ export function AppContent() {
               onFindScholarships={() => navigateTo('find')}
               onExploreScholarships={() => navigateTo('explore')}
             />
+            <Features />
+            <HowItWorks onStart={() => navigateTo('find')} />
             <ExploreByCategory onSelectCategory={handleCategorySelect} />
             <FeaturedScholarships
               onViewDetails={(slug) => navigateTo(`scholarships/${slug}`)}
               onExploreAll={() => navigateTo('explore')}
             />
-            <Features />
-            <HowItWorks onStart={() => navigateTo('find')} />
           </div>
         )}
 

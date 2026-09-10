@@ -3,14 +3,11 @@ import {
   GraduationCap,
   BookOpen,
   Sparkles,
-  Users,
   Award,
   Layers,
   HeartHandshake,
-  Heart,
   Cpu,
   BookmarkCheck,
-  ShieldCheck,
   ArrowRight,
 } from 'lucide-react';
 
@@ -45,14 +42,6 @@ export const ExploreByCategory: React.FC<ExploreByCategoryProps> = ({ onSelectCa
       filterType: 'education',
       filterValue: 'Diploma',
       icon: Layers,
-    },
-    {
-      id: 'iti',
-      name: 'ITI',
-      description: 'Industrial Training Institutes & vocational trade certificates',
-      filterType: 'education',
-      filterValue: 'ITI',
-      icon: Cpu,
     },
     {
       id: 'ug',
@@ -102,30 +91,6 @@ export const ExploreByCategory: React.FC<ExploreByCategoryProps> = ({ onSelectCa
       filterValue: 'Need-based',
       icon: HeartHandshake,
     },
-    {
-      id: 'girls',
-      name: 'Girls / Women',
-      description: 'Special female student grants (AICTE Pragati, Kanya Kelavani)',
-      filterType: 'gender',
-      filterValue: 'Female',
-      icon: Heart,
-    },
-    {
-      id: 'sc-st',
-      name: 'SC / ST',
-      description: 'Scheduled Caste & Scheduled Tribe post-matric initiatives',
-      filterType: 'category',
-      filterValue: 'SC',
-      icon: Users,
-    },
-    {
-      id: 'ews-sebc',
-      name: 'EWS / OBC / SEBC',
-      description: 'Economically Weaker & Socially Backward class scholarships',
-      filterType: 'category',
-      filterValue: 'SEBC/OBC',
-      icon: ShieldCheck,
-    },
   ];
 
   return (
@@ -133,17 +98,17 @@ export const ExploreByCategory: React.FC<ExploreByCategoryProps> = ({ onSelectCa
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="text-xs font-bold uppercase tracking-widest text-[#065F46] dark:text-emerald-400">
-            Browse By Focus Area
+            Education Discovery
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-stone-100 font-editorial mt-2 tracking-tight">
-            Explore Scholarships by Category
+            Explore by Category
           </h2>
           <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-2.5">
-            Click on any segment to view matching verified scholarship programs across India.
+            Select an academic tier or scholarship focus to view verified opportunities.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {categories.map((cat) => {
             const Icon = cat.icon;
             return (
@@ -155,20 +120,15 @@ export const ExploreByCategory: React.FC<ExploreByCategoryProps> = ({ onSelectCa
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-[#1C3630] text-[#065F46] dark:text-emerald-400 flex items-center justify-center group-hover:bg-[#064E3B] group-hover:text-amber-100 transition-colors">
-                      <Icon className="w-5 h-5" />
+                    <div className="w-10 h-10 rounded-xl bg-stone-100 dark:bg-[#1C3630] text-[#065F46] dark:text-emerald-400 flex items-center justify-center group-hover:bg-[#064E3B] group-hover:text-amber-100 transition-colors">
+                      <Icon className="w-5 h-5 stroke-[1.75]" />
                     </div>
-                    {cat.badge && (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300">
-                        {cat.badge}
-                      </span>
-                    )}
                   </div>
 
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#065F46] dark:group-hover:text-emerald-400 transition-colors">
+                  <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-[#065F46] dark:group-hover:text-emerald-400 transition-colors">
                     {cat.name}
                   </h3>
-                  <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-1 line-clamp-2 leading-relaxed">
+                  <p className="text-[11px] sm:text-xs text-stone-500 dark:text-stone-400 mt-1 line-clamp-2 leading-relaxed font-normal">
                     {cat.description}
                   </p>
                 </div>

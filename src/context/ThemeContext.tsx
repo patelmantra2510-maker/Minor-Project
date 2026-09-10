@@ -12,9 +12,9 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>(() => {
-    const saved = localStorage.getItem('edvora_theme');
+    // Strictly default to light mode on initial load
+    const saved = localStorage.getItem('edvora_theme_mode');
     if (saved === 'dark' || saved === 'light') return saved;
-    // Explicitly default to warm light mode as required
     return 'light';
   });
 
@@ -25,7 +25,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } else {
       root.classList.remove('dark');
     }
-    localStorage.setItem('edvora_theme', theme);
+    localStorage.setItem('edvora_theme_mode', theme);
   }, [theme]);
 
   const toggleTheme = () => {

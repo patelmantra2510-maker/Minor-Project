@@ -1,31 +1,31 @@
 import React from 'react';
-import { Sparkles, ShieldCheck, Bookmark, Scale } from 'lucide-react';
+import { Cap3D, Certificate3D, Notebook3D, Medal3D } from '../common/Educational3DObjects';
 
 export const Features: React.FC = () => {
   const featureList = [
     {
       num: '01',
-      icon: Sparkles,
       title: 'Personalized Matches',
-      description: 'Answer a few questions and discover scholarships relevant to you.',
+      description: 'Answer a few questions and discover scholarships matched to your education and category.',
+      renderObject: () => <Cap3D size={40} className="group-hover:scale-110 transition-transform" />,
     },
     {
       num: '02',
-      icon: ShieldCheck,
       title: 'Clear Eligibility',
-      description: 'Understand why a scholarship matches your information.',
+      description: 'Understand exactly why a scholarship matches your criteria with transparent rules.',
+      renderObject: () => <Certificate3D size={40} className="group-hover:scale-110 transition-transform" />,
     },
     {
       num: '03',
-      icon: Bookmark,
       title: 'Save for Later',
-      description: 'Bookmark scholarships without creating an account.',
+      description: 'Bookmark scholarships to your personal session tray without registering an account.',
+      renderObject: () => <Notebook3D size={38} className="group-hover:scale-110 transition-transform" />,
     },
     {
       num: '04',
-      icon: Scale,
       title: 'Compare Options',
-      description: 'Compare up to three scholarships side by side.',
+      description: 'Compare awards, deadlines, and benefits side-by-side to choose the right opportunity.',
+      renderObject: () => <Medal3D size={40} className="group-hover:scale-110 transition-transform" />,
     },
   ];
 
@@ -45,33 +45,30 @@ export const Features: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featureList.map((item) => {
-            const Icon = item.icon;
-            return (
-              <div
-                key={item.num}
-                className="group p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#142420] border border-[#E8E2D7] dark:border-[#1E3A33] hover:border-[#065F46] dark:hover:border-emerald-600 transition-all duration-200 hover:-translate-y-1 shadow-2xs hover:shadow-md flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-5">
-                    <span className="text-xs font-black font-editorial tracking-wider text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-2.5 py-1 rounded-lg border border-amber-200/50 dark:border-amber-800/50">
-                      {item.num}
-                    </span>
-                    <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-[#1C3630] text-[#064E3B] dark:text-emerald-400 flex items-center justify-center group-hover:scale-105 transition-transform">
-                      <Icon className="w-5 h-5 stroke-[2]" />
-                    </div>
+          {featureList.map((item) => (
+            <div
+              key={item.num}
+              className="group p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#142420] border border-[#E8E2D7] dark:border-[#1E3A33] hover:border-[#065F46] dark:hover:border-emerald-600 transition-all duration-200 hover:-translate-y-1 shadow-2xs hover:shadow-md flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-5">
+                  <span className="text-xs font-black font-editorial tracking-wider text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-2.5 py-1 rounded-lg border border-amber-200/50 dark:border-amber-800/50">
+                    {item.num}
+                  </span>
+                  <div className="w-12 h-12 flex items-center justify-center">
+                    {item.renderObject()}
                   </div>
-
-                  <h3 className="text-base font-bold text-slate-900 dark:text-stone-100 mb-2 group-hover:text-[#064E3B] dark:group-hover:text-emerald-400 transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 leading-relaxed font-normal">
-                    {item.description}
-                  </p>
                 </div>
+
+                <h3 className="text-base font-bold text-slate-900 dark:text-stone-100 mb-2 group-hover:text-[#064E3B] dark:group-hover:text-emerald-400 transition-colors">
+                  {item.title}
+                </h3>
+                <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 leading-relaxed font-normal">
+                  {item.description}
+                </p>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
     </section>

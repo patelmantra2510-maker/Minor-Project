@@ -8,6 +8,9 @@ import {
   HeartHandshake,
   Cpu,
   BookmarkCheck,
+  Heart,
+  Users,
+  ShieldCheck,
   ArrowRight,
 } from 'lucide-react';
 
@@ -44,6 +47,14 @@ export const ExploreByCategory: React.FC<ExploreByCategoryProps> = ({ onSelectCa
       icon: Layers,
     },
     {
+      id: 'iti',
+      name: 'ITI',
+      description: 'Industrial Training Institutes & vocational trade certificates',
+      filterType: 'education',
+      filterValue: 'ITI',
+      icon: Cpu,
+    },
+    {
       id: 'ug',
       name: 'Undergraduate',
       description: 'B.E., B.Tech, MBBS, B.Sc, B.Com, B.A. degrees',
@@ -74,6 +85,30 @@ export const ExploreByCategory: React.FC<ExploreByCategoryProps> = ({ onSelectCa
       filterType: 'type',
       filterValue: 'Government',
       icon: Cpu,
+    },
+    {
+      id: 'girls',
+      name: 'Girls / Women',
+      description: 'Special female student grants (AICTE Pragati, Kanya Kelavani)',
+      filterType: 'gender',
+      filterValue: 'Female',
+      icon: Heart,
+    },
+    {
+      id: 'sc-st',
+      name: 'SC / ST',
+      description: 'Scheduled Caste & Scheduled Tribe post-matric initiatives',
+      filterType: 'category',
+      filterValue: 'SC',
+      icon: Users,
+    },
+    {
+      id: 'ews-sebc',
+      name: 'EWS / OBC / SEBC',
+      description: 'Economically Weaker & Socially Backward class scholarships',
+      filterType: 'category',
+      filterValue: 'SEBC/OBC',
+      icon: ShieldCheck,
     },
     {
       id: 'merit',

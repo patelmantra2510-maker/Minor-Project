@@ -1,6 +1,5 @@
 import React from 'react';
-import { StudentIllustration } from '../common/StudentIllustration';
-import { Cap3D, Books3D, Certificate3D, Star3D } from '../common/Educational3DObjects';
+import { DiscoveryDeskComposition } from './DiscoveryDeskComposition';
 import { ArrowRight, Check, Compass, Sparkles, ShieldCheck, ExternalLink } from 'lucide-react';
 
 interface HeroProps {
@@ -108,24 +107,9 @@ export const Hero: React.FC<HeroProps> = ({
               </div>
             </div>
 
-            {/* Right Hero: Editorial Student Illustration surrounded by ONLY 3-4 soft 3D accents (~48% on desktop) */}
+            {/* Right Hero: Scholarship Discovery Desk Composition (~48% on desktop) */}
             <div className="lg:col-span-6 xl:col-span-6 flex justify-center relative">
-              {/* Soft 3D Accents — Maximum 4 objects, placed naturally */}
-              <div className="absolute -top-3 left-4 sm:left-8 z-20 animate-float" title="Graduation Cap">
-                <Cap3D size={52} />
-              </div>
-              <div className="absolute top-2 right-6 sm:right-12 z-20 animate-float-alt" title="Academic Star">
-                <Star3D size={32} />
-              </div>
-              <div className="absolute top-1/3 -right-1 sm:right-2 z-20 animate-float" title="Certificate of Award">
-                <Certificate3D size={48} />
-              </div>
-              <div className="absolute bottom-6 -left-2 sm:left-2 z-20 animate-float-alt" title="Study Books">
-                <Books3D size={48} />
-              </div>
-
-              {/* Central Editorial Student Character & Pathway */}
-              <StudentIllustration variant="hero" />
+              <DiscoveryDeskComposition onFindScholarships={onFindScholarships} />
             </div>
           </div>
         </div>

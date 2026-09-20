@@ -17,14 +17,17 @@ export const FeaturedScholarships: React.FC<FeaturedScholarshipsProps> = ({
   const { t } = useLanguage();
   const { scholarships = SCHOLARSHIPS_DATA } = useScholarships();
 
-  // Curate 4 top popular verified scholarships
+  // Curate top popular verified scholarships (respecting database isFeatured flag)
   const featuredIds = [
     'mysy-gujarat',
     'aicte-pragati-scholarship',
     'pm-usp-csss-national',
     'kotak-kanya-scholarship',
   ];
-  const featuredScholarships = scholarships.filter((s) => featuredIds.includes(s.id));
+  const hasExplicitFeatured = scholarships.some((s) => s.isFeatured);
+  const featuredScholarships = scholarships.filter((s) =>
+    hasExplicitFeatured ? s.isFeatured : featuredIds.includes(s.id)
+  );
 
   return (
     <section className="py-16 bg-white dark:bg-[#0E1A17] border-t border-[#E8E2D7] dark:border-[#1A2E28] transition-colors">

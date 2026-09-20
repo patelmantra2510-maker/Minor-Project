@@ -160,6 +160,13 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 >
                   {t('footer.termsOfUse')}
                 </button>
+                <span>·</span>
+                <button
+                  onClick={() => onNavigate('admin')}
+                  className="hover:text-emerald-400 transition-colors underline"
+                >
+                  Admin
+                </button>
               </li>
             </ul>
           </div>

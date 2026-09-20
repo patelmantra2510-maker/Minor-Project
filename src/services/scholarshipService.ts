@@ -73,6 +73,9 @@ export function mapRowToScholarship(row: SupabaseScholarshipRow): Scholarship {
     applicationWebsite: row.application_website || '',
     lastUpdated: row.last_updated || '',
     tags: row.tags || [],
+    isVerified: (row as any).is_verified !== false && (row as any).is_verified !== 0,
+    isFeatured: (row as any).is_featured === true || (row as any).is_featured === 1,
+    createdAt: row.created_at,
   };
 }
 
@@ -201,3 +204,143 @@ export async function getScholarshipByIdOrSlug(idOrSlug: string): Promise<Schola
     SCHOLARSHIPS_DATA.find((s) => s.id === idOrSlug || s.slug === idOrSlug) || null
   );
 }
+
+/**
+ * Admin API: Authenticate with administrator passphrase
+ */
+export async function adminLogin(password: string): Promise<{ success: boolean; token?: string; error?: string }> {
+  try {
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      return { success: false, error: data.error || 'Authentication failed' };
+    }
+    return data;
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Network error' };
+  }
+}
+
+/**
+ * Admin API: Fetch real dashboard statistics
+ */
+export async function getAdminStats(token: string): Promise<any> {
+  const res = await fetch('/api/admin/stats', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) {
+    throw new Error('Failed to load admin stats');
+  }
+  return res.json();
+}
+
+/**
+ * Admin API: Fetch activity audit log
+ */
+export async function getAdminActivity(token: string): Promise<any[]> {
+  const res = await fetch('/api/admin/activity', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) {
+    throw new Error('Failed to load activity logs');
+  }
+  return res.json();
+}
+
+/**
+ * Admin API: Fetch category counts
+ */
+export async function getAdminCategories(token: string): Promise<any> {
+  const res = await fetch('/api/admin/categories', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) {
+    throw new Error('Failed to load categories');
+  }
+  return res.json();
+}
+
+/**
+ * Admin API: Insert or update scholarship in SQLite
+ */
+export async function saveScholarship(scholarship: Scholarship, token: string): Promise<boolean> {
+  const res = await fetch('/api/scholarships', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(scholarship),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || 'Failed to save scholarship');
+  }
+  return true;
+}
+
+/**
+ * Admin API: Delete scholarship from SQLite
+ */
+export async function deleteScholarship(id: string, token: string): Promise<boolean> {
+  const res = await fetch(`/api/scholarships/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || 'Failed to delete scholarship');
+  }
+  return true;
+}
+
+/**
+ * Admin API: Toggle Featured status
+ */
+export async function toggleFeatureScholarship(id: string, isFeatured: boolean, token: string): Promise<Scholarship> {
+  const res = await fetch(`/api/scholarships/${encodeURIComponent(id)}/toggle-feature`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ isFeatured }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || 'Failed to toggle featured status');
+  }
+  return res.json();
+}
+
+/**
+ * Admin API: Toggle Verified status
+ */
+export async function toggleVerifyScholarship(id: string, isVerified: boolean, token: string): Promise<Scholarship> {
+  const res = await fetch(`/api/scholarships/${encodeURIComponent(id)}/toggle-verify`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ isVerified }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || 'Failed to toggle verified status');
+  }
+  return res.json();
+}
+

@@ -97,6 +97,9 @@ export interface Scholarship {
   lastUpdated: string;
   tags: string[];
   eligibility?: ScholarshipEligibility;
+  isVerified?: boolean;
+  isFeatured?: boolean;
+  createdAt?: string;
 }
 
 export type MatchStatus = 'strong_match' | 'possible_match' | 'not_eligible';

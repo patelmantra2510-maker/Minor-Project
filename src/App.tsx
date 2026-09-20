@@ -17,6 +17,7 @@ import { AboutPage } from './components/pages/AboutPage';
 import { AIPage } from './components/pages/AIPage';
 import { ProfilePage } from './components/pages/ProfilePage';
 import { FindScholarshipsPage } from './components/pages/FindScholarshipsPage';
+import { AdminPanel } from './components/admin/AdminPanel';
 import { ScholarshipDetailPage } from './components/scholarship/ScholarshipDetailPage';
 import { ComparisonModal, FloatingCompareBar } from './components/scholarship/ComparisonModal';
 import { EdvoraBackground, type BackgroundVariant } from './components/background/EdvoraBackground';
@@ -149,6 +150,11 @@ export function AppContent() {
     : currentRoute === 'profile'
     ? 'profile'
     : 'home';
+
+  // Dedicated Admin Panel Route
+  if (currentRoute === 'admin') {
+    return <AdminPanel onNavigate={navigateTo} />;
+  }
 
   return (
     <AIProvider studentAnswers={studentAnswers} currentPage={currentRoute}>

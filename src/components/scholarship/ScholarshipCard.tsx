@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import type { Scholarship, MatchResult } from '../../types/scholarship';
+import type { ScholarshipEligibilityResult } from '../../types/eligibility';
+import { getField } from '../../engine/fieldRegistry';
 import { useSaved } from '../../context/SavedContext';
 import { useCompare } from '../../context/CompareContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -23,14 +25,18 @@ import {
 interface ScholarshipCardProps {
   scholarship: Scholarship;
   matchResult?: MatchResult;
+  eligibilityResult?: ScholarshipEligibilityResult;
   onViewDetails: (slug: string) => void;
+  onUpdateMissingField?: (fieldId: string) => void;
   showMatchStatus?: boolean;
 }
 
 export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
   scholarship,
   matchResult,
+  eligibilityResult,
   onViewDetails,
+  onUpdateMissingField,
   showMatchStatus = true,
 }) => {
   const { t } = useLanguage();
@@ -47,7 +53,10 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
       <div className="p-5 sm:p-6 pb-4">
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex flex-wrap items-center gap-2">
-            {showMatchStatus && matchResult && (
+            {showMatchStatus && eligibilityResult && (
+              <MatchBadge status={eligibilityResult.status} size="sm" />
+            )}
+            {showMatchStatus && !eligibilityResult && matchResult && (
               <MatchBadge status={matchResult.status} size="sm" />
             )}
             <StatusBadge
@@ -131,8 +140,132 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
         </p>
       </div>
 
-      {/* Expandable "Why this matches me?" */}
-      {matchResult && (
+      {/* Prominent Possible Match Callout (Section 17: More information needed) */}
+      {eligibilityResult && eligibilityResult.status === 'possible' && (
+        <div className="mx-5 sm:mx-6 mb-3 p-3.5 rounded-xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs">
+          <div className="flex items-start gap-2.5">
+            <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <div className="flex-1 space-y-1">
+              <div className="font-bold text-amber-950 dark:text-amber-200">
+                {t('profile.matching.moreInfoNeeded', undefined, 'More information needed')}
+              </div>
+              <p className="text-amber-900/85 dark:text-amber-300/85 text-[11px] leading-relaxed">
+                {eligibilityResult.missingFields.length > 0
+                  ? t(
+                      'profile.matching.moreInfoNeededDesc',
+                      { field: (getField(eligibilityResult.missingFields[0])?.label || eligibilityResult.missingFields[0]).toLowerCase() },
+                      `We need your ${(getField(eligibilityResult.missingFields[0])?.label || eligibilityResult.missingFields[0]).toLowerCase()} to determine whether you meet this scholarship's requirements.`
+                    )
+                  : eligibilityResult.explanation}
+              </p>
+              {onUpdateMissingField && eligibilityResult.missingFields.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => onUpdateMissingField(eligibilityResult.missingFields[0])}
+                  className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs transition-colors shadow-2xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>{t('profile.matching.updateProfileBtn', undefined, 'Update Profile')}</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Expandable "Why this matches / Why needed" for modern eligibility */}
+      {eligibilityResult && (
+        <div className="px-5 sm:px-6 pb-2">
+          <button
+            type="button"
+            onClick={() => setShowMatchReasons(!showMatchReasons)}
+            className="w-full py-2 px-3 rounded-xl bg-stone-50 dark:bg-[#1C3630] hover:bg-emerald-50 dark:hover:bg-[#23453E] text-xs font-bold text-[#065F46] dark:text-emerald-300 transition-colors flex items-center justify-between border border-stone-200/80 dark:border-[#23453E] cursor-pointer"
+          >
+            <span className="flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <span>
+                {eligibilityResult.status === 'not_eligible'
+                  ? t('profile.matching.whyNotEligible', undefined, 'Why you are not eligible')
+                  : t('profile.matching.whyThisMatches', undefined, 'Why this matches you')}
+              </span>
+            </span>
+            {showMatchReasons ? (
+              <ChevronUp className="w-3.5 h-3.5" />
+            ) : (
+              <ChevronDown className="w-3.5 h-3.5" />
+            )}
+          </button>
+
+          {showMatchReasons && (
+            <div className="mt-2.5 p-3 rounded-xl bg-[#FAF8F5] dark:bg-[#162A24] border border-stone-200 dark:border-[#23453E] text-xs space-y-2 animate-in fade-in slide-in-from-top-1">
+              <p className="font-medium text-stone-600 dark:text-stone-300 text-[11px] pb-1 border-b border-stone-200 dark:border-[#23453E]">
+                {eligibilityResult.explanation}
+              </p>
+              <div className="space-y-1.5 max-h-52 overflow-y-auto pr-1">
+                {eligibilityResult.passedRules.map((rule) => (
+                  <div key={rule.id} className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <span className="font-semibold text-[#065F46] dark:text-emerald-300">
+                        {rule.description || getField(rule.fieldId)?.label || rule.fieldId}:
+                      </span>{' '}
+                      <span className="text-stone-600 dark:text-stone-400 text-[11px]">
+                        Matches required criteria
+                      </span>
+                    </div>
+                  </div>
+                ))}
+
+                {eligibilityResult.missingFields.map((fid) => (
+                  <div key={fid} className="flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <span className="font-semibold text-amber-800 dark:text-amber-300">
+                        {getField(fid)?.label || fid}:
+                      </span>{' '}
+                      <span className="text-stone-600 dark:text-stone-400 text-[11px]">
+                        Information needed for confirmation
+                      </span>
+                    </div>
+                  </div>
+                ))}
+
+                {eligibilityResult.failedRules.map((rule) => (
+                  <div key={rule.id} className="flex items-start gap-2">
+                    <XCircle className="w-4 h-4 text-stone-500 dark:text-stone-400 shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <span className="font-semibold text-stone-700 dark:text-stone-300">
+                        {rule.description || getField(rule.fieldId)?.label || rule.fieldId}:
+                      </span>{' '}
+                      <span className="text-stone-500 text-[11px]">
+                        Does not meet mandatory requirement
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {eligibilityResult.status === 'possible' &&
+                eligibilityResult.missingFields.length > 0 &&
+                onUpdateMissingField && (
+                  <button
+                    type="button"
+                    onClick={() => onUpdateMissingField(eligibilityResult.missingFields[0])}
+                    className="mt-2 w-full py-1.5 px-3 rounded-lg bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                    <span>
+                      {t('profile.matching.completeInformationBtn', undefined, 'Complete Needed Details')}
+                    </span>
+                  </button>
+                )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Expandable "Why this matches me?" for legacy MatchResult */}
+      {!eligibilityResult && matchResult && (
         <div className="px-5 sm:px-6 pb-2">
           <button
             onClick={() => setShowMatchReasons(!showMatchReasons)}

@@ -3,6 +3,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { SavedProvider } from './context/SavedContext';
 import { CompareProvider } from './context/CompareContext';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
+import { StudentProfileProvider } from './context/StudentProfileContext';
 
 import { Navbar } from './components/common/Navbar';
 import { Footer } from './components/common/Footer';
@@ -10,12 +11,12 @@ import { Hero } from './components/home/Hero';
 import { ExploreByCategory } from './components/home/ExploreByCategory';
 import { FeaturedScholarships } from './components/home/FeaturedScholarships';
 import { HowItWorks } from './components/home/HowItWorks';
-import { QuestionnaireWizard } from './components/questionnaire/QuestionnaireWizard';
-import { ResultsView } from './components/results/ResultsView';
 import { DirectoryView } from './components/directory/DirectoryView';
 import { SavedScholarshipsPage } from './components/pages/SavedScholarshipsPage';
 import { AboutPage } from './components/pages/AboutPage';
 import { AIPage } from './components/pages/AIPage';
+import { ProfilePage } from './components/pages/ProfilePage';
+import { FindScholarshipsPage } from './components/pages/FindScholarshipsPage';
 import { ScholarshipDetailPage } from './components/scholarship/ScholarshipDetailPage';
 import { ComparisonModal, FloatingCompareBar } from './components/scholarship/ComparisonModal';
 import { EdvoraBackground, type BackgroundVariant } from './components/background/EdvoraBackground';
@@ -63,7 +64,7 @@ export function AppContent() {
   });
 
   // Session-only student answers (No accounts, no permanent profile)
-  const [studentAnswers, setStudentAnswers] = useState<StudentAnswers | null>(() => {
+  const [studentAnswers] = useState<StudentAnswers | null>(() => {
     try {
       const stored = sessionStorage.getItem('edvora_session_answers') || sessionStorage.getItem('vidyasetu_session_answers');
       return stored ? JSON.parse(stored) : null;
@@ -114,12 +115,6 @@ export function AppContent() {
     navigateTo('explore');
   };
 
-  // Questionnaire completion handler
-  const handleQuestionnaireComplete = (answers: StudentAnswers) => {
-    setStudentAnswers(answers);
-    navigateTo('find');
-  };
-
   // Evaluate matches if studentAnswers exist
   const matchResults: MatchResult[] = React.useMemo(() => {
     if (!studentAnswers) return [];
@@ -151,6 +146,8 @@ export function AppContent() {
     ? 'about'
     : currentRoute === 'ai'
     ? 'ai'
+    : currentRoute === 'profile'
+    ? 'profile'
     : 'home';
 
   return (
@@ -216,26 +213,7 @@ export function AppContent() {
 
         {/* FIND SCHOLARSHIPS ROUTE */}
         {!isDetailRoute && (currentRoute === 'find' || currentRoute === 'results') && (
-          <div>
-            {studentAnswers && matchResults.length > 0 ? (
-              <ResultsView
-                results={matchResults}
-                answers={studentAnswers}
-                onRetake={() => {
-                  setStudentAnswers(null);
-                  sessionStorage.removeItem('edvora_session_answers');
-                  sessionStorage.removeItem('vidyasetu_session_answers');
-                }}
-                onExploreAll={() => navigateTo('explore')}
-                onViewScholarshipDetails={(slug) => navigateTo(`scholarships/${slug}`)}
-              />
-            ) : (
-              <QuestionnaireWizard
-                initialAnswers={studentAnswers}
-                onComplete={handleQuestionnaireComplete}
-              />
-            )}
-          </div>
+          <FindScholarshipsPage onNavigate={navigateTo} />
         )}
 
         {/* EXPLORE SCHOLARSHIPS DIRECTORY (Unified Single Directory) */}
@@ -297,6 +275,11 @@ export function AppContent() {
             initialScholarshipId={currentAIScholarshipId}
           />
         )}
+
+        {/* STUDENT PROFILE PAGE (Part 2) */}
+        {!isDetailRoute && currentRoute === 'profile' && (
+          <ProfilePage onNavigate={navigateTo} />
+        )}
         </div>
       </main>
 
@@ -321,7 +304,9 @@ export default function App() {
         <ScholarshipProvider>
           <SavedProvider>
             <CompareProvider>
-              <AppContent />
+              <StudentProfileProvider>
+                <AppContent />
+              </StudentProfileProvider>
             </CompareProvider>
           </SavedProvider>
         </ScholarshipProvider>

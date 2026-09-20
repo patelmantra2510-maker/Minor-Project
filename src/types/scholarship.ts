@@ -1,3 +1,6 @@
+import type { ScholarshipEligibility, ScholarshipEligibilityResult } from './eligibility';
+export type { ScholarshipEligibility, ScholarshipEligibilityResult };
+
 export type EducationLevel =
   | 'School'
   | 'Diploma'
@@ -93,6 +96,7 @@ export interface Scholarship {
   applicationWebsite: string;
   lastUpdated: string;
   tags: string[];
+  eligibility?: ScholarshipEligibility;
 }
 
 export type MatchStatus = 'strong_match' | 'possible_match' | 'not_eligible';

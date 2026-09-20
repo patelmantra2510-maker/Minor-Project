@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useSaved } from '../../context/SavedContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useStudentProfile } from '../../context/StudentProfileContext';
 import type { SupportedLanguage } from '../../data/translations';
 import { EdvoraLogo } from './EdvoraLogo';
 import {
@@ -12,6 +13,7 @@ import {
   X,
   Globe,
   ChevronDown,
+  CircleUserRound,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -23,6 +25,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
   const { theme, toggleTheme } = useTheme();
   const { savedIds } = useSaved();
   const { language, setLanguage, t } = useLanguage();
+  const { hasProfile, profileCompletion } = useStudentProfile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const langDropdownRef = useRef<HTMLDivElement>(null);
@@ -88,6 +91,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
     if (currentRoute === 'ai' || currentRoute.startsWith('ai')) return 'ai';
     if (currentRoute === 'saved') return 'saved';
     if (currentRoute === 'about') return 'about';
+    if (currentRoute === 'profile') return 'profile';
     return 'home';
   };
 
@@ -302,6 +306,31 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
               )}
             </button>
 
+            {/* Student Profile Button (Part 2 & 6) */}
+            <button
+              onClick={() => handleLinkClick('profile')}
+              className={`relative w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#065F46] cursor-pointer hover:scale-105 active:scale-95 ${
+                activeKey === 'profile'
+                  ? 'bg-[#EAF3EE] dark:bg-[#163328] text-[#065F46] dark:text-emerald-300 border border-[#D1E7DD] dark:border-emerald-700/80 shadow-xs'
+                  : 'text-stone-700 dark:text-stone-300 bg-stone-50/80 dark:bg-[#182E29] border border-[#E8E2D7] dark:border-[#23453E] hover:border-[#D1E7DD] dark:hover:border-emerald-700/60 hover:text-[#065F46] dark:hover:text-emerald-300 shadow-2xs'
+              }`}
+              title={t('nav.myProfile', undefined, 'My Profile')}
+              aria-label={t('nav.myProfile', undefined, 'My Profile')}
+            >
+              <CircleUserRound className="w-4 h-4 stroke-[1.8]" />
+              {/* Subtle completion indicator (Section 24) */}
+              {hasProfile && profileCompletion && profileCompletion.percentage > 0 && (
+                <span
+                  className={`absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full ring-1 ring-white dark:ring-[#142420] ${
+                    profileCompletion.percentage >= 80
+                      ? 'bg-[#065F46] dark:bg-emerald-400'
+                      : 'bg-amber-500'
+                  }`}
+                  aria-hidden="true"
+                />
+              )}
+            </button>
+
             {/* Mobile Menu Trigger Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -352,6 +381,21 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
               </button>
             );
           })}
+
+          {/* Dedicated Profile Item in Mobile Drawer */}
+          <div className="pt-2 mt-2 border-t border-stone-100 dark:border-[#1E3A33]">
+            <button
+              onClick={() => handleLinkClick('profile')}
+              className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-colors cursor-pointer min-h-[44px] ${
+                activeKey === 'profile'
+                  ? 'text-[#065F46] dark:text-emerald-300 bg-[#EAF3EE] dark:bg-[#163328] font-bold border border-[#D1E7DD] dark:border-emerald-800/70'
+                  : 'text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-[#1C3630]/60 font-medium'
+              }`}
+            >
+              <CircleUserRound className="w-5 h-5 text-[#065F46] dark:text-emerald-400 shrink-0" />
+              <span>{t('nav.myProfile', undefined, 'My Profile')}</span>
+            </button>
+          </div>
         </div>
       )}
     </header>

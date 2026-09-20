@@ -5,7 +5,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { CheckCircle2, AlertTriangle, XCircle, Clock } from 'lucide-react';
 
 interface MatchBadgeProps {
-  status: MatchStatus;
+  status: MatchStatus | 'eligible' | 'possible' | 'not_eligible';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
@@ -18,34 +18,34 @@ export const MatchBadge: React.FC<MatchBadgeProps> = ({ status, size = 'md', cla
     lg: 'text-sm md:text-base px-3.5 py-1.5 gap-2 font-bold',
   }[size];
 
-  if (status === 'strong_match') {
+  if (status === 'strong_match' || status === 'eligible') {
     return (
       <span
-        className={`inline-flex items-center rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 ${sizeClasses} ${className}`}
+        className={`inline-flex items-center rounded-full bg-emerald-100 text-[#065F46] dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 ${sizeClasses} ${className}`}
       >
-        <CheckCircle2 className={size === 'lg' ? 'w-5 h-5 text-emerald-600' : 'w-4 h-4 text-emerald-600'} />
-        <span>{t('strongMatch')}</span>
+        <CheckCircle2 className={size === 'lg' ? 'w-5 h-5 text-emerald-600' : 'w-3.5 h-3.5 text-emerald-600'} />
+        <span>{t('profile.matching.eligible', undefined, 'Eligible')}</span>
       </span>
     );
   }
 
-  if (status === 'possible_match') {
+  if (status === 'possible_match' || status === 'possible') {
     return (
       <span
-        className={`inline-flex items-center rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 border border-amber-300 dark:border-amber-800 ${sizeClasses} ${className}`}
+        className={`inline-flex items-center rounded-full bg-amber-100 text-amber-900 dark:bg-amber-950/70 dark:text-amber-300 border border-amber-300 dark:border-amber-800 ${sizeClasses} ${className}`}
       >
-        <AlertTriangle className={size === 'lg' ? 'w-5 h-5 text-amber-600' : 'w-4 h-4 text-amber-600'} />
-        <span>{t('possibleMatch')}</span>
+        <AlertTriangle className={size === 'lg' ? 'w-5 h-5 text-amber-600' : 'w-3.5 h-3.5 text-amber-600'} />
+        <span>{t('profile.matching.possibleMatch', undefined, 'Possible Match')}</span>
       </span>
     );
   }
 
   return (
     <span
-      className={`inline-flex items-center rounded-full bg-rose-100 text-rose-800 dark:bg-rose-950/70 dark:text-rose-300 border border-rose-300 dark:border-rose-800 ${sizeClasses} ${className}`}
+      className={`inline-flex items-center rounded-full bg-stone-100 text-stone-700 dark:bg-stone-800/80 dark:text-stone-300 border border-stone-300 dark:border-stone-700 ${sizeClasses} ${className}`}
     >
-      <XCircle className={size === 'lg' ? 'w-5 h-5 text-rose-600' : 'w-4 h-4 text-rose-600'} />
-      <span>{t('notEligible')}</span>
+      <XCircle className={size === 'lg' ? 'w-5 h-5 text-stone-500' : 'w-3.5 h-3.5 text-stone-500'} />
+      <span>{t('profile.matching.notEligible', undefined, 'Not Eligible')}</span>
     </span>
   );
 };

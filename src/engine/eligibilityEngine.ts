@@ -5,6 +5,12 @@ import type {
   MatchStatus,
   RuleCheck,
 } from '../types/scholarship';
+import type { StudentProfile } from '../types/studentProfile';
+import type {
+  EligibilityRule,
+  ScholarshipEligibilityResult,
+} from '../types/eligibility';
+import { evaluateRule, evaluateRuleGroup } from './ruleEvaluator';
 
 export function evaluateScholarship(
   scholarship: Scholarship,
@@ -342,3 +348,171 @@ export function evaluateAllScholarships(
 ): MatchResult[] {
   return scholarships.map((s) => evaluateScholarship(s, answers));
 }
+
+/**
+ * Universal evaluation function operating from StudentProfile and ScholarshipEligibility rules.
+ * Does not rely on scholarship-specific hardcoded branching.
+ */
+export function evaluateScholarshipEligibility(
+  scholarship: Scholarship,
+  profile: StudentProfile
+): ScholarshipEligibilityResult {
+  if (scholarship.eligibility) {
+    const passedRules: EligibilityRule[] = [];
+    const failedRules: EligibilityRule[] = [];
+    const unknownRules: EligibilityRule[] = [];
+
+    // Helper to traverse rules
+    const collectAndEvaluate = (group: typeof scholarship.eligibility.rules) => {
+      if (group.rules) {
+        for (const rule of group.rules) {
+          const evalRes = evaluateRule(rule, profile);
+          if (evalRes.status === 'passed') passedRules.push(rule);
+          else if (evalRes.status === 'failed') failedRules.push(rule);
+          else unknownRules.push(rule);
+        }
+      }
+      if (group.groups) {
+        for (const subGroup of group.groups) {
+          collectAndEvaluate(subGroup);
+        }
+      }
+    };
+
+    collectAndEvaluate(scholarship.eligibility.rules);
+
+    // Identify missing required fields
+    const missingFields: string[] = [];
+    for (const fieldId of scholarship.eligibility.requiredFields) {
+      const fieldRecord = profile.fields[fieldId];
+      if (
+        !fieldRecord ||
+        fieldRecord.value === null ||
+        fieldRecord.value === undefined ||
+        fieldRecord.status === 'unknown' ||
+        fieldRecord.status === 'prefer_not_to_say' ||
+        fieldRecord.status === 'not_applicable'
+      ) {
+        missingFields.push(fieldId);
+      }
+    }
+
+    // Evaluate the complete rule group boolean structure
+    const groupEval = evaluateRuleGroup(scholarship.eligibility.rules, profile);
+
+    let status: 'eligible' | 'possible' | 'not_eligible' = 'possible';
+    let explanation = '';
+
+    if (groupEval.status === 'failed' || failedRules.some((r) => r.hardRequirement)) {
+      status = 'not_eligible';
+      const failedDesc = failedRules.map((r) => r.description || r.id).join(', ');
+      explanation = `Does not satisfy mandatory requirements: ${failedDesc}.`;
+    } else if (groupEval.status === 'passed' && missingFields.length === 0) {
+      status = 'eligible';
+      explanation = 'Meets all evaluated eligibility criteria.';
+    } else {
+      status = 'possible';
+      if (missingFields.length > 0) {
+        explanation = `Potential match. Missing ${missingFields.length} required field(s) for final confirmation.`;
+      } else {
+        explanation = 'Potential match. Some eligibility criteria could not be definitively confirmed.';
+      }
+    }
+
+    return {
+      scholarshipId: scholarship.id,
+      status,
+      passedRules,
+      failedRules,
+      unknownRules,
+      missingFields,
+      explanation,
+    };
+  }
+
+  // Fallback for legacy scholarships without structured rule groups
+  const missingFields: string[] = [];
+  const fields = profile.fields;
+  let hasDefiniteFailure = false;
+  let failureReason = '';
+
+  // 1. Education Level
+  const eduField = fields['field_education_level'];
+  if (!eduField || eduField.status !== 'known') {
+    missingFields.push('field_education_level');
+  } else {
+    const studentEdu = String(eduField.value).toLowerCase();
+    const match = scholarship.educationLevels.some(
+      (lvl) => lvl.toLowerCase() === studentEdu || studentEdu.includes(lvl.toLowerCase())
+    );
+    if (!match) {
+      hasDefiniteFailure = true;
+      failureReason = `Education level '${eduField.value}' is not eligible.`;
+    }
+  }
+
+  // 2. Gender
+  const genderField = fields['field_gender'];
+  if (scholarship.genderEligibility !== 'All') {
+    if (!genderField || genderField.status !== 'known') {
+      missingFields.push('field_gender');
+    } else if (scholarship.genderEligibility.toLowerCase() !== String(genderField.value).toLowerCase()) {
+      hasDefiniteFailure = true;
+      failureReason = `Reserved for ${scholarship.genderEligibility} applicants.`;
+    }
+  }
+
+  // 3. State
+  if (scholarship.state === 'Gujarat') {
+    const stateField = fields['field_domicile_state'] || fields['field_current_state'];
+    if (!stateField || stateField.status !== 'known') {
+      missingFields.push('field_domicile_state');
+    } else if (String(stateField.value).toLowerCase() !== 'gujarat') {
+      hasDefiniteFailure = true;
+      failureReason = 'Restricted to Gujarat domicile or enrolled students.';
+    }
+  }
+
+  // 4. Income
+  if (scholarship.incomeLimit !== null) {
+    const incField = fields['field_family_income'];
+    if (!incField || incField.status !== 'known') {
+      missingFields.push('field_family_income');
+    } else if (Number(incField.value) > scholarship.incomeLimit) {
+      hasDefiniteFailure = true;
+      failureReason = `Annual income exceeds ceiling of ₹${scholarship.incomeLimit.toLocaleString('en-IN')}.`;
+    }
+  }
+
+  let status: 'eligible' | 'possible' | 'not_eligible' = 'possible';
+  let explanation = '';
+
+  if (hasDefiniteFailure) {
+    status = 'not_eligible';
+    explanation = failureReason;
+  } else if (missingFields.length === 0) {
+    status = 'eligible';
+    explanation = 'Satisfies known core eligibility requirements.';
+  } else {
+    status = 'possible';
+    explanation = `Candidate match. Missing ${missingFields.length} profile field(s) for verification.`;
+  }
+
+  return {
+    scholarshipId: scholarship.id,
+    status,
+    passedRules: [],
+    failedRules: [],
+    unknownRules: [],
+    missingFields,
+    explanation,
+  };
+}
+
+export function evaluateAllScholarshipsEligibility(
+  scholarships: Scholarship[],
+  profile: StudentProfile
+): ScholarshipEligibilityResult[] {
+  return scholarships.map((s) => evaluateScholarshipEligibility(s, profile));
+}
+

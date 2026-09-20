@@ -19,6 +19,7 @@ describe('Translation Parity & Completeness', () => {
     'footer',
     'ai',
     'aiPage',
+    'profile',
   ];
 
   it('all three languages have all required top-level sections', () => {
@@ -74,6 +75,29 @@ describe('Translation Parity & Completeness', () => {
       expect((en as any).aiPage[key]).toBeTruthy();
       expect((hi as any).aiPage[key]).toBeTruthy();
       expect((gu as any).aiPage[key]).toBeTruthy();
+    }
+  });
+
+  it('profile section and matching strings have complete parity across EN, HI, and GU', () => {
+    const profileMatchingKeys = [
+      'findScholarshipsTitle',
+      'findScholarshipsSubtitle',
+      'profileSummaryTitle',
+      'eligibleMatchesTitle',
+      'possibleMatchesTitle',
+      'notEligibleMatchesTitle',
+      'moreInfoNeeded',
+      'moreInfoNeededDesc',
+      'updateProfileBtn',
+      'completeInformationBtn',
+      'whyThisMatches',
+      'whyNotEligible',
+    ];
+
+    for (const key of profileMatchingKeys) {
+      expect((en as any).profile.matching[key]).toBeTruthy();
+      expect((hi as any).profile.matching[key]).toBeTruthy();
+      expect((gu as any).profile.matching[key]).toBeTruthy();
     }
   });
 });

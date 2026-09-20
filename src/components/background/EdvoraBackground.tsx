@@ -7,6 +7,7 @@ import { AboutBackground } from './AboutBackground';
 import { ScholarshipBackground } from './ScholarshipBackground';
 import { ResultsBackground } from './ResultsBackground';
 import { AiBackground } from './AiBackground';
+import { ProfileBackground } from './ProfileBackground';
 
 export type BackgroundVariant =
   | 'home'
@@ -16,7 +17,8 @@ export type BackgroundVariant =
   | 'about'
   | 'detail'
   | 'results'
-  | 'ai';
+  | 'ai'
+  | 'profile';
 
 interface EdvoraBackgroundProps {
   variant: BackgroundVariant;
@@ -42,6 +44,7 @@ export const EdvoraBackground: React.FC<EdvoraBackgroundProps> = ({
       {variant === 'detail' && <ScholarshipBackground />}
       {variant === 'results' && <ResultsBackground />}
       {variant === 'ai' && <AiBackground />}
+      {variant === 'profile' && <ProfileBackground />}
     </div>
   );
 };

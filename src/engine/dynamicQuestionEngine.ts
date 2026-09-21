@@ -132,21 +132,91 @@ export function getNextQuestion(
   // 2. Identify relevant fields for active candidate scholarships
   const relevantFieldCountMap: Record<string, number> = {};
 
-  for (const scholarship of candidateScholarships) {
-    if (scholarship.eligibility) {
-      scholarship.eligibility.requiredFields.forEach((fid) => {
-        relevantFieldCountMap[fid] = (relevantFieldCountMap[fid] || 0) + 2; // Extra weight for required
-      });
-      scholarship.eligibility.optionalFields?.forEach((fid) => {
-        relevantFieldCountMap[fid] = (relevantFieldCountMap[fid] || 0) + 1;
-      });
-    } else {
-      ['field_education_level', 'field_stream', 'field_domicile_state', 'field_family_income'].forEach(
-        (fid) => {
+  // Standard core fields for initial general discovery
+  const CORE_DISCOVERY_FIELDS = [
+    'field_education_level',
+    'field_stream',
+    'field_branch',
+    'field_academic_year',
+    'field_latest_score',
+    'field_domicile_state',
+    'field_category',
+    'field_family_income',
+    'field_gender',
+  ];
+
+  if (candidateScholarships.length === 0) {
+    // If no candidate scholarships (e.g. empty scholarship list passed),
+    // activate core discovery fields so initial discovery questions can proceed
+    CORE_DISCOVERY_FIELDS.forEach((fid) => {
+      relevantFieldCountMap[fid] = 1;
+    });
+  } else {
+    for (const scholarship of candidateScholarships) {
+      if (scholarship.eligibility) {
+        scholarship.eligibility.requiredFields.forEach((fid) => {
+          relevantFieldCountMap[fid] = (relevantFieldCountMap[fid] || 0) + 3; // Extra weight for required
+        });
+        scholarship.eligibility.optionalFields?.forEach((fid) => {
           relevantFieldCountMap[fid] = (relevantFieldCountMap[fid] || 0) + 1;
+        });
+      } else {
+        // Standard legacy scholarship criteria
+        relevantFieldCountMap['field_education_level'] = (relevantFieldCountMap['field_education_level'] || 0) + 1;
+        relevantFieldCountMap['field_stream'] = (relevantFieldCountMap['field_stream'] || 0) + 1;
+        relevantFieldCountMap['field_branch'] = (relevantFieldCountMap['field_branch'] || 0) + 1;
+        relevantFieldCountMap['field_academic_year'] = (relevantFieldCountMap['field_academic_year'] || 0) + 1;
+        relevantFieldCountMap['field_domicile_state'] = (relevantFieldCountMap['field_domicile_state'] || 0) + 1;
+        relevantFieldCountMap['field_category'] = (relevantFieldCountMap['field_category'] || 0) + 1;
+        relevantFieldCountMap['field_gender'] = (relevantFieldCountMap['field_gender'] || 0) + 1;
+
+        if (scholarship.incomeLimit !== null) {
+          relevantFieldCountMap['field_family_income'] = (relevantFieldCountMap['field_family_income'] || 0) + 1;
         }
-      );
+        if (scholarship.minimumPercentage !== null) {
+          relevantFieldCountMap['field_latest_score'] = (relevantFieldCountMap['field_latest_score'] || 0) + 1;
+        }
+
+        // Special conditions in scholarship
+        if (scholarship.specialConditions?.disabilityRequired) {
+          relevantFieldCountMap['field_has_disability'] = (relevantFieldCountMap['field_has_disability'] || 0) + 2;
+        }
+        if (scholarship.specialConditions?.minorityRequired) {
+          relevantFieldCountMap['field_minority_status'] = (relevantFieldCountMap['field_minority_status'] || 0) + 2;
+        }
+        if (scholarship.specialConditions?.orphanRequired) {
+          relevantFieldCountMap['field_is_orphan'] = (relevantFieldCountMap['field_is_orphan'] || 0) + 2;
+        }
+        if (scholarship.specialConditions?.defenceWardRequired) {
+          relevantFieldCountMap['field_is_defence_dependent'] = (relevantFieldCountMap['field_is_defence_dependent'] || 0) + 2;
+        }
+        if (
+          scholarship.benefits?.hostelAllowance ||
+          scholarship.tags?.some((t) => t.toLowerCase().includes('hostel'))
+        ) {
+          relevantFieldCountMap['field_is_hosteller'] = (relevantFieldCountMap['field_is_hosteller'] || 0) + 2;
+        }
+      }
     }
+  }
+
+  // Progressive disclosure: if parent condition is met, activate child fields
+  const fields = profile.fields;
+  if (fields['field_has_disability']?.value === true && fields['field_has_disability']?.status === 'known') {
+    relevantFieldCountMap['field_disability_percentage'] = 100;
+    relevantFieldCountMap['field_disability_type'] = 90;
+  }
+  if (fields['field_minority_status']?.value === true && fields['field_minority_status']?.status === 'known') {
+    relevantFieldCountMap['field_minority_community'] = 100;
+  }
+  if (fields['field_is_hosteller']?.value === true && fields['field_is_hosteller']?.status === 'known') {
+    relevantFieldCountMap['field_hostel_type'] = 100;
+  }
+
+  // School path activation
+  if (fields['field_education_level']?.value === 'school' && fields['field_education_level']?.status === 'known') {
+    relevantFieldCountMap['field_class_12_percentage'] = (relevantFieldCountMap['field_class_12_percentage'] || 0) + 2;
+    relevantFieldCountMap['field_board'] = (relevantFieldCountMap['field_board'] || 0) + 1;
   }
 
   // 3. Find missing fields (not yet answered or unknown in profile)
@@ -198,13 +268,19 @@ export function getNextQuestion(
         continue;
       }
 
+      // MINIMUM-DATA PRINCIPLE:
+      // Only ask questions that are relevant to candidate scholarships
+      const candidateRelevance = relevantFieldCountMap[fieldId] || 0;
+      if (candidateRelevance <= 0) {
+        continue;
+      }
+
       const fieldDef = getField(fieldId);
       const fieldWeight = fieldDef?.informationValueWeight || 5;
       const questionWeight = question.informationValue || 5;
-      const candidateRelevance = relevantFieldCountMap[fieldId] || 0;
       const priority = question.priority || 50;
 
-      // Combined ranking score: candidate relevance > information gain > base priority
+      // Combined ranking score: candidate relevance > priority > information gain
       const score = candidateRelevance * 60 + fieldWeight * 5 + questionWeight * 3 + priority;
 
       if (score > bestScore) {

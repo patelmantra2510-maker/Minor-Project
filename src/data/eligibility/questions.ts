@@ -23,10 +23,28 @@ export const eligibilityQuestions: QuestionDefinition[] = [
     inputType: 'select',
     options: fieldById['field_stream']?.options,
     allowOther: true,
-    priority: 95,
+    priority: 96,
     informationValue: 9,
   },
-  // 3. Academic Year
+  // 3. Branch / Specialization
+  {
+    id: 'q_branch',
+    fieldId: 'field_branch',
+    question: 'What is your specific branch or specialization?',
+    description: 'For example: Computer Engineering, IT, Mechanical, Electrical, Civil, etc.',
+    inputType: 'text',
+    placeholder: 'e.g. Computer Engineering',
+    showWhen: [
+      {
+        field: 'field_education_level',
+        operator: 'in',
+        value: ['diploma', 'undergraduate', 'postgraduate'],
+      },
+    ],
+    priority: 94,
+    informationValue: 8,
+  },
+  // 4. Academic Year
   {
     id: 'q_academic_year',
     fieldId: 'field_academic_year',
@@ -34,10 +52,22 @@ export const eligibilityQuestions: QuestionDefinition[] = [
     description: 'Some scholarships accept first-year admissions only, while others are renewals or open.',
     inputType: 'radio',
     options: fieldById['field_academic_year']?.options,
-    priority: 90,
+    priority: 92,
     informationValue: 8,
   },
-  // 4. Domicile State
+  // 5. Latest Academic Score / Percentage
+  {
+    id: 'q_latest_score',
+    fieldId: 'field_latest_score',
+    question: 'What was your score / percentage in your most recent qualifying examination?',
+    description: 'Marks or percentage in your current or recent qualifying examination (e.g. Diploma semester, Board exam, or Degree semester).',
+    inputType: 'number',
+    placeholder: 'e.g. 78.5',
+    allowUnknown: true,
+    priority: 90,
+    informationValue: 9,
+  },
+  // 6. Domicile State
   {
     id: 'q_domicile_state',
     fieldId: 'field_domicile_state',
@@ -46,22 +76,10 @@ export const eligibilityQuestions: QuestionDefinition[] = [
     inputType: 'radio',
     options: fieldById['field_domicile_state']?.options,
     allowOther: true,
-    priority: 92,
+    priority: 88,
     informationValue: 10,
   },
-  // 5. Gender
-  {
-    id: 'q_gender',
-    fieldId: 'field_gender',
-    question: 'What is your gender?',
-    description: 'Several schemes (e.g., AICTE Pragati) are specifically reserved for girl students.',
-    inputType: 'radio',
-    options: fieldById['field_gender']?.options,
-    allowPreferNotToSay: true,
-    priority: 88,
-    informationValue: 8,
-  },
-  // 6. Social Category
+  // 7. Social Category
   {
     id: 'q_category',
     fieldId: 'field_category',
@@ -71,10 +89,10 @@ export const eligibilityQuestions: QuestionDefinition[] = [
     options: fieldById['field_category']?.options,
     allowOther: true,
     allowPreferNotToSay: true,
-    priority: 85,
+    priority: 86,
     informationValue: 10,
   },
-  // 7. Family Income
+  // 8. Family Income
   {
     id: 'q_family_income',
     fieldId: 'field_family_income',
@@ -83,22 +101,22 @@ export const eligibilityQuestions: QuestionDefinition[] = [
     inputType: 'currency',
     placeholder: 'e.g. 250000',
     allowUnknown: true,
-    priority: 86,
+    priority: 84,
     informationValue: 10,
   },
-  // 8. Latest Academic Score / Percentage
+  // 9. Gender
   {
-    id: 'q_latest_score',
-    fieldId: 'field_latest_score',
-    question: 'What was your score / percentage in your most recent qualifying examination?',
-    description: 'Merit schemes typically require a minimum percentage (e.g. 80% percentile or 60%+ marks).',
-    inputType: 'number',
-    placeholder: 'e.g. 78.5',
-    allowUnknown: true,
+    id: 'q_gender',
+    fieldId: 'field_gender',
+    question: 'What is your gender?',
+    description: 'Several schemes (e.g., AICTE Pragati) are specifically reserved for girl students.',
+    inputType: 'radio',
+    options: fieldById['field_gender']?.options,
+    allowPreferNotToSay: true,
     priority: 82,
-    informationValue: 9,
+    informationValue: 8,
   },
-  // 9. Class 12 Percentage
+  // 10. Class 12 Percentage
   {
     id: 'q_class_12_percentage',
     fieldId: 'field_class_12_percentage',
@@ -110,7 +128,7 @@ export const eligibilityQuestions: QuestionDefinition[] = [
       {
         field: 'field_education_level',
         operator: 'in',
-        value: ['undergraduate', 'diploma'],
+        value: ['school'],
       },
     ],
     allowUnknown: true,
@@ -228,18 +246,7 @@ export const eligibilityQuestions: QuestionDefinition[] = [
     priority: 50,
     informationValue: 5,
   },
-  // 20. Accommodation Type
-  {
-    id: 'q_accommodation_type',
-    fieldId: 'field_accommodation_type',
-    question: 'What is your accommodation arrangement while studying?',
-    description: 'Hostel allowances are provided by many schemes for students staying in hostels.',
-    inputType: 'radio',
-    options: fieldById['field_accommodation_type']?.options,
-    priority: 45,
-    informationValue: 6,
-  },
-  // 21. Income Certificate Available
+  // 20. Income Certificate Available
   {
     id: 'q_has_income_certificate',
     fieldId: 'field_has_income_certificate',
@@ -248,7 +255,7 @@ export const eligibilityQuestions: QuestionDefinition[] = [
     priority: 40,
     informationValue: 6,
   },
-  // 22. Hosteller Status
+  // 21. Hosteller Status
   {
     id: 'q_is_hosteller',
     fieldId: 'field_is_hosteller',
@@ -258,7 +265,7 @@ export const eligibilityQuestions: QuestionDefinition[] = [
     priority: 46,
     informationValue: 6,
   },
-  // 23. Hostel Type (Conditional on is_hosteller = true)
+  // 22. Hostel Type (Conditional on is_hosteller = true)
   {
     id: 'q_hostel_type',
     fieldId: 'field_hostel_type',
@@ -275,7 +282,7 @@ export const eligibilityQuestions: QuestionDefinition[] = [
     priority: 44,
     informationValue: 5,
   },
-  // 24. Disability Type (Conditional on has_disability = true)
+  // 23. Disability Type (Conditional on has_disability = true)
   {
     id: 'q_disability_type',
     fieldId: 'field_disability_type',
@@ -291,7 +298,7 @@ export const eligibilityQuestions: QuestionDefinition[] = [
     priority: 63,
     informationValue: 6,
   },
-  // 25. Sports Achievement
+  // 24. Sports Achievement
   {
     id: 'q_sports_achievement',
     fieldId: 'field_sports_achievement',
@@ -301,7 +308,7 @@ export const eligibilityQuestions: QuestionDefinition[] = [
     priority: 45,
     informationValue: 6,
   },
-  // 26. Academic Distinction / Olympiad
+  // 25. Academic Distinction / Olympiad
   {
     id: 'q_has_academic_achievement',
     fieldId: 'field_has_academic_achievement',
@@ -311,17 +318,24 @@ export const eligibilityQuestions: QuestionDefinition[] = [
     priority: 45,
     informationValue: 6,
   },
-  // 27. Research Experience
+  // 26. Research Experience
   {
     id: 'q_research_experience',
     fieldId: 'field_research_experience',
     question: 'Do you have published research papers or active participation in recognized research projects?',
     description: 'Higher education research fellowships and project grants support student researchers.',
     inputType: 'boolean',
+    showWhen: [
+      {
+        field: 'field_education_level',
+        operator: 'in',
+        value: ['postgraduate', 'phd'],
+      },
+    ],
     priority: 40,
     informationValue: 5,
   },
-  // 28. School Education Board
+  // 27. School Education Board
   {
     id: 'q_board',
     fieldId: 'field_board',
@@ -329,20 +343,34 @@ export const eligibilityQuestions: QuestionDefinition[] = [
     description: 'Some scholarships are specific to state boards (e.g. GSEB) or central boards (CBSE/ICSE).',
     inputType: 'radio',
     options: fieldById['field_board']?.options,
+    showWhen: [
+      {
+        field: 'field_education_level',
+        operator: 'in',
+        value: ['school'],
+      },
+    ],
     priority: 50,
     informationValue: 6,
   },
-  // 29. Caste Certificate Available
+  // 28. Caste Certificate Available
   {
     id: 'q_has_caste_certificate',
     fieldId: 'field_has_caste_certificate',
     question: 'Do you possess a valid caste or community certificate issued by the competent authority?',
     description: 'Required for reserved category government scholarships.',
     inputType: 'boolean',
+    showWhen: [
+      {
+        field: 'field_category',
+        operator: 'in',
+        value: ['sc', 'st', 'sebc_obc', 'ews'],
+      },
+    ],
     priority: 40,
     informationValue: 5,
   },
-  // 30. Domicile Certificate Available
+  // 29. Domicile Certificate Available
   {
     id: 'q_has_domicile_certificate',
     fieldId: 'field_has_domicile_certificate',
@@ -352,7 +380,7 @@ export const eligibilityQuestions: QuestionDefinition[] = [
     priority: 40,
     informationValue: 5,
   },
-  // 31. Institution Bonafide / Enrollment Certificate Available
+  // 30. Institution Bonafide / Enrollment Certificate Available
   {
     id: 'q_has_institution_certificate',
     fieldId: 'field_has_institution_certificate',

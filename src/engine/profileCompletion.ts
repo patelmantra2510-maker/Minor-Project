@@ -51,6 +51,11 @@ export function calculateProfileCompletion(
         relevantFieldIds.add('field_category');
         if (scholarship.incomeLimit !== null) relevantFieldIds.add('field_family_income');
         if (scholarship.minimumPercentage !== null) relevantFieldIds.add('field_latest_score');
+        if (scholarship.specialConditions?.disabilityRequired) relevantFieldIds.add('field_has_disability');
+        if (scholarship.specialConditions?.minorityRequired) relevantFieldIds.add('field_minority_status');
+        if (scholarship.specialConditions?.orphanRequired) relevantFieldIds.add('field_is_orphan');
+        if (scholarship.specialConditions?.defenceWardRequired) relevantFieldIds.add('field_is_defence_dependent');
+        if (scholarship.benefits?.hostelAllowance) relevantFieldIds.add('field_is_hosteller');
       }
     }
   }

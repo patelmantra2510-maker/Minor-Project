@@ -8,6 +8,7 @@ import {
   invalidateDependentFields,
 } from '../dynamicQuestionEngine';
 import { questionById } from '../../data/eligibility/questions';
+import { SCHOLARSHIPS_DATA } from '../../data/scholarships';
 
 function createMockScholarship(id: string, requiredFields: string[]): Scholarship {
   return {
@@ -317,6 +318,163 @@ describe('Adaptive Question Engine (Part 3)', () => {
       const result = getNextQuestion(profile, [sportsScholarship], state);
 
       expect(result.question?.fieldId).toBe('field_sports_achievement');
+    });
+  });
+
+  describe('EDVORA — Complete Path-Aware & Adaptive Questionnaire Scenarios', () => {
+    it('Scenario A (Diploma Path): Never asks Class 12 marks or school board and focuses on Diploma', () => {
+      const profile = createEmptyProfile();
+      const state = createEmptyQuestionnaireState();
+
+      // Student starts questionnaire and selects Diploma
+      profile.fields['field_education_level'] = {
+        value: 'diploma',
+        status: 'known',
+        updatedAt: new Date().toISOString(),
+        source: 'questionnaire',
+      };
+      state.askedQuestionIds.push('q_education_level');
+
+      // Verify that q_class_12_percentage and q_board are NEVER visible
+      const qClass12 = questionById['q_class_12_percentage'];
+      const qBoard = questionById['q_board'];
+      expect(qClass12).toBeDefined();
+      expect(qBoard).toBeDefined();
+      expect(isQuestionVisible(qClass12!, profile)).toBe(false);
+      expect(isQuestionVisible(qBoard!, profile)).toBe(false);
+
+      // Advance through Diploma questions
+      const askedFields: string[] = [];
+      let iterations = 0;
+      while (iterations < 20) {
+        iterations++;
+        const next = getNextQuestion(profile, SCHOLARSHIPS_DATA, state);
+        if (!next.question) break;
+
+        askedFields.push(next.question.fieldId);
+        state.askedQuestionIds.push(next.question.id);
+        profile.fields[next.question.fieldId] = {
+          value: next.question.fieldId === 'field_family_income' ? 120000 : 'Gujarat',
+          status: 'known',
+          updatedAt: new Date().toISOString(),
+          source: 'questionnaire',
+        };
+      }
+
+      // Assertions
+      expect(askedFields).not.toContain('field_class_12_percentage');
+      expect(askedFields).not.toContain('field_board');
+      expect(askedFields).not.toContain('field_research_experience');
+      expect(askedFields).toContain('field_stream');
+    });
+
+    it('Scenario B (12th / School Path): Activates Class 12 percentage and Board questions', () => {
+      const profile = createEmptyProfile();
+      profile.fields['field_education_level'] = {
+        value: 'school',
+        status: 'known',
+        updatedAt: new Date().toISOString(),
+        source: 'questionnaire',
+      };
+
+      const qClass12 = questionById['q_class_12_percentage'];
+      const qBoard = questionById['q_board'];
+      expect(isQuestionVisible(qClass12!, profile)).toBe(true);
+      expect(isQuestionVisible(qBoard!, profile)).toBe(true);
+    });
+
+    it('Scenario C (Undergraduate Path): Focuses on degree education and does not ask 12th by default', () => {
+      const profile = createEmptyProfile();
+      profile.fields['field_education_level'] = {
+        value: 'undergraduate',
+        status: 'known',
+        updatedAt: new Date().toISOString(),
+        source: 'questionnaire',
+      };
+
+      const qClass12 = questionById['q_class_12_percentage'];
+      const qBoard = questionById['q_board'];
+      expect(isQuestionVisible(qClass12!, profile)).toBe(false);
+      expect(isQuestionVisible(qBoard!, profile)).toBe(false);
+
+      const qBranch = questionById['q_branch'];
+      expect(isQuestionVisible(qBranch!, profile)).toBe(true);
+    });
+
+    it('Scenario D (Disability): Toggles child questions dynamically and invalidates dependent data', () => {
+      const profile = createEmptyProfile();
+      const qDisabilityPercentage = questionById['q_disability_percentage'];
+      const qDisabilityType = questionById['q_disability_type'];
+
+      // When has_disability is unknown / not set
+      expect(isQuestionVisible(qDisabilityPercentage!, profile)).toBe(false);
+      expect(isQuestionVisible(qDisabilityType!, profile)).toBe(false);
+
+      // When has_disability = false
+      profile.fields['field_has_disability'] = {
+        value: false,
+        status: 'known',
+        updatedAt: new Date().toISOString(),
+        source: 'questionnaire',
+      };
+      expect(isQuestionVisible(qDisabilityPercentage!, profile)).toBe(false);
+      expect(isQuestionVisible(qDisabilityType!, profile)).toBe(false);
+
+      // When has_disability = true
+      profile.fields['field_has_disability'] = {
+        value: true,
+        status: 'known',
+        updatedAt: new Date().toISOString(),
+        source: 'questionnaire',
+      };
+      expect(isQuestionVisible(qDisabilityPercentage!, profile)).toBe(true);
+      expect(isQuestionVisible(qDisabilityType!, profile)).toBe(true);
+    });
+
+    it('Scenario E (Hostel): Toggles hostel_type dynamically and prunes on false', () => {
+      const profile = createEmptyProfile();
+      const qHostelType = questionById['q_hostel_type'];
+
+      expect(isQuestionVisible(qHostelType!, profile)).toBe(false);
+
+      // When is_hosteller = true
+      profile.fields['field_is_hosteller'] = {
+        value: true,
+        status: 'known',
+        updatedAt: new Date().toISOString(),
+        source: 'questionnaire',
+      };
+      expect(isQuestionVisible(qHostelType!, profile)).toBe(true);
+
+      // Set hostel type value, then user toggles is_hosteller to false
+      profile.fields['field_hostel_type'] = {
+        value: 'government_hostel',
+        status: 'known',
+        updatedAt: new Date().toISOString(),
+        source: 'questionnaire',
+      };
+      profile.fields['field_is_hosteller'].value = false;
+
+      const cleaned = invalidateDependentFields(profile);
+      expect(cleaned.fields['field_hostel_type']).toBeUndefined();
+    });
+
+    it('Scenario F (Caste Certificate & Minimum-Data): Never asks caste certificate for General category', () => {
+      const profile = createEmptyProfile();
+      const qCasteCert = questionById['q_has_caste_certificate'];
+
+      // General category
+      profile.fields['field_category'] = {
+        value: 'general',
+        status: 'known',
+        updatedAt: new Date().toISOString(),
+        source: 'questionnaire',
+      };
+      expect(isQuestionVisible(qCasteCert!, profile)).toBe(false);
+
+      // Reserved category (SEBC / OBC)
+      profile.fields['field_category'].value = 'sebc_obc';
+      expect(isQuestionVisible(qCasteCert!, profile)).toBe(true);
     });
   });
 });

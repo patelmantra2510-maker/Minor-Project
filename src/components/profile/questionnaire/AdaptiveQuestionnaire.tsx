@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useLanguage } from '../../../context/LanguageContext';
-import type { Scholarship } from '../../../types/scholarship';
+import type { Scholarship, EducationLevel } from '../../../types/scholarship';
 import type { StudentProfile, StudentFieldValue } from '../../../types/studentProfile';
 import type { QuestionnaireState, QuestionDefinition } from '../../../types/questionnaire';
 import type { ProfileValueStatus } from '../../../types/eligibility';
@@ -8,6 +8,7 @@ import { getNextQuestion, invalidateDependentFields } from '../../../engine/dyna
 import { getField, validateFieldValue } from '../../../engine/fieldRegistry';
 import { questionById } from '../../../data/eligibility/questions';
 import { profileStorage } from '../../../services/profile/profileStorage';
+import { STREAMS_BY_EDUCATION } from '../../../data/streams';
 import { QuestionCard } from './QuestionCard';
 import {
   ArrowLeft,
@@ -398,7 +399,34 @@ export const AdaptiveQuestionnaire: React.FC<AdaptiveQuestionnaireProps> = ({
     );
   }
 
-  const currentFieldDef = activeQuestion ? getField(activeQuestion.fieldId) : null;
+  const effectiveQuestion = useMemo(() => {
+    if (!activeQuestion) return null;
+    if (activeQuestion.fieldId === 'field_stream') {
+      const rawEdu = profile.fields['field_education_level']?.value;
+      const eduKey = rawEdu ? String(rawEdu).toLowerCase() : '';
+      let streamLevel: EducationLevel | null = null;
+      if (eduKey.includes('diploma')) streamLevel = 'Diploma';
+      else if (eduKey.includes('undergraduate') || eduKey.includes('degree')) streamLevel = 'Undergraduate';
+      else if (eduKey.includes('postgraduate') || eduKey.includes('master')) streamLevel = 'Postgraduate';
+      else if (eduKey.includes('phd') || eduKey.includes('doctor')) streamLevel = 'PhD';
+      else if (eduKey.includes('iti') || eduKey.includes('vocational')) streamLevel = 'ITI';
+      else if (eduKey.includes('school')) streamLevel = 'School';
+
+      if (streamLevel && STREAMS_BY_EDUCATION[streamLevel]) {
+        const dynamicOptions = STREAMS_BY_EDUCATION[streamLevel].map((st) => ({
+          value: st,
+          label: st,
+        }));
+        return {
+          ...activeQuestion,
+          options: dynamicOptions,
+        };
+      }
+    }
+    return activeQuestion;
+  }, [activeQuestion, profile.fields]);
+
+  const currentFieldDef = effectiveQuestion ? getField(effectiveQuestion.fieldId) : null;
 
   return (
     <div className="max-w-3xl mx-auto py-6 sm:py-10 px-4 sm:px-6 space-y-6">
@@ -455,14 +483,14 @@ export const AdaptiveQuestionnaire: React.FC<AdaptiveQuestionnaireProps> = ({
 
       {/* Screen Reader Live Announcement */}
       <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
-        {activeQuestion ? `${activeQuestion.question}. Category: ${currentFieldDef?.category || ''}` : ''}
+        {effectiveQuestion ? `${effectiveQuestion.question}. Category: ${currentFieldDef?.category || ''}` : ''}
       </div>
 
       {/* Active Question Card */}
-      {activeQuestion && currentFieldDef ? (
+      {effectiveQuestion && currentFieldDef ? (
         <QuestionCard
           cardRef={questionCardRef}
-          question={activeQuestion}
+          question={effectiveQuestion}
           fieldDef={currentFieldDef}
           currentValue={answerValue}
           currentStatus={answerStatus}

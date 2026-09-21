@@ -236,7 +236,7 @@ export const demoAuthService = {
 
   async signInWithGoogle(): Promise<{ error?: string }> {
     return {
-      error: 'Google sign-in will be available in the production authentication system.',
+      error: 'Google sign-in is not supported in the demo.',
     };
   },
 

@@ -778,7 +778,7 @@ export const en = {
     loginBullet2: 'Continue from your existing profile',
     loginBullet3: 'Keep your account information in sync',
     createAccountTitle: 'Create your Edvora account',
-    createAccountSubtitle: 'Start your personalized scholarship journey with cloud sync.',
+    createAccountSubtitle: 'Start your personalized scholarship journey.',
     nameLabel: 'Full Name',
     namePlaceholder: 'e.g. Aarav Patel',
     emailLabel: 'Email',

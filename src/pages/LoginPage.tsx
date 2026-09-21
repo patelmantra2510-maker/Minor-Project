@@ -3,7 +3,6 @@ import { useAuth } from '../auth/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { validateEmail, validatePassword } from '../auth/authValidation';
 import { EdvoraLogo } from '../components/common/EdvoraLogo';
-import { GoogleIcon } from '../components/auth/GoogleIcon';
 import { GoogleRecaptcha, type GoogleRecaptchaRef } from '../components/auth/GoogleRecaptcha';
 import {
   Mail,
@@ -12,7 +11,6 @@ import {
   EyeOff,
   ArrowRight,
   AlertCircle,
-  Loader2,
 } from 'lucide-react';
 
 interface LoginPageProps {
@@ -20,14 +18,13 @@ interface LoginPageProps {
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
-  const { login, loginWithGoogle, isAuthenticated } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const { t } = useLanguage();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -40,25 +37,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
     }
   }, [isAuthenticated, onNavigate]);
 
-  // Check for any OAuth errors passed via URL
-  useEffect(() => {
-    const hash = window.location.hash || '';
-    if (hash.includes('error=access_denied') || hash.includes('error_code=access_denied')) {
-      setErrorMessage(t('auth.errors.googleCancelled', undefined, 'Google sign-in was cancelled.'));
-    } else if (hash.includes('error=')) {
-      setErrorMessage(
-        t(
-          'auth.errors.googleUnavailable',
-          undefined,
-          'Google sign-in is temporarily unavailable. Please try email and password or continue as a guest.'
-        )
-      );
-    }
-  }, [t]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (loading || googleLoading) return;
+    if (loading) return;
     setErrorMessage(null);
 
     const cleanEmail = email.trim();
@@ -129,38 +110,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    if (loading || googleLoading) return;
-    setErrorMessage(null);
-
-    setGoogleLoading(true);
-    try {
-      const result = await loginWithGoogle();
-      if (result.error) {
-        if (result.error.toLowerCase().includes('cancel') || result.error.toLowerCase().includes('denied')) {
-          setErrorMessage(t('auth.errors.googleCancelled', undefined, 'Google sign-in was cancelled.'));
-        } else if (result.error.toLowerCase().includes('network') || result.error.toLowerCase().includes('fetch')) {
-          setErrorMessage(t('auth.errors.googleNetworkError', undefined, "We couldn't connect to Google right now. Please try again."));
-        } else {
-          setErrorMessage(
-            result.error ||
-            t(
-              'auth.errors.googleUnavailable',
-              undefined,
-              'Google sign-in is temporarily unavailable. Please try email and password or continue as a guest.'
-            )
-          );
-        }
-      }
-    } catch {
-      setErrorMessage(
-        t('auth.errors.googleNetworkError', undefined, "We couldn't connect to Google right now. Please try again.")
-      );
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-[calc(100vh-140px)] py-8 sm:py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
       <div className="max-w-4xl w-full grid grid-cols-1 lg:grid-cols-12 bg-white dark:bg-[#142420] rounded-3xl border border-[#DFD8CC] dark:border-[#23453E] shadow-xl overflow-hidden">
@@ -221,35 +170,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                 <span>{errorMessage}</span>
               </div>
             )}
-
-            {/* Continue with Google (Top of authentication form) */}
-            <button
-              type="button"
-              onClick={handleGoogleSignIn}
-              disabled={loading || googleLoading}
-              aria-label={t('auth.continueWithGoogle', undefined, 'Continue with Google')}
-              className="w-full py-2.5 px-4 rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-[#1A332B] hover:bg-stone-50 dark:hover:bg-[#204036] text-stone-700 dark:text-stone-100 font-medium text-xs sm:text-sm flex items-center justify-center gap-3 transition-colors cursor-pointer shadow-xs disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {googleLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin text-stone-500" />
-                  <span>{t('auth.connectingToGoogle', undefined, 'Connecting to Google...')}</span>
-                </>
-              ) : (
-                <>
-                  <GoogleIcon className="w-4 h-4" />
-                  <span>{t('auth.continueWithGoogle', undefined, 'Continue with Google')}</span>
-                </>
-              )}
-            </button>
-
-            {/* Divider */}
-            <div className="relative flex items-center justify-center my-4">
-              <div className="border-t border-stone-200 dark:border-stone-800 w-full" />
-              <span className="bg-white dark:bg-[#142420] px-3 text-[11px] uppercase tracking-wider text-stone-400 font-medium absolute">
-                {t('auth.orDivider', undefined, 'or')}
-              </span>
-            </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email */}
@@ -335,7 +255,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               {/* Sign In Button */}
               <button
                 type="submit"
-                disabled={loading || googleLoading}
+                disabled={loading}
                 className="w-full py-2.5 px-4 rounded-xl bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 font-semibold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {loading ? (

@@ -778,7 +778,7 @@ export const gu = {
     loginBullet2: 'તમારી વર્તમાન પ્રોફાઇલથી આગળ વધો',
     loginBullet3: 'તમારી એકાઉન્ટ માહિતી સિંકમાં રાખો',
     createAccountTitle: 'તમારું એડવોરા એકાઉન્ટ બનાવો',
-    createAccountSubtitle: 'ક્લાઉડ સિંક સાથે તમારી વ્યક્તિગત શિષ્યવૃત્તિ યાત્રા શરૂ કરો.',
+    createAccountSubtitle: 'તમારી વ્યક્તિગત શિષ્યવૃત્તિ યાત્રા શરૂ કરો.',
     nameLabel: 'પૂરું નામ',
     namePlaceholder: 'દા.ત. આરવ પટેલ',
     emailLabel: 'ઇમેઇલ',

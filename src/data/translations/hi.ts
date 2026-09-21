@@ -778,7 +778,7 @@ export const hi = {
     loginBullet2: 'अपनी मौजूदा प्रोफाइल से आगे बढ़ें',
     loginBullet3: 'अपनी खाता जानकारी सिंक में रखें',
     createAccountTitle: 'अपना एडवोरा खाता बनाएं',
-    createAccountSubtitle: 'क्लाउड सिंक के साथ अपनी व्यक्तिगत छात्रवृत्ति यात्रा शुरू करें।',
+    createAccountSubtitle: 'अपनी व्यक्तिगत छात्रवृत्ति यात्रा शुरू करें।',
     nameLabel: 'पूरा नाम',
     namePlaceholder: 'उदा. आरव पटेल',
     emailLabel: 'ईमेल',

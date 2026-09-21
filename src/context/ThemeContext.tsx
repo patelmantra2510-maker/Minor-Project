@@ -13,19 +13,33 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>(() => {
     // Strictly default to light mode on initial load
-    const saved = localStorage.getItem('edvora_theme_mode');
-    if (saved === 'dark' || saved === 'light') return saved;
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('edvora_theme_mode');
+        if (saved === 'dark' || saved === 'light') return saved;
+      } catch {
+        // Fallback
+      }
+    }
     return 'light';
   });
 
   useEffect(() => {
-    const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      if (theme === 'dark') {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
     }
-    localStorage.setItem('edvora_theme_mode', theme);
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem('edvora_theme_mode', theme);
+      } catch {
+        // Fallback
+      }
+    }
   }, [theme]);
 
   const toggleTheme = () => {

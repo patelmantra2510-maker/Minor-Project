@@ -4,6 +4,14 @@ import { SavedProvider } from './context/SavedContext';
 import { CompareProvider } from './context/CompareContext';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { StudentProfileProvider } from './context/StudentProfileContext';
+import { AuthProvider, useAuth } from './auth/AuthContext';
+
+import { LoginPage } from './pages/LoginPage';
+import { SignupPage } from './pages/SignupPage';
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+import { AccountPage } from './pages/AccountPage';
+import { GuestProfileMigrationModal } from './components/auth/GuestProfileMigrationModal';
+import { detectGuestData } from './services/storage/profileMigration';
 
 import { Navbar } from './components/common/Navbar';
 import { Footer } from './components/common/Footer';
@@ -33,14 +41,67 @@ import type { StudentAnswers, MatchResult } from './types/scholarship';
 export function AppContent() {
   const { t } = useLanguage();
   const { scholarships } = useScholarships();
+  const { user, isAuthenticated } = useAuth();
+
+  // Guest data detection and migration dialog state
+  const [migrationModalData, setMigrationModalData] = useState<{
+    isOpen: boolean;
+    fieldCount: number;
+    savedCount: number;
+  }>({ isOpen: false, fieldCount: 0, savedCount: 0 });
+
+  useEffect(() => {
+    if (isAuthenticated && user?.userId) {
+      const guestData = detectGuestData(user.userId);
+      if (guestData.hasData) {
+        setMigrationModalData({
+          isOpen: true,
+          fieldCount: guestData.fieldCount,
+          savedCount: guestData.savedCount,
+        });
+      }
+    }
+  }, [isAuthenticated, user?.userId]);
 
   // Helper to parse route path and query parameters (e.g. #/ai?scholarshipId=mysy-gujarat)
   const parseRouteHash = (rawHash: string) => {
     const clean = rawHash.replace(/^#\/?/, '');
+
+    // Check for Supabase OAuth access_token or refresh_token callback fragment
+    if (clean.includes('access_token=') || clean.includes('refresh_token=')) {
+      if (typeof window !== 'undefined' && window.history?.replaceState) {
+        window.history.replaceState(null, '', window.location.pathname + '#/account');
+      }
+      return {
+        route: 'account',
+        scholarshipId: undefined,
+      };
+    }
+
+    // Check for OAuth error callback fragment (e.g. user cancelled Google sign-in)
+    if (clean.includes('error=access_denied') || clean.includes('error_code=access_denied')) {
+      if (typeof window !== 'undefined' && window.history?.replaceState) {
+        window.history.replaceState(null, '', window.location.pathname + '#/login');
+      }
+      return {
+        route: 'login',
+        scholarshipId: undefined,
+      };
+    }
+
     const [pathPart, queryPart] = clean.split('?');
     const params = new URLSearchParams(queryPart || '');
+
+    // Normalize authentication and common route aliases
+    const routeAliases: Record<string, string> = {
+      signin: 'login',
+      register: 'signup',
+      'create-account': 'signup',
+    };
+    const resolvedRoute = routeAliases[pathPart] || pathPart || 'home';
+
     return {
-      route: pathPart || 'home',
+      route: resolvedRoute,
       scholarshipId: params.get('scholarshipId') || undefined,
     };
   };
@@ -286,6 +347,23 @@ export function AppContent() {
         {!isDetailRoute && currentRoute === 'profile' && (
           <ProfilePage onNavigate={navigateTo} />
         )}
+
+        {/* AUTH ROUTES */}
+        {!isDetailRoute && (currentRoute === 'login' || currentRoute === 'signin') && (
+          <LoginPage onNavigate={navigateTo} />
+        )}
+
+        {!isDetailRoute && (currentRoute === 'signup' || currentRoute === 'register' || currentRoute === 'create-account') && (
+          <SignupPage onNavigate={navigateTo} />
+        )}
+
+        {!isDetailRoute && currentRoute === 'forgot-password' && (
+          <ForgotPasswordPage onNavigate={navigateTo} />
+        )}
+
+        {!isDetailRoute && currentRoute === 'account' && (
+          <AccountPage onNavigate={navigateTo} studentAnswers={studentAnswers} />
+        )}
         </div>
       </main>
 
@@ -294,6 +372,16 @@ export function AppContent() {
       {/* Global Modals & Floating Tools */}
       <ComparisonModal />
       <FloatingCompareBar />
+
+      {migrationModalData.isOpen && user?.userId && (
+        <GuestProfileMigrationModal
+          isOpen={migrationModalData.isOpen}
+          userId={user.userId}
+          fieldCount={migrationModalData.fieldCount}
+          savedCount={migrationModalData.savedCount}
+          onComplete={() => setMigrationModalData({ isOpen: false, fieldCount: 0, savedCount: 0 })}
+        />
+      )}
 
       {/* Global AI Assistant System */}
       <AIFloatingButton currentRoute={currentRoute} />
@@ -307,15 +395,17 @@ export default function App() {
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <ScholarshipProvider>
-          <SavedProvider>
-            <CompareProvider>
-              <StudentProfileProvider>
-                <AppContent />
-              </StudentProfileProvider>
-            </CompareProvider>
-          </SavedProvider>
-        </ScholarshipProvider>
+        <AuthProvider>
+          <ScholarshipProvider>
+            <SavedProvider>
+              <CompareProvider>
+                <StudentProfileProvider>
+                  <AppContent />
+                </StudentProfileProvider>
+              </CompareProvider>
+            </SavedProvider>
+          </ScholarshipProvider>
+        </AuthProvider>
       </LanguageProvider>
     </ThemeProvider>
   );

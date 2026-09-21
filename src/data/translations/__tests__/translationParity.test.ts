@@ -19,7 +19,8 @@ describe('Translation Parity & Completeness', () => {
     'footer',
     'ai',
     'aiPage',
-    'profile',
+    'auth',
+    'matchScore',
   ];
 
   it('all three languages have all required top-level sections', () => {
@@ -78,26 +79,146 @@ describe('Translation Parity & Completeness', () => {
     }
   });
 
-  it('profile section and matching strings have complete parity across EN, HI, and GU', () => {
-    const profileMatchingKeys = [
-      'findScholarshipsTitle',
-      'findScholarshipsSubtitle',
-      'profileSummaryTitle',
-      'eligibleMatchesTitle',
-      'possibleMatchesTitle',
-      'notEligibleMatchesTitle',
-      'moreInfoNeeded',
-      'moreInfoNeededDesc',
-      'updateProfileBtn',
-      'completeInformationBtn',
-      'whyThisMatches',
-      'whyNotEligible',
+  it('auth section contains all login, signup, migration, and dropdown strings across EN, HI, and GU', () => {
+    const authKeys = [
+      'tagline',
+      'slogan',
+      'welcomeBack',
+      'signInSubtitle',
+      'createAccountTitle',
+      'createAccountSubtitle',
+      'nameLabel',
+      'namePlaceholder',
+      'emailLabel',
+      'emailPlaceholder',
+      'passwordLabel',
+      'passwordPlaceholder',
+      'confirmPasswordLabel',
+      'confirmPasswordPlaceholder',
+      'forgotPasswordLink',
+      'signInBtn',
+      'signingIn',
+      'createAccountBtn',
+      'creatingAccount',
+      'continueWithGoogle',
+      'connectingToGoogle',
+      'orDivider',
+      'dontHaveAccount',
+      'alreadyHaveAccount',
+      'continueAsGuest',
+      'resetPasswordTitle',
+      'resetPasswordSubtitle',
+      'sendResetLink',
+      'sendingResetLink',
+      'backToSignIn',
+      'resetSentTitle',
+      'resetSentSubtitle',
+      'configNoticeTitle',
+      'configNoticeDesc',
+      'accountConnectedBadge',
+      'guestModeBadge',
     ];
 
-    for (const key of profileMatchingKeys) {
-      expect((en as any).profile.matching[key]).toBeTruthy();
-      expect((hi as any).profile.matching[key]).toBeTruthy();
-      expect((gu as any).profile.matching[key]).toBeTruthy();
+    for (const key of authKeys) {
+      expect((en as any).auth[key]).toBeTruthy();
+      expect((hi as any).auth[key]).toBeTruthy();
+      expect((gu as any).auth[key]).toBeTruthy();
+    }
+
+    const dropdownKeys = ['myProfile', 'savedScholarships', 'compare', 'account', 'settings', 'logOut', 'signIn', 'createAccount', 'continueAsGuest'];
+    for (const key of dropdownKeys) {
+      expect((en as any).auth.profileDropdown[key]).toBeTruthy();
+      expect((hi as any).auth.profileDropdown[key]).toBeTruthy();
+      expect((gu as any).auth.profileDropdown[key]).toBeTruthy();
+    }
+
+    const migrationKeys = ['title', 'subtitle', 'transferBtn', 'startFreshBtn', 'savedScholarshipsNotice'];
+    for (const key of migrationKeys) {
+      expect((en as any).auth.migration[key]).toBeTruthy();
+      expect((hi as any).auth.migration[key]).toBeTruthy();
+      expect((gu as any).auth.migration[key]).toBeTruthy();
+    }
+  });
+
+  it('matchScore section contains all required score, table, and disclaimer strings across EN, HI, and GU', () => {
+    const matchScoreKeys = [
+      'title',
+      'subtitle',
+      'disclaimer',
+      'howCalculatedTitle',
+      'howCalculatedDesc',
+      'eligibleBadge',
+      'possibleBadge',
+      'notEligibleBadge',
+      'unavailableBadge',
+      'criteriaHeading',
+      'tableCriterion',
+      'tableYourInfo',
+      'tableRequirement',
+      'tableStatus',
+      'statusSatisfied',
+      'statusNotSatisfied',
+      'statusCannotDetermine',
+      'statusNotProvided',
+      'updateProfileBtn',
+      'updateMissingTitle',
+      'saveAndRecalculate',
+      'unknownCountNotice',
+    ];
+
+    for (const key of matchScoreKeys) {
+      expect((en as any).matchScore[key]).toBeTruthy();
+      expect((hi as any).matchScore[key]).toBeTruthy();
+      expect((gu as any).matchScore[key]).toBeTruthy();
+    }
+  });
+
+  it('accountPage section contains all required identity, journey, and security strings across EN, HI, and GU', () => {
+    const accountPageKeys = [
+      'pageTitle',
+      'welcomeBack',
+      'subtitle',
+      'accountInfoHeading',
+      'fullNameLabel',
+      'emailLabel',
+      'accountStatusLabel',
+      'statusConnected',
+      'memberSince',
+      'editNameBtn',
+      'saveChangesBtn',
+      'cancelBtn',
+      'nameUpdatedSuccess',
+      'journeyHeading',
+      'profileCompletionLabel',
+      'profileReadyNotice',
+      'profileNeedsInfoNotice',
+      'viewEditProfileBtn',
+      'savedScholarshipsLabel',
+      'viewSavedBtn',
+      'comparedScholarshipsLabel',
+      'viewCompareBtn',
+      'securityHeading',
+      'changePasswordBtn',
+      'newPasswordLabel',
+      'confirmNewPasswordLabel',
+      'updatePasswordBtn',
+      'passwordUpdatedSuccess',
+      'passwordTooShort',
+      'passwordsDoNotMatch',
+      'signOutBtn',
+      'browseScholarshipsBtn',
+      'guestTitle',
+      'guestDesc',
+      'signInBtn',
+      'continueAsGuestBtn',
+    ];
+
+    for (const key of accountPageKeys) {
+      expect((en as any).accountPage[key]).toBeTruthy();
+      expect((hi as any).accountPage[key]).toBeTruthy();
+      expect((gu as any).accountPage[key]).toBeTruthy();
     }
   });
 });
+
+

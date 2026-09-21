@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useSaved } from '../../context/SavedContext';
+import { useCompare } from '../../context/CompareContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { useStudentProfile } from '../../context/StudentProfileContext';
+import { useAuth } from '../../auth/AuthContext';
 import type { SupportedLanguage } from '../../data/translations';
 import { EdvoraLogo } from './EdvoraLogo';
 import {
@@ -14,6 +15,13 @@ import {
   Globe,
   ChevronDown,
   CircleUserRound,
+  User,
+  LogIn,
+  UserPlus,
+  LogOut,
+  SlidersHorizontal,
+  Sparkles,
+  Settings,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -24,11 +32,15 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
   const { theme, toggleTheme } = useTheme();
   const { savedIds } = useSaved();
+  const { openCompareModal } = useCompare();
   const { language, setLanguage, t } = useLanguage();
-  const { hasProfile, profileCompletion } = useStudentProfile();
+  const { user, isAuthenticated, loading, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const langDropdownRef = useRef<HTMLDivElement>(null);
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
+
 
   // Subtle scroll state for floating depth
   const [isScrolled, setIsScrolled] = useState(false);
@@ -48,12 +60,15 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
       if (langDropdownRef.current && !langDropdownRef.current.contains(e.target as Node)) {
         setLangDropdownOpen(false);
       }
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(e.target as Node)) {
+        setProfileDropdownOpen(false);
+      }
     };
-    if (langDropdownOpen) {
+    if (langDropdownOpen || profileDropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [langDropdownOpen]);
+  }, [langDropdownOpen, profileDropdownOpen]);
 
   // Navigation: Home, Find Scholarships, Explore Scholarships, ✨ AI, Saved, About
   const navLinks = [
@@ -91,7 +106,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
     if (currentRoute === 'ai' || currentRoute.startsWith('ai')) return 'ai';
     if (currentRoute === 'saved') return 'saved';
     if (currentRoute === 'about') return 'about';
-    if (currentRoute === 'profile') return 'profile';
     return 'home';
   };
 
@@ -292,6 +306,28 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
             {/* Subtle Vertical Divider */}
             <span className="h-4 w-[1px] bg-stone-200 dark:bg-[#1E3A33] mx-1 hidden sm:inline-block" />
 
+            {/* Desktop Auth CTAs: Sign In + Create Account (Hidden when authenticated) */}
+            {!loading && !isAuthenticated && (
+              <div className="hidden sm:flex items-center gap-1.5 mr-0.5">
+                <button
+                  onClick={() => onNavigate('login')}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-stone-700 dark:text-stone-200 hover:text-[#064E3B] dark:hover:text-emerald-300 hover:bg-stone-100/80 dark:hover:bg-[#182E29] transition-all cursor-pointer hover:scale-105 active:scale-95"
+                  title={t('auth.profileDropdown.signIn', undefined, 'Sign In')}
+                >
+                  <LogIn className="w-3.5 h-3.5 text-[#065F46] dark:text-emerald-400" />
+                  <span>{t('auth.profileDropdown.signIn', undefined, 'Sign In')}</span>
+                </button>
+                <button
+                  onClick={() => onNavigate('signup')}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#064E3B] hover:bg-[#043E2F] text-amber-50 shadow-2xs hover:shadow-xs transition-all cursor-pointer hover:scale-105 active:scale-95"
+                  title={t('auth.createAccountBtn', undefined, 'Create Account')}
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                  <span>{t('auth.createAccountBtn', undefined, 'Create Account')}</span>
+                </button>
+              </div>
+            )}
+
             {/* Theme Toggle (Premium Compact Circular Control) */}
             <button
               onClick={toggleTheme}
@@ -306,30 +342,160 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
               )}
             </button>
 
-            {/* Student Profile Button (Part 2 & 6) */}
-            <button
-              onClick={() => handleLinkClick('profile')}
-              className={`relative w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#065F46] cursor-pointer hover:scale-105 active:scale-95 ${
-                activeKey === 'profile'
-                  ? 'bg-[#EAF3EE] dark:bg-[#163328] text-[#065F46] dark:text-emerald-300 border border-[#D1E7DD] dark:border-emerald-700/80 shadow-xs'
-                  : 'text-stone-700 dark:text-stone-300 bg-stone-50/80 dark:bg-[#182E29] border border-[#E8E2D7] dark:border-[#23453E] hover:border-[#D1E7DD] dark:hover:border-emerald-700/60 hover:text-[#065F46] dark:hover:text-emerald-300 shadow-2xs'
-              }`}
-              title={t('nav.myProfile', undefined, 'My Profile')}
-              aria-label={t('nav.myProfile', undefined, 'My Profile')}
-            >
-              <CircleUserRound className="w-4 h-4 stroke-[1.8]" />
-              {/* Subtle completion indicator (Section 24) */}
-              {hasProfile && profileCompletion && profileCompletion.percentage > 0 && (
-                <span
-                  className={`absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full ring-1 ring-white dark:ring-[#142420] ${
-                    profileCompletion.percentage >= 80
-                      ? 'bg-[#065F46] dark:bg-emerald-400'
-                      : 'bg-amber-500'
-                  }`}
-                  aria-hidden="true"
-                />
+            {/* Profile / Account Dropdown */}
+            <div className="relative" ref={profileDropdownRef}>
+              <button
+                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                disabled={loading}
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#065F46] cursor-pointer hover:scale-105 active:scale-95 ${
+                  loading
+                    ? 'bg-stone-100 dark:bg-[#182E29] border border-[#E8E2D7] dark:border-[#23453E] cursor-default'
+                    : isAuthenticated
+                    ? 'bg-[#064E3B] text-amber-50 font-bold text-xs shadow-xs border border-emerald-700'
+                    : profileDropdownOpen
+                    ? 'bg-stone-100 dark:bg-[#1C3630] text-[#064E3B] dark:text-emerald-300 border border-stone-300 dark:border-[#23453E]'
+                    : 'text-stone-700 dark:text-stone-300 bg-stone-50/80 dark:bg-[#182E29] border border-[#E8E2D7] dark:border-[#23453E] hover:border-emerald-300 dark:hover:border-emerald-700'
+                }`}
+                title={loading ? 'Checking session...' : isAuthenticated ? user?.email : 'Account'}
+                aria-label="User Account"
+              >
+                {loading ? (
+                  <div className="w-3.5 h-3.5 rounded-full border-2 border-stone-300 dark:border-stone-600 border-t-[#064E3B] dark:border-t-emerald-400 animate-spin" />
+                ) : isAuthenticated ? (
+                  <span>{(user?.name?.[0] || user?.email?.[0] || 'U').toUpperCase()}</span>
+                ) : (
+                  <CircleUserRound className="w-4 h-4 text-[#064E3B] dark:text-emerald-400" />
+                )}
+              </button>
+
+              {profileDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#142420] rounded-2xl shadow-xl border border-[#E8E2D7] dark:border-[#1E3A33] py-2 z-50 animate-in fade-in zoom-in-95">
+                  {isAuthenticated ? (
+                    <>
+                      <div className="px-4 py-2 border-b border-stone-100 dark:border-[#1E3A33]">
+                        <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">
+                          {t('auth.profileDropdown.yourAccount', undefined, 'Your Account')}
+                        </span>
+                        <p className="text-xs font-bold text-[#064E3B] dark:text-emerald-300 truncate mt-0.5">
+                          {user?.name || 'Student Account'}
+                        </p>
+                        <p className="text-[11px] text-stone-500 dark:text-stone-400 truncate">
+                          {user?.email}
+                        </p>
+                      </div>
+
+                      <div className="py-1">
+                        <button
+                          onClick={() => {
+                            setProfileDropdownOpen(false);
+                            onNavigate('find');
+                          }}
+                          className="w-full text-left px-4 py-2 text-xs font-semibold text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-[#1C3630] flex items-center gap-2.5 transition-colors cursor-pointer"
+                        >
+                          <User className="w-3.5 h-3.5 text-[#065F46] dark:text-emerald-400" />
+                          <span>{t('auth.profileDropdown.myProfile', undefined, 'My Profile')}</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setProfileDropdownOpen(false);
+                            onNavigate('account');
+                          }}
+                          className="w-full text-left px-4 py-2 text-xs font-semibold text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-[#1C3630] flex items-center gap-2.5 transition-colors cursor-pointer"
+                        >
+                          <Settings className="w-3.5 h-3.5 text-[#065F46] dark:text-emerald-400" />
+                          <span>{t('auth.profileDropdown.account', undefined, 'Account')}</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setProfileDropdownOpen(false);
+                            onNavigate('saved');
+                          }}
+                          className="w-full text-left px-4 py-2 text-xs font-semibold text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-[#1C3630] flex items-center gap-2.5 transition-colors cursor-pointer"
+                        >
+                          <Bookmark className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                          <span>
+                            {t('auth.profileDropdown.savedScholarships', undefined, 'Saved Scholarships')}
+                          </span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setProfileDropdownOpen(false);
+                            openCompareModal();
+                          }}
+                          className="w-full text-left px-4 py-2 text-xs font-semibold text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-[#1C3630] flex items-center gap-2.5 transition-colors cursor-pointer"
+                        >
+                          <SlidersHorizontal className="w-3.5 h-3.5 text-[#065F46] dark:text-emerald-400" />
+                          <span>{t('auth.profileDropdown.compare', undefined, 'Compare')}</span>
+                        </button>
+                      </div>
+
+                      <div className="border-t border-stone-100 dark:border-[#1E3A33] pt-1">
+                        <button
+                          onClick={async () => {
+                            setProfileDropdownOpen(false);
+                            await logout();
+                            onNavigate('home');
+                          }}
+                          className="w-full text-left px-4 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-2.5 transition-colors cursor-pointer"
+                        >
+                          <LogOut className="w-3.5 h-3.5" />
+                          <span>{t('auth.profileDropdown.logOut', undefined, 'Log Out')}</span>
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="px-4 py-1.5 border-b border-stone-100 dark:border-[#1E3A33] flex items-center justify-between">
+                        <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider">
+                          Account
+                        </span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300">
+                          {t('auth.profileDropdown.guestBadge', undefined, 'Guest Mode')}
+                        </span>
+                      </div>
+
+                      <div className="py-1">
+                        <button
+                          onClick={() => {
+                            setProfileDropdownOpen(false);
+                            onNavigate('login');
+                          }}
+                          className="w-full text-left px-4 py-2 text-xs font-semibold text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-[#1C3630] flex items-center gap-2.5 transition-colors cursor-pointer"
+                        >
+                          <LogIn className="w-3.5 h-3.5 text-[#065F46] dark:text-emerald-400" />
+                          <span>{t('auth.profileDropdown.signIn', undefined, 'Sign In')}</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setProfileDropdownOpen(false);
+                            onNavigate('signup');
+                          }}
+                          className="w-full text-left px-4 py-2 text-xs font-semibold text-[#064E3B] dark:text-emerald-400 hover:bg-emerald-50/60 dark:hover:bg-emerald-950/30 flex items-center gap-2.5 transition-colors cursor-pointer"
+                        >
+                          <UserPlus className="w-3.5 h-3.5" />
+                          <span>{t('auth.profileDropdown.createAccount', undefined, 'Create Account')}</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setProfileDropdownOpen(false);
+                            onNavigate('find');
+                          }}
+                          className="w-full text-left px-4 py-2 text-xs font-medium text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-[#1C3630] flex items-center gap-2.5 transition-colors cursor-pointer"
+                        >
+                          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                          <span>{t('auth.profileDropdown.continueAsGuest', undefined, 'Continue as Guest')}</span>
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
               )}
-            </button>
+            </div>
 
             {/* Mobile Menu Trigger Button */}
             <button
@@ -382,19 +548,74 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
             );
           })}
 
-          {/* Dedicated Profile Item in Mobile Drawer */}
-          <div className="pt-2 mt-2 border-t border-stone-100 dark:border-[#1E3A33]">
-            <button
-              onClick={() => handleLinkClick('profile')}
-              className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-colors cursor-pointer min-h-[44px] ${
-                activeKey === 'profile'
-                  ? 'text-[#065F46] dark:text-emerald-300 bg-[#EAF3EE] dark:bg-[#163328] font-bold border border-[#D1E7DD] dark:border-emerald-800/70'
-                  : 'text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-[#1C3630]/60 font-medium'
-              }`}
-            >
-              <CircleUserRound className="w-5 h-5 text-[#065F46] dark:text-emerald-400 shrink-0" />
-              <span>{t('nav.myProfile', undefined, 'My Profile')}</span>
-            </button>
+          {/* Mobile Auth Actions */}
+          <div className="pt-2 border-t border-stone-200 dark:border-[#1E3A33] space-y-1">
+            {loading ? (
+              <div className="px-4 py-2.5 text-xs text-stone-400 dark:text-stone-500 flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full border-2 border-stone-300 dark:border-stone-600 border-t-[#064E3B] dark:border-t-emerald-400 animate-spin" />
+                <span>Checking session...</span>
+              </div>
+            ) : isAuthenticated ? (
+              <>
+                <div className="px-4 py-2 text-xs text-stone-500 dark:text-stone-400">
+                  Signed in as <strong className="text-[#064E3B] dark:text-emerald-300">{user?.name || user?.email}</strong>
+                </div>
+                <div className="grid grid-cols-2 gap-2 px-4 py-1">
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onNavigate('account');
+                    }}
+                    className="py-1.5 px-3 rounded-xl text-xs font-semibold bg-stone-100 dark:bg-[#1C3630] text-[#064E3B] dark:text-emerald-300 text-center flex items-center justify-center gap-1.5"
+                  >
+                    <Settings className="w-3.5 h-3.5" />
+                    <span>{t('auth.profileDropdown.account', undefined, 'Account')}</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onNavigate('find');
+                    }}
+                    className="py-1.5 px-3 rounded-xl text-xs font-semibold bg-stone-100 dark:bg-[#1C3630] text-[#064E3B] dark:text-emerald-300 text-center flex items-center justify-center gap-1.5"
+                  >
+                    <User className="w-3.5 h-3.5" />
+                    <span>{t('auth.profileDropdown.myProfile', undefined, 'My Profile')}</span>
+                  </button>
+                </div>
+                <button
+                  onClick={async () => {
+                    setMobileMenuOpen(false);
+                    await logout();
+                    onNavigate('home');
+                  }}
+                  className="w-full text-left px-4 py-2 text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>{t('auth.profileDropdown.logOut', undefined, 'Log Out')}</span>
+                </button>
+              </>
+            ) : (
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onNavigate('login');
+                  }}
+                  className="py-2 text-center text-xs font-semibold text-stone-700 dark:text-stone-200 bg-stone-100 dark:bg-[#1C3630] rounded-xl"
+                >
+                  {t('auth.profileDropdown.signIn', undefined, 'Sign In')}
+                </button>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onNavigate('signup');
+                  }}
+                  className="py-2 text-center text-xs font-semibold text-amber-50 bg-[#064E3B] rounded-xl"
+                >
+                  {t('auth.profileDropdown.createAccount', undefined, 'Create Account')}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

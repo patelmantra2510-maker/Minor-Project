@@ -31,3 +31,7 @@ dist-ssr
 *.sqlite-wal
 *.sqlite-shm
 *.sqlite-journal
+
+# Local documentation charts & rendered pages
+docs/
+

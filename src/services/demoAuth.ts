@@ -9,6 +9,11 @@ export interface StoredDemoUser {
   email: string;
   password: string;
   createdAt: string;
+  lastLoginAt?: string;
+  lastActiveAt?: string;
+  loginCount?: number;
+  authMethod?: string;
+  status?: 'active' | 'inactive';
 }
 
 export interface DemoSession {
@@ -25,7 +30,12 @@ export const DEFAULT_DEMO_USER: StoredDemoUser = {
   name: 'Demo Student',
   email: 'student@edvora.demo',
   password: 'demo123',
-  createdAt: '2026-01-01T00:00:00.000Z',
+  createdAt: '2026-09-20T10:00:00.000Z',
+  lastLoginAt: '2026-09-21T08:30:00.000Z',
+  lastActiveAt: '2026-09-21T08:30:00.000Z',
+  loginCount: 4,
+  authMethod: 'Demo Email',
+  status: 'active',
 };
 
 const getLocalStorage = (): Storage | null => {
@@ -54,7 +64,14 @@ export function getStoredDemoUsers(): StoredDemoUser[] {
       parsed.push(DEFAULT_DEMO_USER);
       storage.setItem(DEMO_USERS_KEY, JSON.stringify(parsed));
     }
-    return parsed;
+    return parsed.map((u: StoredDemoUser) => ({
+      ...u,
+      loginCount: typeof u.loginCount === 'number' ? u.loginCount : (u.email.toLowerCase() === DEFAULT_DEMO_USER.email.toLowerCase() ? 4 : 1),
+      lastLoginAt: u.lastLoginAt || u.createdAt || new Date().toISOString(),
+      lastActiveAt: u.lastActiveAt || u.lastLoginAt || u.createdAt || new Date().toISOString(),
+      authMethod: u.authMethod || 'Demo Email',
+      status: u.status || 'active',
+    }));
   } catch {
     return [DEFAULT_DEMO_USER];
   }
@@ -65,6 +82,13 @@ export function saveStoredDemoUsers(users: StoredDemoUser[]): void {
   if (!storage) return;
   try {
     storage.setItem(DEMO_USERS_KEY, JSON.stringify(users));
+    if (typeof window !== 'undefined' && window.dispatchEvent) {
+      if (typeof CustomEvent !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('edvora:demo-users-change'));
+      } else {
+        window.dispatchEvent({ type: 'edvora:demo-users-change' } as any);
+      }
+    }
   } catch (err) {
     console.warn('Failed to save demo users to localStorage:', err);
   }
@@ -138,6 +162,12 @@ export const demoAuthService = {
     }
 
     const now = new Date().toISOString();
+    user.loginCount = (user.loginCount || 0) + 1;
+    user.lastLoginAt = now;
+    user.lastActiveAt = now;
+    user.status = 'active';
+    saveStoredDemoUsers(users);
+
     const session: DemoSession = {
       userId: user.userId,
       email: user.email,
@@ -191,6 +221,11 @@ export const demoAuthService = {
       email,
       password,
       createdAt: now,
+      lastLoginAt: now,
+      lastActiveAt: now,
+      loginCount: 1,
+      authMethod: 'Demo Email',
+      status: 'active',
     };
 
     users.push(newUser);
@@ -309,3 +344,40 @@ export const demoAuthService = {
     };
   },
 };
+
+/**
+ * Safe user record for administrative management.
+ * In strict compliance with privacy & security practices,
+ * passwords are NEVER included, exposed, or transmitted.
+ */
+export interface AdminUserRecord {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+  lastLoginAt: string;
+  lastActiveAt: string;
+  loginCount: number;
+  authMethod: string;
+  status: 'active' | 'inactive';
+  passwordConfigured: boolean;
+  profileCompletion: number;
+}
+
+export function getSafeAdminUserRecords(): AdminUserRecord[] {
+  const users = getStoredDemoUsers();
+  return users.map((u) => ({
+    id: u.userId,
+    name: u.name,
+    email: u.email,
+    createdAt: u.createdAt,
+    lastLoginAt: u.lastLoginAt || u.createdAt,
+    lastActiveAt: u.lastActiveAt || u.lastLoginAt || u.createdAt,
+    loginCount: typeof u.loginCount === 'number' ? u.loginCount : 1,
+    authMethod: u.authMethod || 'Demo Email',
+    status: u.status || 'active',
+    passwordConfigured: Boolean(u.password),
+    profileCompletion: 0,
+  }));
+}
+

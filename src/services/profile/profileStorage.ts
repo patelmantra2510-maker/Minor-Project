@@ -233,6 +233,26 @@ export class LocalStorageProfileStorage implements ProfileStorage {
         storedAt: now,
       };
       window.localStorage.setItem(this.profileStorageKey, JSON.stringify(envelope));
+
+      // Link to logged in demo user if active
+      try {
+        const rawSession = window.localStorage.getItem('edvora_demo_session');
+        if (rawSession) {
+          const session = JSON.parse(rawSession);
+          if (session?.userId) {
+            window.localStorage.setItem(`edvora_profile_${session.userId}`, JSON.stringify(updatedProfile));
+          }
+        } else if (updatedProfile.userId) {
+          window.localStorage.setItem(`edvora_profile_${updatedProfile.userId}`, JSON.stringify(updatedProfile));
+        }
+        if (typeof window.dispatchEvent === 'function') {
+          if (typeof CustomEvent !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('edvora:profile-updated'));
+          }
+        }
+      } catch {
+        // Safe fallback
+      }
     } catch {
       this.memoryFallbackProfile = updatedProfile;
     }

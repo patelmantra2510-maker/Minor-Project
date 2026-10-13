@@ -129,7 +129,8 @@ export async function getScholarships(): Promise<{
   try {
     const res = await fetch('/api/scholarships');
     if (res.ok) {
-      const data = await res.json();
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : null;
       if (Array.isArray(data) && data.length > 0) {
         return {
           data,
@@ -175,7 +176,8 @@ export async function getScholarshipByIdOrSlug(idOrSlug: string): Promise<Schola
   try {
     const res = await fetch(`/api/scholarships/${encodeURIComponent(idOrSlug)}`);
     if (res.ok) {
-      const item = await res.json();
+      const text = await res.text();
+      const item = text ? JSON.parse(text) : null;
       if (item && item.id) return item as Scholarship;
     }
   } catch {

@@ -9,7 +9,8 @@
     "db:seed": "node scripts/seedSqlite.cjs",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "vite preview"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",

@@ -24,7 +24,7 @@ function getGroqApiKey(): string {
     const key =
       (import.meta as any).env?.VITE_GROQ_API_KEY ||
       (import.meta as any).env?.GROQ_API_KEY ||
-      (typeof process !== 'undefined' ? (process as any).env?.GROQ_API_KEY : '');
+      ((globalThis as any).process?.env?.GROQ_API_KEY || '');
     if (key && typeof key === 'string' && key.trim()) {
       return key.trim();
     }

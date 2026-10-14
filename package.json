@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "server": "node server/server.cjs",
+    "intelligence": "python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000",
     "db:seed": "node scripts/seedSqlite.cjs",
     "build": "tsc -b && vite build",
     "lint": "oxlint",

@@ -35,3 +35,9 @@ dist-ssr
 # Local documentation charts & rendered pages
 docs/
 
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+

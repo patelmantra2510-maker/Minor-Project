@@ -533,3 +533,164 @@ export async function getScholarshipViewsAnalytics(token: string): Promise<{
   return null;
 }
 
+// ==========================================
+// AUTOMATED SCHOLARSHIP INTELLIGENCE ENGINE
+// ==========================================
+
+export interface IntelligenceSource {
+  id: string;
+  name: string;
+  url: string;
+  sourceType: string;
+  priority: number;
+  isActive: boolean;
+  lastScannedAt: string | null;
+  lastStatus: string | null;
+  errorMessage: string | null;
+  schemesCount: number;
+}
+
+export interface IntelligenceRun {
+  id: number;
+  startedAt: string;
+  completedAt: string | null;
+  status: 'running' | 'success' | 'failed' | 'partial';
+  sourcesChecked: number;
+  discoveredCount: number;
+  updatedCount: number;
+  failedSources: string[];
+  logSummary: string;
+  triggerType: string;
+}
+
+export interface IntelligenceStatus {
+  isSchedulerActive: boolean;
+  isScanningNow: boolean;
+  intervalHours: number;
+  lastRun: IntelligenceRun | null;
+  nextScheduledRun: string | null;
+  totalSources: number;
+  activeSources: number;
+  totalScholarshipsInDb: number;
+  verifiedCount: number;
+  flaggedCount: number;
+  sources: IntelligenceSource[];
+  recentRuns: IntelligenceRun[];
+}
+
+/**
+ * Fetch current state and telemetry of the automated intelligence engine
+ */
+export async function getIntelligenceStatus(): Promise<IntelligenceStatus | null> {
+  try {
+    const res = await fetch('/api/intelligence/status');
+    if (res.ok) {
+      const text = await res.text();
+      return text ? JSON.parse(text) : null;
+    }
+  } catch (err) {
+    console.warn('Failed to fetch intelligence status:', err);
+  }
+  return null;
+}
+
+/**
+ * Manually trigger discovery & verification cycle across official portals
+ */
+export async function triggerIntelligenceScan(triggerType: string = 'manual'): Promise<{
+  status: string;
+  message: string;
+  run?: IntelligenceRun;
+}> {
+  try {
+    const res = await fetch('/api/intelligence/trigger', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ triggerType }),
+    });
+    const text = await res.text();
+    if (res.ok && text) {
+      return JSON.parse(text);
+    }
+    return {
+      status: 'error',
+      message: text || 'Scan trigger failed on intelligence server',
+    };
+  } catch (err: any) {
+    return {
+      status: 'error',
+      message: err?.message || 'Failed to connect to intelligence engine',
+    };
+  }
+}
+
+/**
+ * Fetch registered official scholarship portals and their live health
+ */
+export async function getIntelligenceSources(): Promise<IntelligenceSource[]> {
+  try {
+    const res = await fetch('/api/intelligence/sources');
+    if (res.ok) {
+      const text = await res.text();
+      return text ? JSON.parse(text) : [];
+    }
+  } catch (err) {
+    console.warn('Failed to fetch intelligence sources:', err);
+  }
+  return [];
+}
+
+/**
+ * Fetch discovery execution history logs
+ */
+export async function getIntelligenceRuns(limit: number = 20): Promise<IntelligenceRun[]> {
+  try {
+    const res = await fetch(`/api/intelligence/runs?limit=${limit}`);
+    if (res.ok) {
+      const text = await res.text();
+      return text ? JSON.parse(text) : [];
+    }
+  } catch (err) {
+    console.warn('Failed to fetch intelligence runs:', err);
+  }
+  return [];
+}
+
+/**
+ * Fetch scholarships currently flagged for manual admin verification
+ */
+export async function getFlaggedScholarships(): Promise<Scholarship[]> {
+  try {
+    const res = await fetch('/api/intelligence/flagged');
+    if (res.ok) {
+      const text = await res.text();
+      return text ? JSON.parse(text) : [];
+    }
+  } catch (err) {
+    console.warn('Failed to fetch flagged scholarships:', err);
+  }
+  return [];
+}
+
+/**
+ * Mark a flagged scholarship as manually reviewed and approved
+ */
+export async function verifyScholarshipRecord(
+  id: string,
+  notes: string = 'Manually verified by administrator'
+): Promise<{ success: boolean; scholarship?: Scholarship; error?: string }> {
+  try {
+    const res = await fetch(`/api/intelligence/verify/${encodeURIComponent(id)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ notes }),
+    });
+    const text = await res.text();
+    if (res.ok && text) {
+      return JSON.parse(text);
+    }
+    return { success: false, error: text || 'Failed to verify scholarship' };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Network error' };
+  }
+}

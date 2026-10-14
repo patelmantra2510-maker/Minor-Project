@@ -416,6 +416,14 @@ export default defineConfig({
     edvoraAiPlugin(),
     edvoraSqlitePlugin(),
   ],
+  server: {
+    proxy: {
+      '/api/intelligence': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+      },
+    },
+  },
   preview: {
     host: '0.0.0.0',
     port: process.env.PORT ? parseInt(process.env.PORT, 10) : 4173,

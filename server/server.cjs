@@ -296,6 +296,28 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // Proxy /api/intelligence to FastAPI backend (port 8000)
+  if (urlPath.startsWith('/api/intelligence')) {
+    const options = {
+      hostname: '127.0.0.1',
+      port: 8000,
+      path: req.url,
+      method: req.method,
+      headers: { ...req.headers, host: '127.0.0.1:8000' }
+    };
+    const proxyReq = http.request(options, (proxyRes) => {
+      res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      proxyRes.pipe(res);
+    });
+    proxyReq.on('error', (err) => {
+      res.statusCode = 502;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ error: 'FastAPI Intelligence server unavailable on port 8000', details: err.message }));
+    });
+    req.pipe(proxyReq);
+    return;
+  }
+
   res.statusCode = 404;
   res.setHeader('Content-Type', 'application/json');
   res.end(JSON.stringify({ error: 'Endpoint not found' }));

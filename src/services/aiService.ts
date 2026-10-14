@@ -137,42 +137,46 @@ Rules:
 
   messages.push({ role: 'user' as const, content: promptToUse });
 
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 12000);
+  const candidateModels = ['qwen/qwen3.8-27b', 'openai/gpt-oss-20b'];
 
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'qwen/qwen3.8-27b',
-        messages,
-        temperature: 0.5,
-        max_tokens: 800,
-      }),
-      signal: controller.signal,
-    });
+  for (const model of candidateModels) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-    clearTimeout(timeoutId);
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model,
+          messages,
+          temperature: 0.5,
+          max_tokens: 800,
+        }),
+        signal: controller.signal,
+      });
 
-    if (res.ok) {
-      const data = await res.json();
-      const text = data.choices?.[0]?.message?.content;
-      if (text && typeof text === 'string') {
-        return {
-          message: text.trim(),
-          sourceLinks: targetScholarship
-            ? [{ title: targetScholarship.shortName, url: targetScholarship.officialWebsite }]
-            : [],
-          scholarshipIds: targetScholarship ? [targetScholarship.id] : [],
-        };
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content;
+        if (text && typeof text === 'string') {
+          return {
+            message: text.trim(),
+            sourceLinks: targetScholarship
+              ? [{ title: targetScholarship.shortName, url: targetScholarship.officialWebsite }]
+              : [],
+            scholarshipIds: targetScholarship ? [targetScholarship.id] : [],
+          };
+        }
       }
+    } catch (err) {
+      console.warn(`[Edvora AI] Direct Groq call with model ${model} failed, trying next:`, err);
     }
-  } catch (err) {
-    console.warn('[Edvora AI] Direct Groq call fallback:', err);
   }
 
   return null;
@@ -206,35 +210,42 @@ export async function generateAIResponse(req: GenerateAIRequest): Promise<AIResp
     console.warn('[Edvora AI] Direct Groq call fallback:', groqErr);
   }
 
-  // 2. Server-side API endpoint (/api/ai/chat)
-  try {
-    const response = await fetch('/api/ai/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        mode,
-        scholarshipId,
-        studentContext,
-        matchResult,
-        conversation,
-        language,
-        currentPage,
-        prompt,
-        quickKey,
-      }),
-    });
+  // 2. Server-side API endpoint (/api/ai/chat) with port 5000 fallback
+  const endpoints = ['/api/ai/chat'];
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost' && window.location.port !== '5000') {
+    endpoints.push('http://localhost:5000/api/ai/chat');
+  }
 
-    if (response.ok) {
-      const text = await response.text();
-      const data = text ? JSON.parse(text) : null;
-      if (data && typeof data.message === 'string') {
-        return data as AIResponsePayload;
+  for (const endpoint of endpoints) {
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          mode,
+          scholarshipId,
+          studentContext,
+          matchResult,
+          conversation,
+          language,
+          currentPage,
+          prompt,
+          quickKey,
+        }),
+      });
+
+      if (response.ok) {
+        const text = await response.text();
+        const data = text ? JSON.parse(text) : null;
+        if (data && typeof data.message === 'string') {
+          return data as AIResponsePayload;
+        }
       }
+    } catch {
+      // Try next endpoint
     }
-  } catch {
-    // Network or server offline; proceed to fallback
   }
 
   // 2. Client-side verified knowledge fallback (No server/network failure will break Edvora)

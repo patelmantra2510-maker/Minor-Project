@@ -8,6 +8,7 @@ import { ScholarshipDetailModal } from './ScholarshipDetailModal';
 import { CategoryManagement } from './CategoryManagement';
 import { UserManagement } from './UserManagement';
 import { AnalyticsView } from './AnalyticsView';
+import { IntelligenceMonitoring } from './IntelligenceMonitoring';
 import { EdvoraLogo } from '../common/EdvoraLogo';
 import { useScholarships } from '../../context/ScholarshipContext';
 import {
@@ -25,6 +26,7 @@ import {
   FolderTree,
   Users,
   BarChart3,
+  Bot,
   LogOut,
   ExternalLink,
   PlusCircle,
@@ -41,7 +43,7 @@ const AdminPanelContent: React.FC<AdminPanelProps> = ({ onNavigate }) => {
   const { scholarships, refreshScholarships } = useScholarships();
 
   const [currentTab, setCurrentTab] = useState<
-    'dashboard' | 'scholarships' | 'categories' | 'users' | 'analytics'
+    'dashboard' | 'scholarships' | 'categories' | 'users' | 'analytics' | 'intelligence'
   >('dashboard');
 
   const [stats, setStats] = useState<any>(null);
@@ -135,6 +137,7 @@ const AdminPanelContent: React.FC<AdminPanelProps> = ({ onNavigate }) => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'scholarships', label: 'Scholarships', icon: GraduationCap, badge: scholarships.length },
+    { id: 'intelligence', label: 'Auto Intelligence', icon: Bot, badge: 'Live' },
     { id: 'categories', label: 'Categories', icon: FolderTree },
     { id: 'users', label: 'Users & Privacy', icon: Users },
     { id: 'analytics', label: 'AI & Engine', icon: BarChart3 },
@@ -337,6 +340,15 @@ const AdminPanelContent: React.FC<AdminPanelProps> = ({ onNavigate }) => {
             <CategoryManagement
               categoriesData={categoriesData || stats?.categories}
               onFilterCategory={handleCategoryFilter}
+            />
+          )}
+
+          {currentTab === 'intelligence' && (
+            <IntelligenceMonitoring
+              onRefreshParent={async () => {
+                await refreshScholarships();
+                await loadAdminData();
+              }}
             />
           )}
 

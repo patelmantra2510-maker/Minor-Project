@@ -645,19 +645,48 @@ export function processGlobalQuery(
     };
   }
 
-  // Default Fallback
-  const featured = SCHOLARSHIPS_DATA.slice(0, 3);
+  // Greetings
+  const isGreeting =
+    !query ||
+    query === 'hi' ||
+    query === 'hello' ||
+    query === 'hey' ||
+    query === 'namaste' ||
+    query === 'kem cho' ||
+    query.startsWith('hi ') ||
+    query.startsWith('hello ') ||
+    query.includes('who are you') ||
+    query.includes('what is your name');
+
+  if (isGreeting) {
+    const featured = SCHOLARSHIPS_DATA.slice(0, 3);
+    return {
+      message:
+        lang === 'hi'
+          ? `नमस्ते! मैं एडवोरा एआई सहायक हूँ। मैं आपकी छात्रवृत्तियां खोजने, पात्रता नियमों को समझने और योजनाओं की तुलना करने में सहायता कर सकता हूँ। आप मुझसे विशिष्ट पाठ्यक्रमों (जैसे डिप्लोमा, स्नातक), राज्यों (जैसे गुजरात) या योजनाओं (जैसे MYSY, CSSS) के बारे में पूछ सकते हैं!`
+          : lang === 'gu'
+          ? `નમસ્તે! હું એડવોરા એઆઈ સહાયક છું. હું તમને શિષ્યવૃત્તિઓ શોધવામાં, પાત્રતાના નિયમો સમજવામાં અને યોજનાઓની સરખામણી કરવામાં મદદ કરી શકું છું. તમે ચોક્કસ અભ્યાસક્રમો (જેમ કે ડિપ્લોમા, ગ્રેજ્યુએશન), રાજ્યો અથવા ચોક્કસ યોજનાઓ (જેમ કે MYSY, CSSS) વિશે પૂછી શકો છો!`
+          : `Hello! I am Edvora's Scholarship Assistant. I can help you discover scholarships, explain eligibility requirements, check required documents, and compare schemes.\n\nTry asking:\n• *"Which scholarships are available for diploma students?"*\n• *"What scholarships can I apply for in Gujarat?"*\n• *"Compare MYSY and CSSS"*\n• *"What documents are commonly required?"*`,
+      scholarshipIds: featured.map((s) => s.id),
+      actions: [
+        { type: 'find', label: 'Take 7-Step Finder' },
+        { type: 'explore', label: 'Explore All Scholarships' },
+      ],
+    };
+  }
+
+  // Explicit Fallback for unretrievable query when live AI is unavailable
   return {
     message:
       lang === 'hi'
-        ? `मैं आपकी छात्रवृत्तियां खोजने, पात्रता नियमों को समझने और योजनाओं की तुलना करने में सहायता कर सकता हूँ। आप मुझसे विशिष्ट पाठ्यक्रमों (जैसे डिप्लोमा, स्नातक), राज्यों (जैसे गुजरात) या योजनाओं (जैसे MYSY, CSSS) के बारे में पूछ सकते हैं!`
+        ? `लाइव एआई सेवा से वास्तविक समय में उत्तर प्राप्त नहीं हो सका और स्थानीय ज्ञानकोष में "${rawQuery}" के लिए कोई सीधा मिलान नहीं मिला। कृपया अपना इंटरनेट कनेक्शन जांचें या छात्रवृत्ति पात्रता, गुजरात योजनाओं या आवेदन प्रक्रिया के बारे में पूछें।`
         : lang === 'gu'
-        ? `હું તમને શિષ્યવૃત્તિઓ શોધવામાં, પાત્રતાના નિયમો સમજવામાં અને યોજનાઓની સરખામણી કરવામાં મદદ કરી શકું છું. તમે ચોક્કસ અભ્યાસક્રમો (જેમ કે ડિપ્લોમા, ગ્રેજ્યુએશન), રાજ્યો અથવા ચોક્કસ યોજનાઓ (જેમ કે MYSY, CSSS) વિશે પૂછી શકો છો!`
-        : `I'm Edvora's AI Assistant. I can help you discover scholarships, explain eligibility requirements, check required documents, and compare schemes.\n\nTry asking:\n• *"Which scholarships are available for diploma students?"*\n• *"What scholarships can I apply for in Gujarat?"*\n• *"Compare MYSY and CSSS"*\n• *"What documents are commonly required?"*`,
-    scholarshipIds: featured.map((s) => s.id),
+        ? `લાઇવ એઆઈ સર્વિસ સાથે જોડાણ થઈ શક્યું નથી અને સ્થાનિક માહિતીમાં "${rawQuery}" માટે યોગ્ય મેળ મળ્યો નથી. કૃપા કરીને તમારું ઇન્ટરનેટ કનેક્શન તપાસો અથવા શિષ્યવૃત્તિ પાત્રતા, ગુજરાતની યોજનાઓ કે જરૂરી દસ્તાવેજો વિશે પૂછો.`
+        : `Could not retrieve a live AI response for: **"${rawQuery}"**\n\nThe real-time AI connection is currently unreachable, and no verified offline entry matches this specific query.\n\n**Suggestions:**\n- Check your network connection.\n- Inquire about known schemes (e.g. *MYSY*, *Digital Gujarat*, *AICTE Pragati*).\n- Ask about eligibility, income limits, or required documents.`,
+    scholarshipIds: [],
     actions: [
       { type: 'find', label: 'Take 7-Step Finder' },
-      { type: 'explore', label: 'Explore All Scholarships' },
+      { type: 'explore', label: 'Browse Verified Catalog' },
     ],
   };
 }

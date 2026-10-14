@@ -161,13 +161,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
 
   return (
     <header
-      className={`sticky top-0 z-40 transition-all duration-300 select-none px-3 sm:px-6 lg:px-8 ${
+      className={`sticky top-0 z-40 transition-all duration-300 select-none px-2 sm:px-4 lg:px-6 ${
         isScrolled ? 'pt-1.5 sm:pt-2' : 'pt-2.5 sm:pt-3'
       }`}
     >
       {/* Floating White Card Container (Subtle Premium Depth) */}
       <div
-        className={`max-w-7xl mx-auto bg-white/95 dark:bg-[#142420]/95 backdrop-blur-md rounded-2xl transition-all duration-300 px-4 sm:px-6 ${
+        className={`w-full max-w-[1600px] mx-auto bg-white/95 dark:bg-[#142420]/95 backdrop-blur-md rounded-2xl transition-all duration-300 px-3 sm:px-5 lg:px-6 ${
           isScrolled
             ? 'border border-[#DFD8CC] dark:border-[#23453E] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.08),0_2px_6px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.45)]'
             : 'border border-[#E8E2D7] dark:border-[#1E3A33] shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04),0_1px_3px_rgba(0,0,0,0.02)] dark:shadow-[0_2px_12px_-3px_rgba(0,0,0,0.3)]'

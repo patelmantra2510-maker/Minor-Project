@@ -99,6 +99,7 @@ export interface Scholarship {
   eligibility?: ScholarshipEligibility;
   isVerified?: boolean;
   isFeatured?: boolean;
+  views?: number;
   createdAt?: string;
 }
 

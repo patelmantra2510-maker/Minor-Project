@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAI } from '../../context/AIContext';
+import { useScholarships } from '../../context/ScholarshipContext';
 
 interface ScholarshipDetailPageProps {
   scholarship: Scholarship;
@@ -52,6 +53,7 @@ export const ScholarshipDetailPage: React.FC<ScholarshipDetailPageProps> = ({
   const { openScholarshipAI } = useAI();
   const { isSaved, toggleSave, addRecentlyViewed } = useSaved();
   const { isComparing, toggleCompare, compareIds } = useCompare();
+  const { trackScholarshipView } = useScholarships();
 
   const saved = isSaved(scholarship.id);
   const comparing = isComparing(scholarship.id);
@@ -63,6 +65,7 @@ export const ScholarshipDetailPage: React.FC<ScholarshipDetailPageProps> = ({
   const [showStickyBar, setShowStickyBar] = useState(false);
 
   useEffect(() => {
+    trackScholarshipView(scholarship.id);
     addRecentlyViewed(scholarship.id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setCheckedDocs({});

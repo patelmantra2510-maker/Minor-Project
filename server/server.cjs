@@ -100,6 +100,15 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // Admin Scholarship Views Analytics Endpoint
+  if (urlPath === '/api/admin/scholarship-views' && req.method === 'GET') {
+    if (!requireAdmin()) return;
+    const { getScholarshipViewsAnalytics } = require('./db.cjs');
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(getScholarshipViewsAnalytics()));
+    return;
+  }
+
   // Database Status
   if (urlPath === '/api/database/status' && req.method === 'GET') {
     res.setHeader('Content-Type', 'application/json');
@@ -206,11 +215,29 @@ const server = http.createServer((req, res) => {
       });
       req.on('end', () => {
         try {
-          const item = JSON.parse(body);
+          const payload = JSON.parse(body || '{}');
+          const cleanSub = decodeURIComponent(sub);
+
+          // POST /api/scholarships/:id/view
+          if (cleanSub.endsWith('/view')) {
+            const targetId = cleanSub.replace(/\/view$/, '');
+            const { recordScholarshipView } = require('./db.cjs');
+            const result = recordScholarshipView(targetId, payload.sessionId);
+            if (!result) {
+              res.statusCode = 404;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ error: 'Scholarship not found' }));
+              return;
+            }
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ success: true, ...result }));
+            return;
+          }
+
           const token = getAuthToken();
           const { verifyAdminToken } = require('./db.cjs');
           const source = verifyAdminToken(token) ? 'admin' : 'public_api';
-          insertOrUpdateScholarship(item, source);
+          insertOrUpdateScholarship(payload, source);
           res.setHeader('Content-Type', 'application/json');
           res.end(JSON.stringify({ success: true, message: 'Saved to SQLite database' }));
         } catch (err) {

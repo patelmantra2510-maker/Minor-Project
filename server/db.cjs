@@ -52,7 +52,7 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_scholarships_status ON scholarships(status);
 `);
 
-// Safe migrations: Check and add is_verified and is_featured columns if not present
+// Safe migrations: Check and add is_verified, is_featured, and views columns if not present
 try {
   const tableInfo = db.prepare('PRAGMA table_info(scholarships)').all();
   const columnNames = tableInfo.map((c) => c.name);
@@ -63,9 +63,24 @@ try {
   if (!columnNames.includes('is_featured')) {
     db.exec('ALTER TABLE scholarships ADD COLUMN is_featured INTEGER DEFAULT 0;');
   }
+  if (!columnNames.includes('views')) {
+    db.exec('ALTER TABLE scholarships ADD COLUMN views INTEGER DEFAULT 0;');
+  }
 } catch (e) {
   console.warn('[SQLite Migration Warning]:', e.message);
 }
+
+// Dedicated scholarship views audit table for tracking and deduplication
+db.exec(`
+  CREATE TABLE IF NOT EXISTS scholarship_views (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    scholarship_id TEXT NOT NULL,
+    session_id TEXT,
+    viewed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE INDEX IF NOT EXISTS idx_scholarship_views_sid ON scholarship_views(scholarship_id);
+  CREATE INDEX IF NOT EXISTS idx_scholarship_views_sess ON scholarship_views(session_id, scholarship_id);
+`);
 
 // Activity logs table for full admin auditing
 db.exec(`
@@ -154,6 +169,7 @@ function parseRow(row) {
     tags: JSON.parse(row.tags || '[]'),
     isVerified: row.is_verified === 1 || row.is_verified === null || row.is_verified === undefined,
     isFeatured: row.is_featured === 1,
+    views: Number(row.views || 0),
     createdAt: row.created_at,
   };
 }
@@ -326,6 +342,47 @@ function getCategoriesWithCount() {
   };
 }
 
+function recordScholarshipView(idOrSlug, sessionId = null) {
+  const scholarship = getScholarshipByIdOrSlug(idOrSlug);
+  if (!scholarship) return null;
+
+  if (sessionId) {
+    const existing = db
+      .prepare('SELECT id FROM scholarship_views WHERE scholarship_id = ? AND session_id = ?')
+      .get(scholarship.id, String(sessionId));
+
+    if (existing) {
+      const current = db.prepare('SELECT views FROM scholarships WHERE id = ?').get(scholarship.id);
+      return { id: scholarship.id, views: Number(current?.views || 0), newlyRecorded: false };
+    }
+
+    try {
+      db.prepare('INSERT INTO scholarship_views (scholarship_id, session_id) VALUES (?, ?)').run(scholarship.id, String(sessionId));
+    } catch (e) {}
+  } else {
+    try {
+      db.prepare('INSERT INTO scholarship_views (scholarship_id, session_id) VALUES (?, NULL)').run(scholarship.id);
+    } catch (e) {}
+  }
+
+  db.prepare('UPDATE scholarships SET views = COALESCE(views, 0) + 1 WHERE id = ?').run(scholarship.id);
+  const updated = db.prepare('SELECT views FROM scholarships WHERE id = ?').get(scholarship.id);
+  return { id: scholarship.id, views: Number(updated?.views || 0), newlyRecorded: true };
+}
+
+function getScholarshipViewsAnalytics() {
+  const rows = db.prepare(`
+    SELECT id, slug, name, short_name as shortName, COALESCE(views, 0) as views
+    FROM scholarships
+    ORDER BY views DESC, name ASC
+  `).all();
+  const totalViews = rows.reduce((sum, r) => sum + Number(r.views || 0), 0);
+  return {
+    totalViews,
+    scholarships: rows,
+  };
+}
+
 function getDatabaseStats() {
   const countRow = db.prepare('SELECT COUNT(*) as count FROM scholarships').get();
   const verifiedRow = db.prepare('SELECT COUNT(*) as count FROM scholarships WHERE is_verified = 1 OR is_verified IS NULL').get();
@@ -334,6 +391,7 @@ function getDatabaseStats() {
   const openRow = db.prepare("SELECT COUNT(*) as count FROM scholarships WHERE status = 'Open'").get();
   const gujaratRow = db.prepare("SELECT COUNT(*) as count FROM scholarships WHERE state = 'Gujarat'").get();
   const allIndiaRow = db.prepare("SELECT COUNT(*) as count FROM scholarships WHERE state = 'All India'").get();
+  const totalViewsRow = db.prepare('SELECT SUM(COALESCE(views, 0)) as totalViews FROM scholarships').get();
 
   let dbSizeBytes = 0;
   try {
@@ -351,6 +409,7 @@ function getDatabaseStats() {
     unverifiedCount: unverifiedRow.count,
     featuredCount: featuredRow.count,
     openCount: openRow.count,
+    totalViews: Number(totalViewsRow?.totalViews || 0),
     stateDistribution: {
       gujarat: gujaratRow.count,
       allIndia: allIndiaRow.count,
@@ -382,6 +441,8 @@ module.exports = {
   deleteScholarship,
   toggleScholarshipFeature,
   toggleScholarshipVerify,
+  recordScholarshipView,
+  getScholarshipViewsAnalytics,
   getDatabaseStats,
   getAdminDashboardStats,
   getActivityLogs,

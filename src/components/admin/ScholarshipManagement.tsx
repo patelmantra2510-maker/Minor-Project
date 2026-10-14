@@ -94,6 +94,10 @@ export const ScholarshipManagement: React.FC<ScholarshipManagementProps> = ({
 
   const targetDeleteScholarship = scholarships.find((s) => s.id === deletingId);
 
+  const totalViews = useMemo(() => {
+    return scholarships.reduce((sum, s) => sum + (s.views || 0), 0);
+  }, [scholarships]);
+
   return (
     <div className="space-y-6 animate-page-enter">
       {/* Action Header */}
@@ -103,7 +107,7 @@ export const ScholarshipManagement: React.FC<ScholarshipManagementProps> = ({
             Scholarship Directory Management
           </h2>
           <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-            Viewing {filteredScholarships.length} of {scholarships.length} scholarships stored in SQLite database.
+            Viewing {filteredScholarships.length} of {scholarships.length} scholarships stored in SQLite database • {totalViews.toLocaleString()} total views across all schemes.
           </p>
         </div>
 
@@ -214,6 +218,7 @@ export const ScholarshipManagement: React.FC<ScholarshipManagementProps> = ({
                 <th className="py-3.5 px-3">State / Type</th>
                 <th className="py-3.5 px-3">Benefits</th>
                 <th className="py-3.5 px-3">Deadline</th>
+                <th className="py-3.5 px-3 text-center">Views</th>
                 <th className="py-3.5 px-3 text-center">Verified</th>
                 <th className="py-3.5 px-3 text-center">Featured</th>
                 <th className="py-3.5 px-4 text-right">Actions</th>
@@ -222,7 +227,7 @@ export const ScholarshipManagement: React.FC<ScholarshipManagementProps> = ({
             <tbody className="divide-y divide-stone-100 dark:divide-emerald-950/40">
               {filteredScholarships.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-stone-400">
+                  <td colSpan={8} className="py-12 text-center text-stone-400">
                     No scholarships match your filters or search criteria.
                   </td>
                 </tr>
@@ -279,6 +284,14 @@ export const ScholarshipManagement: React.FC<ScholarshipManagementProps> = ({
                           : 'bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400'
                       }`}>
                         {s.status}
+                      </span>
+                    </td>
+
+                    {/* Views */}
+                    <td className="py-4 px-3 text-center whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300">
+                        <Eye className="w-3.5 h-3.5 text-stone-400" />
+                        <span>{(s.views || 0).toLocaleString()}</span>
                       </span>
                     </td>
 

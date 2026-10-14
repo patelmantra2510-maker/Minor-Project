@@ -12,6 +12,7 @@ import {
   PlusCircle,
   CheckCircle2,
   Users,
+  Eye,
 } from 'lucide-react';
 
 interface AdminDashboardProps {
@@ -48,6 +49,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const featuredCount = stats?.featuredCount ?? 0;
   const categoriesCount = stats?.categories?.totalDistinctCategories ?? 0;
   const openCount = stats?.openCount ?? 0;
+  const totalViews = stats?.totalViews ?? 0;
   const gujaratCount = stats?.stateDistribution?.gujarat ?? 0;
   const allIndiaCount = stats?.stateDistribution?.allIndia ?? 0;
   const recentUpdated: Scholarship[] = stats?.recentUpdated || [];
@@ -99,7 +101,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       </div>
 
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4">
         {/* Total Scholarships */}
         <div className="p-5 rounded-2xl bg-white dark:bg-[#101D19] border border-stone-200/90 dark:border-emerald-950/70 shadow-xs hover:border-emerald-300 transition-all">
           <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 flex items-center justify-center mb-3">
@@ -110,6 +112,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
           <div className="text-xs font-semibold text-stone-500 dark:text-stone-400 mt-1">
             Total Schemes
+          </div>
+        </div>
+
+        {/* Total Views */}
+        <div className="p-5 rounded-2xl bg-white dark:bg-[#101D19] border border-stone-200/90 dark:border-emerald-950/70 shadow-xs hover:border-emerald-300 transition-all">
+          <div className="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-400 flex items-center justify-center mb-3">
+            <Eye className="w-5 h-5" />
+          </div>
+          <div className="text-2xl font-extrabold text-stone-900 dark:text-white font-editorial">
+            {Number(totalViews).toLocaleString()}
+          </div>
+          <div className="text-xs font-semibold text-stone-500 dark:text-stone-400 mt-1">
+            Total Views
           </div>
         </div>
 

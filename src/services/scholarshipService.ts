@@ -75,6 +75,7 @@ export function mapRowToScholarship(row: SupabaseScholarshipRow): Scholarship {
     tags: row.tags || [],
     isVerified: (row as any).is_verified !== false && (row as any).is_verified !== 0,
     isFeatured: (row as any).is_featured === true || (row as any).is_featured === 1,
+    views: Number((row as any).views || 0),
     createdAt: row.created_at,
   };
 }
@@ -112,6 +113,28 @@ export function mapScholarshipToRow(s: Scholarship): Omit<SupabaseScholarshipRow
     last_updated: s.lastUpdated,
     tags: s.tags,
   };
+}
+
+function getLocalViews(): Record<string, number> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = localStorage.getItem('edvora_scholarship_views');
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function setLocalView(id: string): number {
+  if (typeof window === 'undefined') return 1;
+  try {
+    const views = getLocalViews();
+    views[id] = (views[id] || 0) + 1;
+    localStorage.setItem('edvora_scholarship_views', JSON.stringify(views));
+    return views[id];
+  } catch {
+    return 1;
+  }
 }
 
 /**
@@ -162,8 +185,12 @@ export async function getScholarships(): Promise<{
   }
 
   // 3. Fallback to bundled dataset
+  const localViews = getLocalViews();
   return {
-    data: SCHOLARSHIPS_DATA,
+    data: SCHOLARSHIPS_DATA.map((s) => ({
+      ...s,
+      views: localViews[s.id] ?? s.views ?? 0,
+    })),
     source: 'local_fallback',
   };
 }
@@ -202,9 +229,15 @@ export async function getScholarshipByIdOrSlug(idOrSlug: string): Promise<Schola
   }
 
   // 3. Static fallback
-  return (
-    SCHOLARSHIPS_DATA.find((s) => s.id === idOrSlug || s.slug === idOrSlug) || null
-  );
+  const fallback = SCHOLARSHIPS_DATA.find((s) => s.id === idOrSlug || s.slug === idOrSlug);
+  if (fallback) {
+    const localViews = getLocalViews();
+    return {
+      ...fallback,
+      views: localViews[fallback.id] ?? fallback.views ?? 0,
+    };
+  }
+  return null;
 }
 
 /**
@@ -413,5 +446,90 @@ export async function toggleVerifyScholarship(id: string, isVerified: boolean, t
   } catch {}
   const target = SCHOLARSHIPS_DATA.find((s) => s.id === id);
   return { ...(target || ({} as Scholarship)), isVerified };
+}
+
+/**
+ * Automatically records a view for an individual scholarship when a user views its detail page.
+ * Avoids admin sessions, duplicate page loads, and maintains resilient offline fallback.
+ */
+export async function recordScholarshipView(idOrSlug: string): Promise<{ success: boolean; views?: number }> {
+  if (!idOrSlug) return { success: false };
+
+  // 1. Exclude admin sessions: viewing in admin or admin previews must not increment public views
+  if (typeof window !== 'undefined') {
+    try {
+      const adminToken = sessionStorage.getItem('edvora_admin_token');
+      if (adminToken) {
+        return { success: false };
+      }
+    } catch {}
+  }
+
+  // 2. Prevent accidental duplicate counting on component re-mounts or refreshes within the same user session
+  const sessionKey = `edvora_viewed_${idOrSlug}`;
+  if (typeof window !== 'undefined') {
+    try {
+      if (sessionStorage.getItem(sessionKey)) {
+        return { success: false };
+      }
+    } catch {}
+  }
+
+  // Generate or retrieve persistent browser session ID for server-side deduplication
+  let sessionId = '';
+  if (typeof window !== 'undefined') {
+    try {
+      sessionId = sessionStorage.getItem('edvora_session_id') || '';
+      if (!sessionId) {
+        sessionId = 'sess_' + Math.random().toString(36).substring(2, 12) + '_' + Date.now();
+        sessionStorage.setItem('edvora_session_id', sessionId);
+      }
+      sessionStorage.setItem(sessionKey, '1');
+    } catch {}
+  }
+
+  // 3. Send view tracking event to backend API
+  try {
+    const res = await fetch(`/api/scholarships/${encodeURIComponent(idOrSlug)}/view`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId }),
+    });
+    if (res.ok) {
+      const text = await res.text();
+      if (text) {
+        const data = JSON.parse(text);
+        return { success: true, views: data.views };
+      }
+      return { success: true };
+    }
+  } catch {
+    // Backend API offline / static hosting mode
+  }
+
+  // 4. Standalone fallback (Render static or offline mode)
+  const updatedCount = setLocalView(idOrSlug);
+  return { success: true, views: updatedCount };
+}
+
+/**
+ * Admin API: Fetch scholarship-wise view analytics
+ */
+export async function getScholarshipViewsAnalytics(token: string): Promise<{
+  totalViews: number;
+  scholarships: Array<{ id: string; slug: string; name: string; shortName: string; views: number }>;
+} | null> {
+  try {
+    const res = await fetch('/api/admin/scholarship-views', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.ok) {
+      const text = await res.text();
+      if (text) return JSON.parse(text);
+    }
+  } catch {}
+  return null;
 }
 

@@ -241,6 +241,21 @@ function edvoraSqlitePlugin(): Plugin {
           }
         }
 
+        // GET /api/admin/scholarship-views
+        if (url === '/api/admin/scholarship-views' && req.method === 'GET') {
+          if (!requireAdmin()) return;
+          try {
+            const data = dbMod.getScholarshipViewsAnalytics();
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(data));
+            return;
+          } catch (e: any) {
+            res.statusCode = 500;
+            res.end(JSON.stringify({ error: e?.message || 'Database error' }));
+            return;
+          }
+        }
+
         // GET /api/database/status
         if (url === '/api/database/status' && req.method === 'GET') {
           try {
@@ -349,10 +364,27 @@ function edvoraSqlitePlugin(): Plugin {
               });
               req.on('end', () => {
                 try {
-                  const item = JSON.parse(body);
+                  const payload = JSON.parse(body || '{}');
+                  const cleanSub = decodeURIComponent(subPath);
+
+                  // POST /api/scholarships/:id/view
+                  if (cleanSub.endsWith('/view')) {
+                    const targetId = cleanSub.replace(/\/view$/, '');
+                    const result = dbMod.recordScholarshipView(targetId, payload.sessionId);
+                    if (!result) {
+                      res.statusCode = 404;
+                      res.setHeader('Content-Type', 'application/json');
+                      res.end(JSON.stringify({ error: 'Scholarship not found' }));
+                      return;
+                    }
+                    res.setHeader('Content-Type', 'application/json');
+                    res.end(JSON.stringify({ success: true, ...result }));
+                    return;
+                  }
+
                   const token = getAuthToken();
                   const source = dbMod.verifyAdminToken(token) ? 'admin' : 'public_api';
-                  dbMod.insertOrUpdateScholarship(item, source);
+                  dbMod.insertOrUpdateScholarship(payload, source);
                   res.setHeader('Content-Type', 'application/json');
                   res.end(JSON.stringify({ success: true, message: 'Saved to SQLite database' }));
                 } catch (err: any) {

@@ -27,7 +27,11 @@ import {
   AlertCircle,
   CheckCircle2,
   KeyRound,
+  Clock,
 } from 'lucide-react';
+import { useScholarships } from '../context/ScholarshipContext';
+import { calculateDeadlineAlert } from '../utils/deadlineAlerts';
+import { StatusBadge } from '../components/common/Badge';
 
 interface AccountPageProps {
   onNavigate: (route: string) => void;
@@ -39,7 +43,25 @@ export const AccountPage: React.FC<AccountPageProps> = ({ onNavigate, studentAns
   const { t } = useLanguage();
   const { savedIds } = useSaved();
   const { compareIds, openCompareModal } = useCompare();
+  const { scholarships } = useScholarships();
   const isGoogleUser = user?.provider === 'google';
+
+  // Active deadline alerts for scholarships closing within 7 days
+  const approachingDeadlines = React.useMemo(() => {
+    return scholarships
+      .map((s) => ({
+        scholarship: s,
+        alert: calculateDeadlineAlert(s.applicationDeadline, s.applicationStart, s.status),
+      }))
+      .filter(
+        ({ alert }) =>
+          alert.effectiveStatus === 'Open' &&
+          alert.daysRemaining !== null &&
+          alert.daysRemaining >= 0 &&
+          alert.daysRemaining <= 7
+      )
+      .sort((a, b) => (a.alert.daysRemaining ?? 99) - (b.alert.daysRemaining ?? 99));
+  }, [scholarships]);
 
   // Profile completion calculation
   const [profilePercentage, setProfilePercentage] = useState<number>(0);
@@ -529,6 +551,82 @@ export const AccountPage: React.FC<AccountPageProps> = ({ onNavigate, studentAns
             </div>
           </div>
         </div>
+      </div>
+
+      {/* 2.5 ACTIVE DEADLINE ALERTS (DASHBOARD) */}
+      <div className="bg-white dark:bg-[#142420] rounded-3xl p-6 sm:p-7 border border-[#E8E2D7] dark:border-[#1E3A33] shadow-2xs space-y-4">
+        <div className="flex items-center justify-between border-b border-stone-100 dark:border-[#1E3A33] pb-3">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+              <Clock className="w-4 h-4" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold font-editorial text-stone-900 dark:text-white flex items-center gap-2">
+                <span>Active Deadline Alerts</span>
+                {approachingDeadlines.length > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200">
+                    {approachingDeadlines.length} urgent
+                  </span>
+                )}
+              </h2>
+              <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+                Scholarships closing within 7 days. Monitor and submit applications before deadlines expire.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => onNavigate('explore')}
+            className="text-xs font-semibold text-[#065F46] dark:text-emerald-400 hover:underline cursor-pointer"
+          >
+            Explore all
+          </button>
+        </div>
+
+        {approachingDeadlines.length === 0 ? (
+          <div className="p-4 rounded-2xl bg-stone-50 dark:bg-[#182E29] text-xs text-stone-500 dark:text-stone-400 text-center">
+            No scholarships closing within the next 7 days. All monitored schemes are on regular schedule.
+          </div>
+        ) : (
+          <div className="divide-y divide-stone-100 dark:divide-[#1E3A33]">
+            {approachingDeadlines.slice(0, 4).map(({ scholarship: s, alert }) => (
+              <div
+                key={s.id}
+                className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 first:pt-1 last:pb-1"
+              >
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <StatusBadge
+                      deadline={s.applicationDeadline}
+                      startDate={s.applicationStart}
+                      overrideStatus={s.status}
+                    />
+                    <span
+                      onClick={() => onNavigate(`scholarships/${s.slug}`)}
+                      className="text-xs sm:text-sm font-bold text-stone-900 dark:text-stone-100 hover:text-emerald-700 dark:hover:text-emerald-400 cursor-pointer truncate"
+                    >
+                      {s.name}
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5 flex items-center gap-2">
+                    <span className="truncate">{s.provider}</span>
+                    <span>•</span>
+                    <span className="font-semibold text-stone-700 dark:text-stone-300">
+                      Closes {alert.formattedDate} ({alert.daysRemaining === 0 ? 'Today' : `${alert.daysRemaining} days left`})
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => onNavigate(`scholarships/${s.slug}`)}
+                  className="px-3 py-1.5 rounded-xl bg-stone-100 dark:bg-[#1E3A33] hover:bg-stone-200 dark:hover:bg-[#28483F] text-stone-800 dark:text-stone-200 text-xs font-bold transition-colors cursor-pointer self-start sm:self-auto shrink-0 flex items-center gap-1"
+                >
+                  <span>Apply Before Deadline</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 3. SECURITY & CREDENTIALS SECTION */}

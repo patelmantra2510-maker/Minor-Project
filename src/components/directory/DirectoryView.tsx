@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAI } from '../../context/AIContext';
+import { calculateDeadlineAlert } from '../../utils/deadlineAlerts';
 
 interface DirectoryViewProps {
   initialLocationTab?: 'all' | 'Gujarat' | 'All India';
@@ -180,10 +181,26 @@ export const DirectoryView: React.FC<DirectoryViewProps> = ({
         }
       }
 
-      // 8. Application Status
+      // 8. Application Status with dynamic deadline alert evaluation
       if (statusFilter !== 'all') {
-        if (s.status !== statusFilter) {
-          return false;
+        const alert = calculateDeadlineAlert(s.applicationDeadline, s.applicationStart, s.status);
+        if (statusFilter === 'closing_soon') {
+          if (!alert.isWarning || alert.effectiveStatus !== 'Open') {
+            return false;
+          }
+        } else if (statusFilter === 'Open') {
+          // Strictly exclude expired/past deadline scholarships from Open listings
+          if (alert.effectiveStatus !== 'Open') {
+            return false;
+          }
+        } else if (statusFilter === 'Closed') {
+          if (alert.effectiveStatus !== 'Closed') {
+            return false;
+          }
+        } else if (statusFilter === 'Opening Soon') {
+          if (alert.effectiveStatus !== 'Opening Soon') {
+            return false;
+          }
         }
       }
 
@@ -192,20 +209,24 @@ export const DirectoryView: React.FC<DirectoryViewProps> = ({
 
     // Sort
     list.sort((a, b) => {
+      const alertA = calculateDeadlineAlert(a.applicationDeadline, a.applicationStart, a.status);
+      const alertB = calculateDeadlineAlert(b.applicationDeadline, b.applicationStart, b.status);
+
       if (sortOption === 'recommended') {
-        // Neutral default: active schemes first, then by deadline
-        if (a.status !== b.status) {
-          if (a.status === 'Open') return -1;
-          if (b.status === 'Open') return 1;
+        // Neutral default: active schemes first (urgent/closing soon top), then closed
+        if (alertA.effectiveStatus !== alertB.effectiveStatus) {
+          if (alertA.effectiveStatus === 'Open') return -1;
+          if (alertB.effectiveStatus === 'Open') return 1;
         }
-        return (
-          new Date(a.applicationDeadline).getTime() - new Date(b.applicationDeadline).getTime()
-        );
+        const daysA = alertA.daysRemaining ?? 999;
+        const daysB = alertB.daysRemaining ?? 999;
+        return daysA - daysB;
       }
       if (sortOption === 'deadline') {
-        return (
-          new Date(a.applicationDeadline).getTime() - new Date(b.applicationDeadline).getTime()
-        );
+        // Prioritize closest deadlines first (0 days, 1 day, 2 days...)
+        const daysA = alertA.daysRemaining ?? 999;
+        const daysB = alertB.daysRemaining ?? 999;
+        return daysA - daysB;
       }
       if (sortOption === 'updated') {
         return new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime();
@@ -673,9 +694,10 @@ export const DirectoryView: React.FC<DirectoryViewProps> = ({
                   className="w-full p-2 rounded-xl bg-stone-50 dark:bg-[#1C3630] border border-stone-200 dark:border-[#23453E] text-slate-800 dark:text-stone-200 font-medium focus:outline-none cursor-pointer"
                 >
                   <option value="all">{t('directory.allStatus', undefined, 'All Status')}</option>
+                  <option value="closing_soon">⏳ Deadline Soon (≤ 7 days)</option>
                   <option value="Open">{t('openStatus', undefined, 'Open')}</option>
                   <option value="Opening Soon">{t('openingSoonStatus', undefined, 'Opening Soon')}</option>
-                  <option value="Closed">{t('closedStatus', undefined, 'Closed')}</option>
+                  <option value="Closed">{t('closedStatus', undefined, 'Closed / Expired')}</option>
                 </select>
               </div>
 
@@ -894,18 +916,24 @@ export const DirectoryView: React.FC<DirectoryViewProps> = ({
                   {t('directory.applicationStatus', undefined, 'Status')}
                 </label>
                 <div className="flex flex-wrap gap-1.5">
-                  {['all', 'Open', 'Opening Soon', 'Closed'].map((st) => (
+                  {[
+                    { id: 'all', label: t('directory.allStatus', undefined, 'All') },
+                    { id: 'closing_soon', label: '⏳ Deadline Soon' },
+                    { id: 'Open', label: t('openStatus', undefined, 'Open') },
+                    { id: 'Opening Soon', label: t('openingSoonStatus', undefined, 'Opening Soon') },
+                    { id: 'Closed', label: t('closedStatus', undefined, 'Closed / Expired') },
+                  ].map((st) => (
                     <button
-                      key={st}
+                      key={st.id}
                       type="button"
-                      onClick={() => setStatusFilter(st)}
-                      className={`px-3 py-1.5 rounded-xl font-semibold border transition-all cursor-pointer ${
-                        statusFilter === st
+                      onClick={() => setStatusFilter(st.id)}
+                      className={`px-3 py-1.5 rounded-xl font-semibold border transition-all cursor-pointer text-xs ${
+                        statusFilter === st.id
                           ? 'bg-[#064E3B] text-amber-50 border-[#064E3B]'
                           : 'bg-stone-50 dark:bg-[#1C3630] border-stone-200 dark:border-[#23453E] text-stone-700 dark:text-stone-300'
                       }`}
                     >
-                      {st === 'all' ? t('directory.allStatus', undefined, 'All') : st}
+                      {st.label}
                     </button>
                   ))}
                 </div>

@@ -4,6 +4,7 @@ import { useSaved } from '../../context/SavedContext';
 import { useCompare } from '../../context/CompareContext';
 import { StatusBadge, MatchBadge } from '../common/Badge';
 import { formatDate } from '../../utils/dateUtils';
+import { calculateDeadlineAlert } from '../../utils/deadlineAlerts';
 import { SCHOLARSHIPS_DATA } from '../../data/scholarships';
 import { ScholarshipCard } from './ScholarshipCard';
 import {
@@ -18,6 +19,7 @@ import {
   GraduationCap,
   FileText,
   AlertCircle,
+  AlertTriangle,
   Share2,
   Clock,
   Ban,
@@ -135,32 +137,48 @@ export const ScholarshipDetailPage: React.FC<ScholarshipDetailPageProps> = ({
     ].filter(Boolean) as string[];
   }, [scholarship]);
 
-  // Deadline & Countdown Calculation
-  const deadlineInfo = useMemo(() => {
-    if (!scholarship.applicationDeadline) {
-      return {
-        label: t('detail.deadlineUnavailable', undefined, 'Deadline information unavailable'),
-        isClosed: false,
-      };
-    }
-    const deadline = new Date(scholarship.applicationDeadline);
-    const now = new Date();
-    const diffDays = Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  // Unified Deadline Alert Calculation
+  const deadlineAlert = useMemo(
+    () =>
+      calculateDeadlineAlert(
+        scholarship.applicationDeadline,
+        scholarship.applicationStart,
+        scholarship.status
+      ),
+    [scholarship.applicationDeadline, scholarship.applicationStart, scholarship.status]
+  );
 
-    if (diffDays <= 0 || scholarship.status === 'Closed') {
+  const deadlineInfo = useMemo(() => {
+    if (deadlineAlert.isUnverified) {
       return {
-        label: t('detail.applicationClosed', undefined, 'Application Closed'),
-        isClosed: true,
-        formatted: formatDate(scholarship.applicationDeadline),
+        label: t('deadline.notVerified', undefined, 'Deadline not verified'),
+        isClosed: false,
+        formatted: 'Deadline not verified',
       };
     }
+    if (deadlineAlert.isExpired || deadlineAlert.effectiveStatus === 'Closed') {
+      return {
+        label: t('detail.applicationClosed', undefined, 'Application Closed (Deadline Passed)'),
+        isClosed: true,
+        formatted: deadlineAlert.formattedDate,
+      };
+    }
+    if (deadlineAlert.daysRemaining === 0) {
+      return {
+        label: `${deadlineAlert.formattedDate} • ${t('deadline.closingToday', undefined, 'Deadline Today!')}`,
+        isClosed: false,
+        days: 0,
+        formatted: deadlineAlert.formattedDate,
+      };
+    }
+    const days = deadlineAlert.daysRemaining ?? 0;
     return {
-      label: `${formatDate(scholarship.applicationDeadline)} • ${diffDays} ${t('detail.daysRemaining', { count: diffDays }, `${diffDays} days remaining`)}`,
+      label: `${deadlineAlert.formattedDate} • ${days} ${t('detail.daysRemaining', { count: days }, `${days} days remaining`)}`,
       isClosed: false,
-      days: diffDays,
-      formatted: formatDate(scholarship.applicationDeadline),
+      days: deadlineAlert.daysRemaining,
+      formatted: deadlineAlert.formattedDate,
     };
-  }, [scholarship.applicationDeadline, scholarship.status, t]);
+  }, [deadlineAlert, t]);
 
   // Related Scholarships (3 verified schemes with similar state, education level, or type)
   const relatedScholarships = useMemo(() => {
@@ -242,6 +260,75 @@ export const ScholarshipDetailPage: React.FC<ScholarshipDetailPageProps> = ({
         </div>
       </div>
 
+      {/* Urgency Alert Banner for Approaching Deadlines / Expired Schemes */}
+      {deadlineAlert.urgency === 'closing_today' && (
+        <div className="mb-6 p-4 rounded-2xl bg-rose-600 text-white shadow-md animate-pulse flex items-center justify-between gap-3 text-xs sm:text-sm font-semibold">
+          <div className="flex items-center gap-2.5">
+            <AlertTriangle className="w-5 h-5 shrink-0 text-white" />
+            <div>
+              <span className="font-extrabold uppercase tracking-wide block sm:inline">Deadline Today! </span>
+              <span>This scholarship closes tonight! Complete and submit your application on the official portal before 11:59 PM.</span>
+            </div>
+          </div>
+          {scholarship.applicationWebsite && (
+            <a
+              href={scholarship.applicationWebsite}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 px-3.5 py-1.5 rounded-xl font-bold text-xs bg-white text-rose-900 hover:bg-rose-50 flex items-center gap-1.5 transition-all shadow-xs"
+            >
+              <span>Apply Now</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          )}
+        </div>
+      )}
+
+      {deadlineAlert.urgency === 'urgent' && (
+        <div className="mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-800 flex items-center justify-between gap-3 text-xs sm:text-sm font-semibold">
+          <div className="flex items-center gap-2.5">
+            <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600 dark:text-rose-400" />
+            <div>
+              <span className="font-bold text-rose-700 dark:text-rose-300 block sm:inline">Apply Now — Closing Soon: </span>
+              <span>This scholarship closes in {deadlineAlert.daysRemaining} days ({deadlineAlert.formattedDate}). Submit your documents promptly.</span>
+            </div>
+          </div>
+          {scholarship.applicationWebsite && (
+            <a
+              href={scholarship.applicationWebsite}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 px-3.5 py-1.5 rounded-xl font-bold text-xs bg-rose-600 hover:bg-rose-700 text-white flex items-center gap-1.5 transition-all shadow-xs"
+            >
+              <span>Apply Online</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          )}
+        </div>
+      )}
+
+      {deadlineAlert.urgency === 'closing_soon' && (
+        <div className="mb-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 border border-amber-200 dark:border-amber-800 flex items-center justify-between gap-3 text-xs sm:text-sm font-semibold">
+          <div className="flex items-center gap-2.5">
+            <Clock className="w-5 h-5 shrink-0 text-amber-600 dark:text-amber-400" />
+            <div>
+              <span className="font-bold text-amber-800 dark:text-amber-300 block sm:inline">Deadline Soon: </span>
+              <span>Applications close in {deadlineAlert.daysRemaining} days on {deadlineAlert.formattedDate}.</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deadlineAlert.isExpired && (
+        <div className="mb-6 p-4 rounded-2xl bg-stone-100 dark:bg-stone-900/70 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-800 flex items-center gap-3 text-xs sm:text-sm font-medium">
+          <Ban className="w-5 h-5 shrink-0 text-stone-500" />
+          <div>
+            <span className="font-bold text-stone-900 dark:text-stone-100 block sm:inline">Deadline Passed: </span>
+            <span>The application deadline for this cycle passed on {deadlineAlert.formattedDate}. This scheme is no longer accepting new submissions.</span>
+          </div>
+        </div>
+      )}
+
       {/* ========================================================================= */}
       {/* 2. SCHOLARSHIP HERO SECTION                                               */}
       {/* ========================================================================= */}
@@ -311,15 +398,28 @@ export const ScholarshipDetailPage: React.FC<ScholarshipDetailPageProps> = ({
 
         {/* Primary Action Buttons */}
         <div className="flex flex-wrap items-center gap-3 mt-6 pt-5 border-t border-stone-100 dark:border-[#1E3A33]">
-          {/* Apply on Official Portal Button */}
-          {scholarship.applicationWebsite ? (
+          {/* Primary Action Button: Apply or Concluded */}
+          {deadlineAlert.isExpired ? (
+            <div className="flex items-center gap-2 px-5 py-3 rounded-xl bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 font-bold text-xs sm:text-sm border border-stone-200 dark:border-stone-700 select-none">
+              <Ban className="w-4 h-4 text-rose-500 shrink-0" />
+              <span>{t('deadline.deadlinePassed', undefined, 'Deadline Passed')}</span>
+            </div>
+          ) : scholarship.applicationWebsite ? (
             <a
               href={scholarship.applicationWebsite}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-5 py-3 rounded-xl bg-amber-400 hover:bg-amber-500 text-stone-950 font-bold text-xs sm:text-sm shadow-xs hover:shadow-md transition-all flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400"
+              className={`px-5 py-3 rounded-xl font-bold text-xs sm:text-sm shadow-xs hover:shadow-md transition-all flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 ${
+                deadlineAlert.isUrgent
+                  ? 'bg-rose-600 hover:bg-rose-700 text-white focus:ring-rose-500'
+                  : 'bg-amber-400 hover:bg-amber-500 text-stone-950 focus:ring-amber-400'
+              }`}
             >
-              <span>{t('detail.applyOfficial', undefined, 'Apply on Official Portal')}</span>
+              <span>
+                {deadlineAlert.isUrgent
+                  ? t('deadline.applyNowUrgent', undefined, 'Apply Now — Urgent')
+                  : t('detail.applyOfficial', undefined, 'Apply on Official Portal')}
+              </span>
               <ExternalLink className="w-4 h-4" />
             </a>
           ) : (
@@ -331,6 +431,19 @@ export const ScholarshipDetailPage: React.FC<ScholarshipDetailPageProps> = ({
             >
               <span>{t('detail.viewOfficialSource', undefined, 'View Official Source')}</span>
               <ExternalLink className="w-4 h-4" />
+            </a>
+          )}
+
+          {/* Secondary Official Portal Link if expired */}
+          {deadlineAlert.isExpired && (scholarship.applicationWebsite || scholarship.officialWebsite) && (
+            <a
+              href={scholarship.applicationWebsite || scholarship.officialWebsite}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-3 rounded-xl border border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800/60 text-stone-700 dark:text-stone-300 font-semibold text-xs transition-colors flex items-center gap-1.5"
+            >
+              <span>Official Portal</span>
+              <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
             </a>
           )}
 

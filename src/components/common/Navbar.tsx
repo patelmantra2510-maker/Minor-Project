@@ -6,6 +6,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../auth/AuthContext';
 import type { SupportedLanguage } from '../../data/translations';
 import { EdvoraLogo } from './EdvoraLogo';
+import { DeadlineNotificationDropdown } from './DeadlineNotificationDropdown';
 import {
   Sun,
   Moon,
@@ -327,6 +328,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
                 </button>
               </div>
             )}
+
+            {/* In-App Deadline Alert Notification Dropdown */}
+            <DeadlineNotificationDropdown onNavigate={onNavigate} />
 
             {/* Theme Toggle (Premium Compact Circular Control) */}
             <button

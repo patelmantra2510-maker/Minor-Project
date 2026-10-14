@@ -4,6 +4,7 @@ import { useSaved } from '../../context/SavedContext';
 import { useCompare } from '../../context/CompareContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { calculateDeadlineStatus } from '../../utils/dateUtils';
+import { StatusBadge } from '../common/Badge';
 import {
   Bookmark,
   ArrowRight,
@@ -13,6 +14,7 @@ import {
   Building2,
   ShieldCheck,
   Award,
+  Calendar,
 } from 'lucide-react';
 
 interface FeaturedScholarshipCardProps {
@@ -82,41 +84,12 @@ export const FeaturedScholarshipCard: React.FC<FeaturedScholarshipCardProps> = (
       <div className="p-5 sm:p-6 pb-4 flex-1 flex flex-col">
         {/* Top Status & Quick Action Controls */}
         <div className="flex items-center justify-between gap-2 mb-2.5">
-          {/* Status Badge + Remaining Days */}
-          <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-            <span
-              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase border ${
-                deadlineInfo.status === 'Open'
-                  ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800'
-                  : deadlineInfo.status === 'Opening Soon'
-                  ? 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800'
-                  : 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800'
-              }`}
-            >
-              <span
-                className={`w-1.5 h-1.5 rounded-full ${
-                  deadlineInfo.status === 'Open'
-                    ? 'bg-emerald-600 dark:bg-emerald-400'
-                    : deadlineInfo.status === 'Opening Soon'
-                    ? 'bg-amber-600 dark:bg-amber-400'
-                    : 'bg-rose-600 dark:bg-rose-400'
-                }`}
-              />
-              <span>
-                {deadlineInfo.status === 'Open'
-                  ? t('common.open', undefined, 'OPEN')
-                  : deadlineInfo.status === 'Opening Soon'
-                  ? t('common.openingSoon', undefined, 'SOON')
-                  : t('common.closed', undefined, 'CLOSED')}
-              </span>
-            </span>
-
-            {deadlineInfo.status === 'Open' && deadlineInfo.daysRemaining > 0 && (
-              <span className="text-[11px] font-medium text-stone-500 dark:text-stone-400 whitespace-nowrap">
-                {deadlineInfo.daysRemaining}{t('common.dLeft', undefined, 'd left')}
-              </span>
-            )}
-          </div>
+          {/* Standardized Urgency Status Badge */}
+          <StatusBadge
+            deadline={scholarship.applicationDeadline}
+            startDate={scholarship.applicationStart}
+            overrideStatus={scholarship.status}
+          />
 
           {/* Compare & Bookmark Buttons */}
           <div className="flex items-center gap-1.5 shrink-0">
@@ -236,6 +209,38 @@ export const FeaturedScholarshipCard: React.FC<FeaturedScholarshipCardProps> = (
 
         {/* Divider */}
         <div className="border-t border-stone-100 dark:border-[#1E3A33] my-3.5" />
+
+        {/* Exact Closing Date & Days Left */}
+        <div className="flex items-center justify-between text-[11px] text-stone-500 dark:text-stone-400 font-medium mb-3">
+          <span className="flex items-center gap-1.5 truncate">
+            <Calendar className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+            <span className="truncate">
+              {deadlineInfo.isUnverified ? (
+                <span className="italic text-stone-400">{t('deadline.notVerified', undefined, 'Deadline not verified')}</span>
+              ) : (
+                <>
+                  {t('detail.deadline', undefined, 'Closes')}:{' '}
+                  <strong className={deadlineInfo.isUrgent ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-stone-800 dark:text-stone-200'}>
+                    {deadlineInfo.formattedDate}
+                  </strong>
+                </>
+              )}
+            </span>
+          </span>
+          {deadlineInfo.daysRemaining !== null && deadlineInfo.status === 'Open' && (
+            <span
+              className={`shrink-0 font-semibold text-[10.5px] px-2 py-0.5 rounded-full ${
+                deadlineInfo.isUrgent
+                  ? 'bg-rose-100 text-rose-800 dark:bg-rose-950/70 dark:text-rose-300'
+                  : deadlineInfo.isWarning
+                  ? 'bg-amber-100 text-amber-900 dark:bg-amber-950/70 dark:text-amber-300'
+                  : 'bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300'
+              }`}
+            >
+              {deadlineInfo.daysRemaining === 0 ? t('deadline.closingToday', undefined, 'Today') : `${deadlineInfo.daysRemaining}d left`}
+            </span>
+          )}
+        </div>
 
         {/* Description - Consistent Height for Alignment */}
         <p className="text-xs text-stone-600 dark:text-stone-400 line-clamp-2 leading-relaxed min-h-[2.5rem]">

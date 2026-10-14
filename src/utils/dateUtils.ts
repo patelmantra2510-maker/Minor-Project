@@ -1,68 +1,39 @@
+import { calculateDeadlineAlert, type DeadlineUrgency } from './deadlineAlerts';
+
 export interface DeadlineStatusInfo {
-  status: 'Open' | 'Opening Soon' | 'Closed';
+  status: 'Open' | 'Opening Soon' | 'Closed' | 'Unverified';
   daysRemaining: number;
   displayText: string;
   badgeColorClass: string;
+  urgency?: DeadlineUrgency;
+  badgeText?: string;
+  formattedDate?: string;
+  isUrgent?: boolean;
+  isWarning?: boolean;
+  isExpired?: boolean;
+  isUnverified?: boolean;
 }
 
 export function calculateDeadlineStatus(
-  deadlineStr: string,
-  startDateStr?: string,
-  overrideStatus?: 'Open' | 'Opening Soon' | 'Closed'
+  deadlineStr?: string | null,
+  startDateStr?: string | null,
+  overrideStatus?: 'Open' | 'Opening Soon' | 'Closed' | string,
+  nowDate?: Date
 ): DeadlineStatusInfo {
-  const now = new Date();
-  const deadline = new Date(deadlineStr);
-  deadline.setHours(23, 59, 59, 999);
-
-  const diffMs = deadline.getTime() - now.getTime();
-  const daysRemaining = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-
-  // If start date is in the future
-  if (startDateStr) {
-    const start = new Date(startDateStr);
-    if (start.getTime() > now.getTime()) {
-      const daysUntilOpen = Math.ceil((start.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-      return {
-        status: 'Opening Soon',
-        daysRemaining: daysUntilOpen,
-        displayText: `Opens in ${daysUntilOpen} ${daysUntilOpen === 1 ? 'day' : 'days'}`,
-        badgeColorClass: 'bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 border-amber-200 dark:border-amber-800',
-      };
-    }
-  }
-
-  if (overrideStatus === 'Closed' || daysRemaining < 0) {
-    return {
-      status: 'Closed',
-      daysRemaining: 0,
-      displayText: 'Application Closed',
-      badgeColorClass: 'bg-rose-100 text-rose-800 dark:bg-rose-950/70 dark:text-rose-300 border-rose-200 dark:border-rose-800',
-    };
-  }
-
-  if (overrideStatus === 'Opening Soon') {
-    return {
-      status: 'Opening Soon',
-      daysRemaining: Math.max(daysRemaining, 0),
-      displayText: 'Opening Soon',
-      badgeColorClass: 'bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 border-amber-200 dark:border-amber-800',
-    };
-  }
-
-  if (daysRemaining === 0) {
-    return {
-      status: 'Open',
-      daysRemaining: 0,
-      displayText: 'Closes Today',
-      badgeColorClass: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
-    };
-  }
+  const alert = calculateDeadlineAlert(deadlineStr, startDateStr, overrideStatus, nowDate);
 
   return {
-    status: 'Open',
-    daysRemaining,
-    displayText: `${daysRemaining} ${daysRemaining === 1 ? 'day' : 'days'} remaining`,
-    badgeColorClass: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+    status: alert.effectiveStatus,
+    daysRemaining: alert.daysRemaining ?? 0,
+    displayText: alert.alertHeadline || alert.badgeText,
+    badgeColorClass: alert.badgeColorClass,
+    urgency: alert.urgency,
+    badgeText: alert.badgeText,
+    formattedDate: alert.formattedDate,
+    isUrgent: alert.isUrgent,
+    isWarning: alert.isWarning,
+    isExpired: alert.isExpired,
+    isUnverified: alert.isUnverified,
   };
 }
 

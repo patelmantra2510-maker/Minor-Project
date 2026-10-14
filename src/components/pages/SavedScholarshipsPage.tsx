@@ -2,11 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { useSaved } from '../../context/SavedContext';
 import { useCompare } from '../../context/CompareContext';
 import { useAI } from '../../context/AIContext';
+import { useScholarships } from '../../context/ScholarshipContext';
 import { SCHOLARSHIPS_DATA } from '../../data/scholarships';
 import { ScholarshipCard } from '../scholarship/ScholarshipCard';
 import { DocumentChecklistModal } from '../saved/DocumentChecklistModal';
 import { StatusBadge } from '../common/Badge';
-import { formatDate, getDaysUntilDeadline } from '../../utils/dateUtils';
+import { calculateDeadlineAlert } from '../../utils/deadlineAlerts';
 import {
   Bookmark,
   Compass,
@@ -40,6 +41,11 @@ export const SavedScholarshipsPage: React.FC<SavedScholarshipsPageProps> = ({
   const { savedIds, recentlyViewedIds, clearSaved, clearRecentlyViewed, toggleSave } = useSaved();
   const { compareIds, addToCompare, openCompareModal } = useCompare();
   const { openGlobalAI, sendMessage } = useAI();
+  const { scholarships: rawScholarships } = useScholarships();
+
+  const allScholarships = useMemo(() => {
+    return rawScholarships && rawScholarships.length > 0 ? rawScholarships : SCHOLARSHIPS_DATA;
+  }, [rawScholarships]);
 
   // Local UI states
   const [selectedRegion, setSelectedRegion] = useState<'all' | 'gujarat' | 'all-india'>('all');
@@ -49,25 +55,28 @@ export const SavedScholarshipsPage: React.FC<SavedScholarshipsPageProps> = ({
 
   // Filter saved scholarships by savedIds preserving insertion order or sort order
   const savedScholarships = useMemo(() => {
-    return SCHOLARSHIPS_DATA.filter((s) => savedIds.includes(s.id));
-  }, [savedIds]);
+    return allScholarships.filter((s) => savedIds.includes(s.id));
+  }, [allScholarships, savedIds]);
 
   const recentlyViewed = useMemo(() => {
-    return SCHOLARSHIPS_DATA.filter((s) => recentlyViewedIds.includes(s.id));
-  }, [recentlyViewedIds]);
+    return allScholarships.filter((s) => recentlyViewedIds.includes(s.id));
+  }, [allScholarships, recentlyViewedIds]);
 
   // Recommended popular starter schemes for empty state
   const popularSuggestions = useMemo(() => {
     const popularIds = ['mysy-gujarat', 'nsp-central-sector', 'pm-yasasvi-obc'];
-    return SCHOLARSHIPS_DATA.filter((s) => popularIds.includes(s.id));
-  }, []);
+    return allScholarships.filter((s) => popularIds.includes(s.id));
+  }, [allScholarships]);
 
-  // Check for upcoming urgent deadlines (< 14 days)
-  const urgentDeadlineScholarship = useMemo(() => {
-    return savedScholarships.find((s) => {
-      const days = getDaysUntilDeadline(s.applicationDeadline);
-      return days !== null && days >= 0 && days <= 14;
-    });
+  // Check for upcoming urgent deadlines (<= 7 days or closing_today/urgent/closing_soon)
+  const urgentAlertItem = useMemo(() => {
+    for (const s of savedScholarships) {
+      const alert = calculateDeadlineAlert(s.applicationDeadline, s.applicationStart, s.status);
+      if (alert.urgency === 'closing_today' || alert.urgency === 'urgent' || alert.urgency === 'closing_soon') {
+        return { scholarship: s, alert };
+      }
+    }
+    return null;
   }, [savedScholarships]);
 
   // Filtered & Sorted saved scholarships
@@ -84,8 +93,10 @@ export const SavedScholarshipsPage: React.FC<SavedScholarshipsPageProps> = ({
     // Sorting
     if (sortBy === 'deadline') {
       list.sort((a, b) => {
-        const daysA = getDaysUntilDeadline(a.applicationDeadline) ?? 999;
-        const daysB = getDaysUntilDeadline(b.applicationDeadline) ?? 999;
+        const alertA = calculateDeadlineAlert(a.applicationDeadline, a.applicationStart, a.status);
+        const alertB = calculateDeadlineAlert(b.applicationDeadline, b.applicationStart, b.status);
+        const daysA = alertA.daysRemaining ?? 9999;
+        const daysB = alertB.daysRemaining ?? 9999;
         return daysA - daysB;
       });
     } else if (sortBy === 'benefit') {
@@ -174,26 +185,50 @@ export const SavedScholarshipsPage: React.FC<SavedScholarshipsPageProps> = ({
         </button>
       </div>
 
-      {/* 3. Urgent Deadline Alert Banner (if deadline < 14 days away) */}
-      {urgentDeadlineScholarship && (
-        <div className="mb-8 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 flex items-start sm:items-center justify-between gap-3 animate-in slide-in-from-top-2">
+      {/* 3. Urgent Deadline Alert Banner (if deadline <= 7 days away or urgent/closing_today) */}
+      {urgentAlertItem && (
+        <div
+          className={`mb-8 p-4 rounded-2xl border flex items-start sm:items-center justify-between gap-3 animate-in slide-in-from-top-2 ${
+            urgentAlertItem.alert.urgency === 'closing_today' || urgentAlertItem.alert.urgency === 'urgent'
+              ? 'bg-rose-500/10 border-rose-500/30 text-rose-900 dark:text-rose-200'
+              : 'bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200'
+          }`}
+        >
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5 sm:mt-0" />
+            <AlertCircle
+              className={`w-5 h-5 shrink-0 mt-0.5 sm:mt-0 ${
+                urgentAlertItem.alert.urgency === 'closing_today' || urgentAlertItem.alert.urgency === 'urgent'
+                  ? 'text-rose-600 dark:text-rose-400'
+                  : 'text-amber-600 dark:text-amber-400'
+              }`}
+            />
             <div>
-              <p className="text-xs sm:text-sm font-bold">
-                Application Deadline Alert:{' '}
-                <span className="underline decoration-amber-500 underline-offset-2">
-                  {urgentDeadlineScholarship.name}
-                </span>
-              </p>
-              <p className="text-[11px] sm:text-xs text-amber-800/90 dark:text-amber-300/80 mt-0.5">
-                Closes in {getDaysUntilDeadline(urgentDeadlineScholarship.applicationDeadline)} days ({formatDate(urgentDeadlineScholarship.applicationDeadline)}). Ensure your documents are ready.
+              <div className="flex items-center gap-2 flex-wrap">
+                <StatusBadge
+                  deadline={urgentAlertItem.scholarship.applicationDeadline}
+                  startDate={urgentAlertItem.scholarship.applicationStart}
+                  overrideStatus={urgentAlertItem.scholarship.status}
+                />
+                <p className="text-xs sm:text-sm font-bold">
+                  <span className="underline decoration-current underline-offset-2">
+                    {urgentAlertItem.scholarship.name}
+                  </span>
+                </p>
+              </div>
+              <p className="text-[11px] sm:text-xs text-stone-700 dark:text-stone-300 mt-1">
+                {urgentAlertItem.alert.urgency === 'closing_today'
+                  ? 'Closes today! Ensure your final application and documents are submitted immediately.'
+                  : `Closes in ${urgentAlertItem.alert.daysRemaining} days (${urgentAlertItem.alert.formattedDate}). Ensure your documents are ready.`}
               </p>
             </div>
           </div>
           <button
             onClick={() => setIsChecklistOpen(true)}
-            className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shrink-0 shadow-2xs transition-colors"
+            className={`px-3 py-1.5 rounded-xl text-white font-bold text-xs shrink-0 shadow-2xs transition-colors ${
+              urgentAlertItem.alert.urgency === 'closing_today' || urgentAlertItem.alert.urgency === 'urgent'
+                ? 'bg-rose-600 hover:bg-rose-700'
+                : 'bg-amber-500 hover:bg-amber-600'
+            }`}
           >
             Check Documents
           </button>

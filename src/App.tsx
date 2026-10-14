@@ -18,6 +18,7 @@ import { Footer } from './components/common/Footer';
 import { Hero } from './components/home/Hero';
 import { ExploreByCategory } from './components/home/ExploreByCategory';
 import { FeaturedScholarships } from './components/home/FeaturedScholarships';
+import { DeadlineAlertBanner } from './components/home/DeadlineAlertBanner';
 import { HowItWorks } from './components/home/HowItWorks';
 import { DirectoryView } from './components/directory/DirectoryView';
 import { SavedScholarshipsPage } from './components/pages/SavedScholarshipsPage';
@@ -268,6 +269,10 @@ export function AppContent() {
               onFindScholarships={() => navigateTo('find')}
               onExploreScholarships={() => navigateTo('explore')}
               onAskAI={() => navigateTo('ai')}
+            />
+            <DeadlineAlertBanner
+              onViewDetails={(slug) => navigateTo(`scholarships/${slug}`)}
+              onExploreClosingSoon={() => navigateTo('explore')}
             />
             <HowItWorks onStart={() => navigateTo('find')} />
             <ExploreByCategory onSelectCategory={handleCategorySelect} />

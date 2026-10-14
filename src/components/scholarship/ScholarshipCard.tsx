@@ -20,7 +20,9 @@ import {
   CheckCircle2,
   XCircle,
   AlertTriangle,
+  Calendar,
 } from 'lucide-react';
+import { calculateDeadlineAlert } from '../../utils/deadlineAlerts';
 
 interface ScholarshipCardProps {
   scholarship: Scholarship;
@@ -46,9 +48,22 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
 
   const saved = isSaved(scholarship.id);
   const comparing = isComparing(scholarship.id);
+  const deadlineAlert = calculateDeadlineAlert(
+    scholarship.applicationDeadline,
+    scholarship.applicationStart,
+    scholarship.status
+  );
 
   return (
-    <div className="group bg-white dark:bg-[#142420] rounded-2xl border border-[#E8E2D7] dark:border-[#1E3A33] shadow-2xs hover:shadow-md hover:border-[#065F46] dark:hover:border-emerald-600 transition-all duration-200 flex flex-col justify-between overflow-hidden">
+    <div
+      className={`group bg-white dark:bg-[#142420] rounded-2xl border ${
+        deadlineAlert.isExpired
+          ? 'border-stone-200 dark:border-stone-800 opacity-85'
+          : deadlineAlert.isUrgent
+          ? 'border-rose-300 dark:border-rose-900/60 shadow-xs'
+          : 'border-[#E8E2D7] dark:border-[#1E3A33] shadow-2xs hover:shadow-md hover:border-[#065F46] dark:hover:border-emerald-600'
+      } transition-all duration-200 flex flex-col justify-between overflow-hidden`}
+    >
       {/* Top Banner with Badges */}
       <div className="p-5 sm:p-6 pb-4">
         <div className="flex items-start justify-between gap-3 mb-3">
@@ -132,6 +147,38 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
               </span>
             </div>
           </div>
+        </div>
+
+        {/* Exact Closing Date & Days Remaining Display */}
+        <div className="flex items-center justify-between text-[11px] pt-3 text-stone-500 dark:text-stone-400 font-medium">
+          <span className="flex items-center gap-1.5 truncate">
+            <Calendar className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+            <span className="truncate">
+              {deadlineAlert.isUnverified ? (
+                <span className="italic text-stone-400">{t('deadline.notVerified', undefined, 'Deadline not verified')}</span>
+              ) : (
+                <>
+                  {t('detail.deadline', undefined, 'Closes')}:{' '}
+                  <strong className={deadlineAlert.isUrgent ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-stone-800 dark:text-stone-200'}>
+                    {deadlineAlert.formattedDate}
+                  </strong>
+                </>
+              )}
+            </span>
+          </span>
+          {deadlineAlert.daysRemaining !== null && deadlineAlert.effectiveStatus === 'Open' && (
+            <span
+              className={`shrink-0 font-semibold text-[10.5px] px-2 py-0.5 rounded-full ${
+                deadlineAlert.isUrgent
+                  ? 'bg-rose-100 text-rose-800 dark:bg-rose-950/70 dark:text-rose-300'
+                  : deadlineAlert.isWarning
+                  ? 'bg-amber-100 text-amber-900 dark:bg-amber-950/70 dark:text-amber-300'
+                  : 'bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300'
+              }`}
+            >
+              {deadlineAlert.daysRemaining === 0 ? t('deadline.closingToday', undefined, 'Today') : `${deadlineAlert.daysRemaining}d left`}
+            </span>
+          )}
         </div>
 
         {/* Description */}

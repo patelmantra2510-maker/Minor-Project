@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface CompareContextType {
   compareIds: string[];
@@ -15,8 +15,34 @@ interface CompareContextType {
 const CompareContext = createContext<CompareContextType | undefined>(undefined);
 
 export const CompareProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [compareIds, setCompareIds] = useState<string[]>(() => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const stored = localStorage.getItem('edvora_compare_ids') || localStorage.getItem('vidyasetu_compare_ids');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            return parsed.slice(0, 3);
+          }
+        }
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  });
+
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('edvora_compare_ids', JSON.stringify(compareIds));
+      }
+    } catch (err) {
+      console.warn('Failed to persist compareIds:', err);
+    }
+  }, [compareIds]);
 
   const addToCompare = (id: string): boolean => {
     if (compareIds.includes(id)) return true;

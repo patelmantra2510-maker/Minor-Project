@@ -4,6 +4,8 @@ interface SavedContextType {
   savedIds: string[];
   recentlyViewedIds: string[];
   toggleSave: (id: string) => void;
+  saveScholarship: (id: string) => void;
+  removeSaved: (id: string) => void;
   isSaved: (id: string) => boolean;
   addRecentlyViewed: (id: string) => void;
   clearSaved: () => void;
@@ -39,6 +41,14 @@ export const SavedProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     localStorage.setItem('edvora_recent_ids', JSON.stringify(recentlyViewedIds));
   }, [recentlyViewedIds]);
 
+  const saveScholarship = (id: string) => {
+    setSavedIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  };
+
+  const removeSaved = (id: string) => {
+    setSavedIds((prev) => prev.filter((item) => item !== id));
+  };
+
   const toggleSave = (id: string) => {
     setSavedIds((prev) => {
       if (prev.includes(id)) {
@@ -72,6 +82,8 @@ export const SavedProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       value={{
         savedIds,
         recentlyViewedIds,
+        saveScholarship,
+        removeSaved,
         toggleSave,
         isSaved,
         addRecentlyViewed,

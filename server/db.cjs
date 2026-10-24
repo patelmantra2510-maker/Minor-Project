@@ -107,6 +107,16 @@ try {
   }
 } catch (e) {}
 
+// Automatically update expired scholarships on startup
+try {
+  const todayStr = new Date().toISOString().split('T')[0];
+  db.prepare(`
+    UPDATE scholarships 
+    SET status = 'Closed' 
+    WHERE application_deadline < ? AND application_deadline != '' AND status != 'Closed'
+  `).run(todayStr);
+} catch (e) {}
+
 // Simple and secure token authentication for admin actions
 const ADMIN_SECRET = process.env.ADMIN_SECRET || 'edvora_admin_secure_salt_key_2026';
 const ADMIN_DEFAULT_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
@@ -139,6 +149,25 @@ function logActivity(action, entityType, entityId, details) {
 
 function parseRow(row) {
   if (!row) return null;
+
+  let currentStatus = row.status;
+  if (row.application_deadline) {
+    const todayStr = new Date().toISOString().split('T')[0];
+    if (row.application_deadline < todayStr) {
+      currentStatus = 'Closed';
+    } else if (currentStatus === 'Open' || !currentStatus) {
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      const dl = new Date(row.application_deadline);
+      if (!isNaN(dl.getTime())) {
+        const diffDays = Math.ceil((dl.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        if (diffDays <= 7 && diffDays >= 0) {
+          currentStatus = 'Closing Soon';
+        }
+      }
+    }
+  }
+
   return {
     id: row.id,
     slug: row.slug,
@@ -158,7 +187,7 @@ function parseRow(row) {
     benefits: JSON.parse(row.benefits || '{}'),
     applicationStart: row.application_start,
     applicationDeadline: row.application_deadline,
-    status: row.status,
+    status: currentStatus,
     documents: JSON.parse(row.documents || '[]'),
     description: row.description,
     whoCanApply: JSON.parse(row.who_can_apply || '[]'),

@@ -24,6 +24,11 @@ logger = logging.getLogger("edvora.intelligence_api")
 async def lifespan(app: FastAPI):
     """Lifecycle manager: starts scheduler on startup and cleans up on shutdown."""
     logger.info("Starting Edvora Scholarship Intelligence Engine...")
+    try:
+        from .sync_service import refresh_all_scholarship_statuses
+        refresh_all_scholarship_statuses()
+    except Exception as e:
+        logger.warning(f"Initial status refresh: {e}")
     scheduler.start()
     yield
     logger.info("Stopping Edvora Scholarship Intelligence Engine...")

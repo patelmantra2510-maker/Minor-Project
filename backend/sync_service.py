@@ -232,3 +232,30 @@ def sync_scholarship(item: ExtractedScholarship) -> Tuple[str, Dict[str, Any]]:
 
     finally:
         conn.close()
+
+
+def refresh_all_scholarship_statuses() -> int:
+    """
+    Recomputes application status for all scholarships in SQLite based on current date.
+    - If deadline has passed -> 'Closed'
+    - If deadline is within 7 days -> 'Closing Soon'
+    Returns count of updated records.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    updated = 0
+    try:
+        cursor.execute("""
+            UPDATE scholarships
+            SET status = 'Closed', last_updated = ?
+            WHERE application_deadline < ? AND application_deadline != '' AND status != 'Closed'
+        """, (today_str, today_str))
+        updated += cursor.rowcount
+        conn.commit()
+        if updated > 0:
+            logger.info(f"Refreshed scholarship statuses: {updated} records updated to 'Closed'.")
+        return updated
+    finally:
+        conn.close()
+

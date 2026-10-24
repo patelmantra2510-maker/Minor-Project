@@ -141,7 +141,12 @@ class IntelligenceScheduler:
                     "status": "error",
                     "error": err_msg,
                 }
-                logger.warn(f"[{source_name}] FAILED: {err_msg}")
+        # Re-evaluate calendar status for all existing scholarships
+        try:
+            from .sync_service import refresh_all_scholarship_statuses
+            refresh_all_scholarship_statuses()
+        except Exception as e:
+            logger.warning(f"Status refresh warning in run_cycle: {e}")
 
         completed_at = datetime.now().isoformat()
         total_elapsed = round(time.time() - start_time_perf, 2)

@@ -10,6 +10,7 @@ from .collectors import (
     DigitalGujaratCollector,
     AICTECollector,
     UGCCollector,
+    MYSYCollector,
 )
 from .sync_service import sync_scholarship
 from .db import record_intelligence_run, update_source_status, get_db_connection
@@ -79,6 +80,7 @@ class IntelligenceScheduler:
         collectors = [
             ("nsp", "National Scholarship Portal", NSPCollector()),
             ("digital_gujarat", "Digital Gujarat", DigitalGujaratCollector()),
+            ("mysy_gujarat", "Mukhyamantri Yuva Swavalamban Yojana (MYSY)", MYSYCollector()),
             ("aicte", "AICTE India", AICTECollector()),
             ("ugc", "UGC India", UGCCollector()),
         ]

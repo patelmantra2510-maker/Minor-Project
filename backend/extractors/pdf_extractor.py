@@ -46,3 +46,36 @@ def fetch_and_extract_pdf_url(pdf_url: str) -> str:
     except Exception as e:
         logger.warn(f"Failed to fetch PDF at {pdf_url}: {e}")
         return ""
+
+def extract_text_from_pdf(source: Any) -> str:
+    """Extracts text from a PDF file path, URL, or bytes."""
+    if isinstance(source, bytes):
+        return extract_text_from_pdf_bytes(source)
+    if isinstance(source, str):
+        if source.startswith("http://") or source.startswith("https://"):
+            return fetch_and_extract_pdf_url(source)
+        try:
+            with open(source, "rb") as f:
+                return extract_text_from_pdf_bytes(f.read())
+        except Exception as e:
+            logger.warn(f"Failed to read local PDF {source}: {e}")
+    return ""
+
+def parse_scholarship_guideline_pdf(pdf_source: Any) -> Dict[str, Any]:
+    """Parses key guideline sections from a scholarship document PDF."""
+    text = extract_text_from_pdf(pdf_source)
+    from .html_extractor import (
+        parse_iso_date,
+        extract_income_limit,
+        extract_minimum_percentage,
+        extract_education_levels,
+        extract_documents,
+    )
+    return {
+        "raw_text_length": len(text),
+        "deadline": parse_iso_date(text),
+        "income_limit": extract_income_limit(text),
+        "minimum_percentage": extract_minimum_percentage(text),
+        "education_levels": extract_education_levels(text),
+        "documents": extract_documents(text),
+    }

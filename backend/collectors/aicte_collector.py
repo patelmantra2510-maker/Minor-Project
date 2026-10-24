@@ -34,14 +34,23 @@ class AICTECollector:
         results: List[ExtractedScholarship] = []
 
         try:
-            resp = self.session.get(
+            resp = None
+            urls_to_try = [
                 self.BASE_URL,
-                timeout=REQUEST_TIMEOUT_SECONDS,
-                verify=False
-            )
+                "https://www.aicte-india.org/schemes",
+                "https://www.aicte-india.org",
+            ]
+            for url in urls_to_try:
+                try:
+                    r = self.session.get(url, timeout=REQUEST_TIMEOUT_SECONDS, verify=False)
+                    if r.status_code == 200:
+                        resp = r
+                        break
+                except Exception:
+                    continue
 
-            if resp.status_code != 200:
-                logger.warn(f"AICTE portal returned status code {resp.status_code}")
+            if not resp or resp.status_code != 200:
+                logger.warn("AICTE portal endpoints unreachable")
                 return results
 
             soup = BeautifulSoup(resp.text, "html.parser")

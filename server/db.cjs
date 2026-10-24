@@ -174,16 +174,38 @@ function parseRow(row) {
   };
 }
 
-function getAllScholarships() {
-  const rows = db.prepare('SELECT * FROM scholarships ORDER BY name ASC').all();
+function getAllScholarships(includeUnverified = false) {
+  let query = 'SELECT * FROM scholarships';
+  if (!includeUnverified) {
+    query += " WHERE (is_verified = 1 OR is_verified IS NULL) AND (review_status IS NULL OR review_status = 'verified') AND (review_status != 'rejected' OR review_status IS NULL)";
+  }
+  query += ' ORDER BY name ASC';
+  const rows = db.prepare(query).all();
   return rows.map(parseRow);
 }
 
-function getScholarshipByIdOrSlug(idOrSlug) {
+function getScholarshipByIdOrSlug(idOrSlug, allowUnverified = false) {
   const row = db
     .prepare('SELECT * FROM scholarships WHERE id = ? OR slug = ?')
     .get(idOrSlug, idOrSlug);
-  return parseRow(row);
+  if (!row) return null;
+  const parsed = parseRow(row);
+  if (!allowUnverified && row.review_status === 'rejected') {
+    return null;
+  }
+  return parsed;
+}
+
+function rejectScholarshipRecord(id, reason = 'Rejected by administrator') {
+  const target = getScholarshipByIdOrSlug(id, true);
+  if (!target) return null;
+  db.prepare(`
+    UPDATE scholarships 
+    SET is_verified = 0, review_status = 'rejected', verification_notes = ?, last_verified_at = ?
+    WHERE id = ?
+  `).run(reason, new Date().toISOString(), target.id);
+  logActivity('REJECT', 'scholarship', target.id, `Admin rejected: ${reason}`);
+  return { id: target.id, status: 'rejected' };
 }
 
 function insertOrUpdateScholarship(s, source = 'system') {
@@ -441,6 +463,7 @@ module.exports = {
   deleteScholarship,
   toggleScholarshipFeature,
   toggleScholarshipVerify,
+  rejectScholarshipRecord,
   recordScholarshipView,
   getScholarshipViewsAnalytics,
   getDatabaseStats,

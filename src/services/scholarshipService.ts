@@ -683,13 +683,36 @@ export async function verifyScholarshipRecord(
     const res = await fetch(`/api/intelligence/verify/${encodeURIComponent(id)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ notes }),
+      body: JSON.stringify({ verificationNotes: notes }),
     });
     const text = await res.text();
     if (res.ok && text) {
       return JSON.parse(text);
     }
     return { success: false, error: text || 'Failed to verify scholarship' };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Network error' };
+  }
+}
+
+/**
+ * Mark a flagged or invalid scholarship as rejected so it is withheld from public display
+ */
+export async function rejectScholarshipRecord(
+  id: string,
+  rejectionReason: string = 'Rejected by administrator: unreliable, duplicate, or invalid information.'
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const res = await fetch(`/api/intelligence/reject/${encodeURIComponent(id)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rejectionReason }),
+    });
+    const text = await res.text();
+    if (res.ok && text) {
+      return JSON.parse(text);
+    }
+    return { success: false, error: text || 'Failed to reject scholarship' };
   } catch (err: any) {
     return { success: false, error: err?.message || 'Network error' };
   }

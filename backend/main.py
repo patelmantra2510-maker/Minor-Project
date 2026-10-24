@@ -163,15 +163,15 @@ async def get_intelligence_runs(limit: int = 15):
 
 @app.get("/api/intelligence/flagged")
 async def get_flagged_scholarships():
-    """Returns scholarships requiring admin review due to conflicting source data."""
+    """Returns scholarships requiring admin review due to incomplete, conflicting, or unverified source data."""
     conn = get_db_connection()
     try:
         rows = conn.execute("""
             SELECT id, slug, name, short_name, provider, state, status,
                    application_deadline, source_url, source_domain,
-                   verification_notes, review_status, last_verified_at
+                   verification_notes, review_status, last_verified_at, is_verified
             FROM scholarships
-            WHERE review_status = 'flagged_for_review' OR is_verified = 0
+            WHERE review_status IN ('flagged_for_review', 'pending_review', 'rejected') OR is_verified = 0
             ORDER BY id DESC;
         """).fetchall()
         return [dict(r) for r in rows]
@@ -182,9 +182,12 @@ class VerifyPayload(BaseModel):
     isVerified: bool = True
     verificationNotes: Optional[str] = "Manually approved by administrator."
 
+class RejectPayload(BaseModel):
+    rejectionReason: Optional[str] = "Rejected by administrator: unreliable, duplicate, or invalid information."
+
 @app.post("/api/intelligence/verify/{scholarship_id}")
 async def verify_flagged_scholarship(scholarship_id: str, payload: VerifyPayload):
-    """Allows an administrator to manually verify or resolve a flagged record."""
+    """Allows an administrator to manually verify and publish a record."""
     conn = get_db_connection()
     try:
         cursor = conn.cursor()
@@ -211,6 +214,38 @@ async def verify_flagged_scholarship(scholarship_id: str, payload: VerifyPayload
         )
 
         return {"success": True, "id": scholarship_id, "status": "verified"}
+    finally:
+        conn.close()
+
+@app.post("/api/intelligence/reject/{scholarship_id}")
+async def reject_flagged_scholarship(scholarship_id: str, payload: RejectPayload):
+    """Allows an administrator to mark a record as rejected so it is withheld from public display."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, name FROM scholarships WHERE id = ?;", (scholarship_id,))
+        row = cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Scholarship not found.")
+
+        cursor.execute("""
+            UPDATE scholarships
+            SET is_verified = 0,
+                review_status = 'rejected',
+                verification_notes = ?,
+                last_verified_at = ?
+            WHERE id = ?;
+        """, (payload.rejectionReason, datetime.now().isoformat(), scholarship_id))
+        conn.commit()
+
+        log_audit_activity(
+            "REJECT",
+            "scholarship",
+            scholarship_id,
+            f"Admin rejected: {payload.rejectionReason}"
+        )
+
+        return {"success": True, "id": scholarship_id, "status": "rejected"}
     finally:
         conn.close()
 
@@ -261,12 +296,26 @@ async def list_scholarships(
     state: Optional[str] = None,
     education: Optional[str] = None,
     category: Optional[str] = None,
-    status: Optional[str] = None
+    status: Optional[str] = None,
+    include_unverified: bool = False
 ):
-    """Returns all scholarships with optional query filters."""
+    """
+    Returns scholarships. By default, returns ONLY verified records.
+    Unverified, pending-review, and rejected scholarships are strictly excluded from public display.
+    """
     conn = get_db_connection()
     try:
-        rows = conn.execute("SELECT * FROM scholarships ORDER BY name ASC;").fetchall()
+        if include_unverified:
+            rows = conn.execute("SELECT * FROM scholarships ORDER BY name ASC;").fetchall()
+        else:
+            rows = conn.execute("""
+                SELECT * FROM scholarships 
+                WHERE (is_verified = 1 OR is_verified IS NULL) 
+                  AND (review_status IS NULL OR review_status = 'verified')
+                  AND (review_status != 'rejected' OR review_status IS NULL)
+                ORDER BY name ASC;
+            """).fetchall()
+
         results = [row_to_scholarship_dict(r) for r in rows]
 
         if state and state.lower() != "all":

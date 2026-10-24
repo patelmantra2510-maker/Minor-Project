@@ -35,7 +35,7 @@ def sync_scholarship(item: ExtractedScholarship) -> Tuple[str, Dict[str, Any]]:
         item.status = compute_application_status(item.applicationStart, item.applicationDeadline)
 
         # 2. Duplicate Detection
-        # Match by ID, slug, or matching normalized name and provider
+        # Match by ID, slug, normalized name, or source / application URL
         cursor.execute("SELECT * FROM scholarships WHERE id = ? OR slug = ?;", (item.id, item.slug))
         existing_row = cursor.fetchone()
 
@@ -47,12 +47,45 @@ def sync_scholarship(item: ExtractedScholarship) -> Tuple[str, Dict[str, Any]]:
             """, (item.name,))
             existing_row = cursor.fetchone()
 
-        # 3. If Record Exists -> Update Changed Fields
+        if not existing_row and item.sourceUrl:
+            # Match exact scheme-specific deep URLs (exclude generic portal root domains)
+            path_segments = [p for p in item.sourceUrl.split("://")[-1].split("/") if p]
+            if len(path_segments) >= 2:
+                cursor.execute("""
+                    SELECT * FROM scholarships 
+                    WHERE source_url = ? AND source_url != '';
+                """, (item.sourceUrl,))
+                existing_row = cursor.fetchone()
+
+        # 3. If Record Exists -> Update Changed Fields Without Overwriting with Incomplete Data
         if existing_row:
             target_id = existing_row["id"]
             existing_hash = existing_row["raw_data_hash"] if "raw_data_hash" in existing_row.keys() else None
             existing_deadline = existing_row["application_deadline"]
             existing_status = existing_row["status"]
+
+            # Preserve existing rich fields if freshly extracted fields are empty or sparse
+            existing_docs = json.loads(existing_row["documents"] or "[]")
+            final_docs = item.documents if item.documents and len(item.documents) > 0 else existing_docs
+
+            existing_who = json.loads(existing_row["who_can_apply"] or "[]")
+            final_who = item.whoCanApply if item.whoCanApply and len(item.whoCanApply) > 0 else existing_who
+
+            existing_steps = json.loads(existing_row["how_to_apply_steps"] or "[]")
+            final_steps = item.howToApplySteps if item.howToApplySteps and len(item.howToApplySteps) > 0 else existing_steps
+
+            existing_desc = existing_row["description"] or ""
+            final_desc = item.description if len(item.description.strip()) > 30 else (existing_desc or item.description)
+
+            existing_benefits = json.loads(existing_row["benefits"] or "{}")
+            final_benefits = item.benefits.model_dump() if item.benefits.amountDescription else existing_benefits
+
+            # If existing scheme is rejected by admin, preserve rejection unless source published brand new verifiable scheme
+            final_review_status = item.reviewStatus
+            final_is_verified = 1 if item.isVerified else 0
+            if existing_row["review_status"] == "rejected":
+                final_review_status = "rejected"
+                final_is_verified = 0
 
             has_changes = (
                 item.rawHash != existing_hash or
@@ -79,26 +112,28 @@ def sync_scholarship(item: ExtractedScholarship) -> Tuple[str, Dict[str, Any]]:
                         last_verified_at = ?,
                         verification_notes = ?,
                         review_status = ?,
+                        is_verified = ?,
                         academic_year = ?
                     WHERE id = ?;
                 """, (
-                    item.applicationStart,
-                    item.applicationDeadline,
+                    item.applicationStart or existing_row["application_start"],
+                    item.applicationDeadline or existing_row["application_deadline"],
                     item.status,
-                    json.dumps(item.benefits.model_dump()),
-                    json.dumps(item.documents),
-                    item.description,
-                    json.dumps(item.whoCanApply),
-                    json.dumps(item.howToApplySteps),
+                    json.dumps(final_benefits),
+                    json.dumps(final_docs),
+                    final_desc,
+                    json.dumps(final_who),
+                    json.dumps(final_steps),
                     today_date,
-                    json.dumps(item.tags),
+                    json.dumps(item.tags or json.loads(existing_row["tags"] or "[]")),
                     item.sourceUrl,
                     item.sourceDomain,
                     item.rawHash,
                     now_iso,
                     item.verificationNotes,
-                    item.reviewStatus,
-                    item.academicYear,
+                    final_review_status,
+                    final_is_verified,
+                    item.academicYear or existing_row["academic_year"],
                     target_id
                 ))
                 conn.commit()

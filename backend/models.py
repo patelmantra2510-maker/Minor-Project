@@ -46,8 +46,9 @@ ApplicationStatus = Literal[
 
 ReviewStatus = Literal[
     'verified',
+    'pending_review',
     'flagged_for_review',
-    'pending_verification'
+    'rejected'
 ]
 
 class ScholarshipBenefitsModel(BaseModel):

@@ -15,6 +15,7 @@ import {
   getIntelligenceStatus,
   triggerIntelligenceScan,
   verifyScholarshipRecord,
+  rejectScholarshipRecord,
   type IntelligenceStatus,
   type IntelligenceSource,
   type IntelligenceRun,
@@ -118,6 +119,22 @@ export const IntelligenceMonitoring: React.FC<IntelligenceMonitoringProps> = ({
       }
     } catch (err) {
       console.error('Error approving scholarship:', err);
+    } finally {
+      setVerifyingId(null);
+    }
+  };
+
+  const handleRejectFlagged = async (scholarshipId: string) => {
+    setVerifyingId(scholarshipId);
+    try {
+      const res = await rejectScholarshipRecord(scholarshipId, 'Rejected by admin: unverified or conflicting data');
+      if (res.success) {
+        await fetchFlagged();
+        await fetchStatus();
+        if (onRefreshParent) onRefreshParent();
+      }
+    } catch (err) {
+      console.error('Error rejecting scholarship:', err);
     } finally {
       setVerifyingId(null);
     }
@@ -468,31 +485,49 @@ export const IntelligenceMonitoring: React.FC<IntelligenceMonitoringProps> = ({
                 Verification Queue is Clear
               </h4>
               <p className="text-xs text-stone-500 max-w-md mx-auto">
-                All 24 scholarships in the database are fully verified against official government portals with source URLs, confirmed eligibility criteria, and verified deadlines.
+                All {statusData?.totalScholarshipsInDb || 27} scholarships in the database are fully verified against official government portals with source URLs, confirmed eligibility criteria, and verified deadlines.
               </p>
             </div>
           ) : (
             <div className="divide-y divide-stone-100 dark:divide-emerald-950">
               {flaggedItems.map((item) => (
-                <div key={item.id} className="p-4 sm:p-5 flex items-center justify-between gap-4">
-                  <div>
-                    <h4 className="text-sm font-bold text-stone-900 dark:text-stone-100">
-                      {item.name}
-                    </h4>
+                <div key={item.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        (item as any).review_status === 'rejected'
+                          ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+                          : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                      }`}>
+                        {(item as any).review_status === 'rejected' ? 'Rejected' : 'Pending Review'}
+                      </span>
+                      <h4 className="text-sm font-bold text-stone-900 dark:text-stone-100 truncate">
+                        {item.name}
+                      </h4>
+                    </div>
                     <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
-                      Flagged reason: {(item as any).verification_notes || 'Requires manual review'}
+                      Review Reason: {(item as any).verification_notes || 'Requires manual review'}
                     </p>
-                    <div className="text-[11px] text-stone-400 mt-1 font-mono">
+                    <div className="text-[11px] text-stone-400 mt-1 font-mono truncate">
                       Source: {(item as any).source_url || 'Web scraper'}
                     </div>
                   </div>
-                  <button
-                    onClick={() => handleApproveFlagged(item.id)}
-                    disabled={verifyingId === item.id}
-                    className="px-3.5 py-2 rounded-xl bg-emerald-700 text-white font-bold text-xs hover:bg-emerald-800 transition-colors"
-                  >
-                    {verifyingId === item.id ? 'Approving...' : 'Approve & Publish'}
-                  </button>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => handleRejectFlagged(item.id)}
+                      disabled={verifyingId === item.id}
+                      className="px-3 py-1.5 rounded-xl border border-rose-300 dark:border-rose-900 text-rose-700 dark:text-rose-400 font-bold text-xs hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                    >
+                      {verifyingId === item.id ? 'Processing...' : 'Reject'}
+                    </button>
+                    <button
+                      onClick={() => handleApproveFlagged(item.id)}
+                      disabled={verifyingId === item.id}
+                      className="px-3.5 py-1.5 rounded-xl bg-emerald-700 text-white font-bold text-xs hover:bg-emerald-800 transition-colors shadow-xs"
+                    >
+                      {verifyingId === item.id ? 'Approving...' : 'Approve & Publish'}
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

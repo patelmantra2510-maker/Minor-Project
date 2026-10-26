@@ -268,7 +268,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
           setIsQuestionnaireActive(false);
           setPreferredQuestionFieldId(undefined);
         }}
-        onFindScholarships={() => {
+        onFindScholarships={async () => {
+          await refreshProfile();
           setIsQuestionnaireActive(false);
           setPreferredQuestionFieldId(undefined);
           onNavigate('find');

@@ -245,6 +245,11 @@ export class LocalStorageProfileStorage implements ProfileStorage {
           this.memoryFallbackProfiles[targetUserId] = updatedProfile;
         }
       }
+      if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+        if (typeof CustomEvent !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('edvora:profile-updated'));
+        }
+      }
       return;
     }
 

@@ -13,6 +13,7 @@ import { AccountPage } from './pages/AccountPage';
 import { GuestProfileMigrationModal } from './components/auth/GuestProfileMigrationModal';
 import { detectGuestData } from './services/storage/profileMigration';
 
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { Navbar } from './components/common/Navbar';
 import { Footer } from './components/common/Footer';
 import { Hero } from './components/home/Hero';
@@ -405,7 +406,9 @@ export default function App() {
             <SavedProvider>
               <CompareProvider>
                 <StudentProfileProvider>
-                  <AppContent />
+                  <ErrorBoundary>
+                    <AppContent />
+                  </ErrorBoundary>
                 </StudentProfileProvider>
               </CompareProvider>
             </SavedProvider>

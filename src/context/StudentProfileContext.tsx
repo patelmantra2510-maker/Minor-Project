@@ -82,7 +82,7 @@ export const StudentProfileProvider: React.FC<{
     refreshProfile();
   }, [refreshProfile, currentUserId]);
 
-  // Multi-tab synchronization
+  // Multi-tab and in-tab synchronization
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -93,9 +93,15 @@ export const StudentProfileProvider: React.FC<{
       }
     };
 
+    const handleCustomEvent = () => {
+      refreshProfile();
+    };
+
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('edvora:profile-updated', handleCustomEvent);
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('edvora:profile-updated', handleCustomEvent);
     };
   }, [refreshProfile, currentUserId]);
 

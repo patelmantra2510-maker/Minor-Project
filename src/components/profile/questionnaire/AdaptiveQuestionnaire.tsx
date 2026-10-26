@@ -70,6 +70,10 @@ export const AdaptiveQuestionnaire: React.FC<AdaptiveQuestionnaireProps> = ({
   // Completion state
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
 
+  // Submission & transition locks to prevent duplicate submissions
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isFinishing, setIsFinishing] = useState<boolean>(false);
+
   // Accessible focus shift when moving to a new question
   useEffect(() => {
     if (activeQuestion && questionCardRef.current) {
@@ -168,18 +172,26 @@ export const AdaptiveQuestionnaire: React.FC<AdaptiveQuestionnaireProps> = ({
   // Clean completion handler
   const handleFinish = useCallback(
     async (action: 'complete' | 'find') => {
+      if (isFinishing) return;
+      setIsFinishing(true);
       try {
-        await profileStorage.clearQuestionnaireState();
-      } catch {
-        // Storage error safeguard
-      }
-      if (action === 'complete') {
-        onComplete(profile);
-      } else {
-        onFindScholarships();
+        try {
+          await profileStorage.clearQuestionnaireState();
+        } catch {
+          // Storage error safeguard
+        }
+        if (action === 'complete') {
+          onComplete(profile);
+        } else {
+          onFindScholarships();
+        }
+      } catch (err) {
+        console.error('[AdaptiveQuestionnaire] Error during finish:', err);
+      } finally {
+        setIsFinishing(false);
       }
     },
-    [profile, onComplete, onFindScholarships]
+    [profile, onComplete, onFindScholarships, isFinishing]
   );
 
   // Compute live progress via dynamic question engine
@@ -187,6 +199,37 @@ export const AdaptiveQuestionnaire: React.FC<AdaptiveQuestionnaireProps> = ({
     const nextRes = getNextQuestion(profile, scholarships, questionState);
     return nextRes.progress;
   }, [profile, scholarships, questionState]);
+
+  // Effective question with dynamic context (e.g. dynamic streams by education level)
+  const effectiveQuestion = useMemo(() => {
+    if (!activeQuestion) return null;
+    if (activeQuestion.fieldId === 'field_stream') {
+      const rawEdu = profile?.fields ? profile.fields['field_education_level']?.value : undefined;
+      const eduKey = rawEdu ? String(rawEdu).toLowerCase() : '';
+      let streamLevel: EducationLevel | null = null;
+      if (eduKey.includes('diploma')) streamLevel = 'Diploma';
+      else if (eduKey.includes('undergraduate') || eduKey.includes('degree')) streamLevel = 'Undergraduate';
+      else if (eduKey.includes('postgraduate') || eduKey.includes('master')) streamLevel = 'Postgraduate';
+      else if (eduKey.includes('phd') || eduKey.includes('doctor')) streamLevel = 'PhD';
+      else if (eduKey.includes('iti') || eduKey.includes('vocational')) streamLevel = 'ITI';
+      else if (eduKey.includes('school')) streamLevel = 'School';
+      else if (eduKey.includes('other')) streamLevel = 'Other';
+
+      if (streamLevel && STREAMS_BY_EDUCATION[streamLevel]) {
+        const dynamicOptions = STREAMS_BY_EDUCATION[streamLevel].map((st) => ({
+          value: st,
+          label: st,
+        }));
+        return {
+          ...activeQuestion,
+          options: dynamicOptions,
+        };
+      }
+    }
+    return activeQuestion;
+  }, [activeQuestion, profile.fields]);
+
+  const currentFieldDef = effectiveQuestion ? getField(effectiveQuestion.fieldId) : null;
 
   // Handle value change from QuestionRenderer
   const handleAnswerChange = (val: any, status: ProfileValueStatus, custom?: string) => {
@@ -198,7 +241,7 @@ export const AdaptiveQuestionnaire: React.FC<AdaptiveQuestionnaireProps> = ({
 
   // Submit Answer & Dynamically Progress
   const handleContinue = async () => {
-    if (!activeQuestion) return;
+    if (isSubmitting || !activeQuestion) return;
 
     const fieldDef = getField(activeQuestion.fieldId);
     if (!fieldDef) return;
@@ -217,55 +260,62 @@ export const AdaptiveQuestionnaire: React.FC<AdaptiveQuestionnaireProps> = ({
       return;
     }
 
-    const now = new Date().toISOString();
-    const newFieldValue: StudentFieldValue = {
-      value: answerStatus === 'known' ? answerValue : null,
-      status: answerStatus,
-      customText: answerStatus === 'custom' ? customText.trim() : undefined,
-      updatedAt: now,
-      source: 'questionnaire',
-    };
-
-    // 1. Update Profile Fields
-    const updatedProfileFields = {
-      ...profile.fields,
-      [activeQuestion.fieldId]: newFieldValue,
-    };
-
-    // 2. Prune Invalid Dependent Fields (Parent Answer Invalidation)
-    const cleanedProfile = invalidateDependentFields({
-      ...profile,
-      updatedAt: now,
-      fields: updatedProfileFields,
-    });
-
-    // 3. Persist Profile Immediately
-    await profileStorage.saveProfile(cleanedProfile);
-    setProfile(cleanedProfile);
-
-    // 4. Update Questionnaire State & History Stack
-    const nextAsked = Array.from(new Set([...questionState.askedQuestionIds, activeQuestion.id]));
-    const nextQState: QuestionnaireState = {
-      ...questionState,
-      askedQuestionIds: nextAsked,
-      answers: {
-        ...questionState.answers,
-        [activeQuestion.fieldId]: newFieldValue,
-      },
-    };
-
-    setQuestionState(nextQState);
-    setHistoryStack((prev) => [...prev, activeQuestion.id]);
-
-    // Save questionnaire state progress for resume
+    setIsSubmitting(true);
     try {
-      await profileStorage.saveQuestionnaireState(nextQState);
-    } catch {
-      // Ignore
-    }
+      const now = new Date().toISOString();
+      const newFieldValue: StudentFieldValue = {
+        value: answerStatus === 'known' ? answerValue : null,
+        status: answerStatus,
+        customText: answerStatus === 'custom' ? customText.trim() : undefined,
+        updatedAt: now,
+        source: 'questionnaire',
+      };
 
-    // 5. Dynamically Load Next Question
-    advanceToNext(cleanedProfile, nextQState);
+      // 1. Update Profile Fields
+      const updatedProfileFields = {
+        ...profile.fields,
+        [activeQuestion.fieldId]: newFieldValue,
+      };
+
+      // 2. Prune Invalid Dependent Fields (Parent Answer Invalidation)
+      const cleanedProfile = invalidateDependentFields({
+        ...profile,
+        updatedAt: now,
+        fields: updatedProfileFields,
+      });
+
+      // 3. Persist Profile Immediately
+      await profileStorage.saveProfile(cleanedProfile);
+      setProfile(cleanedProfile);
+
+      // 4. Update Questionnaire State & History Stack
+      const nextAsked = Array.from(new Set([...questionState.askedQuestionIds, activeQuestion.id]));
+      const nextQState: QuestionnaireState = {
+        ...questionState,
+        askedQuestionIds: nextAsked,
+        answers: {
+          ...questionState.answers,
+          [activeQuestion.fieldId]: newFieldValue,
+        },
+      };
+
+      setQuestionState(nextQState);
+      setHistoryStack((prev) => [...prev, activeQuestion.id]);
+
+      // Save questionnaire state progress for resume
+      try {
+        await profileStorage.saveQuestionnaireState(nextQState);
+      } catch {
+        // Ignore
+      }
+
+      // 5. Dynamically Load Next Question
+      advanceToNext(cleanedProfile, nextQState);
+    } catch (err: any) {
+      setValidationError(err?.message || 'Failed to save profile. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Skip Current Question
@@ -381,16 +431,28 @@ export const AdaptiveQuestionnaire: React.FC<AdaptiveQuestionnaireProps> = ({
         {/* Action CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 max-w-md mx-auto">
           <button
+            type="button"
+            disabled={isFinishing}
             onClick={() => handleFinish('find')}
-            className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#065F46] hover:bg-[#044835] text-amber-50 text-sm font-bold shadow-xs transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#065F46]"
+            className={`w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#065F46] hover:bg-[#044835] text-amber-50 text-sm font-bold shadow-xs transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#065F46] ${
+              isFinishing ? 'opacity-70 cursor-not-allowed' : ''
+            }`}
           >
-            <Search className="w-4 h-4" />
+            {isFinishing ? (
+              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Search className="w-4 h-4" />
+            )}
             <span>{t('profile.questionnaire.findScholarshipsBtn', undefined, 'Find Scholarships Now')}</span>
           </button>
 
           <button
+            type="button"
+            disabled={isFinishing}
             onClick={() => handleFinish('complete')}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-stone-100 dark:bg-[#1C3630] hover:bg-stone-200 dark:hover:bg-[#23453E] text-stone-800 dark:text-stone-200 text-sm font-semibold border border-stone-200 dark:border-[#23453E] transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#065F46]"
+            className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-stone-100 dark:bg-[#1C3630] hover:bg-stone-200 dark:hover:bg-[#23453E] text-stone-800 dark:text-stone-200 text-sm font-semibold border border-stone-200 dark:border-[#23453E] transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#065F46] ${
+              isFinishing ? 'opacity-70 cursor-not-allowed' : ''
+            }`}
           >
             <span>{t('profile.questionnaire.reviewProfileBtn', undefined, 'Review Profile')}</span>
           </button>
@@ -398,36 +460,6 @@ export const AdaptiveQuestionnaire: React.FC<AdaptiveQuestionnaireProps> = ({
       </div>
     );
   }
-
-  const effectiveQuestion = useMemo(() => {
-    if (!activeQuestion) return null;
-    if (activeQuestion.fieldId === 'field_stream') {
-      const rawEdu = profile?.fields ? profile.fields['field_education_level']?.value : undefined;
-      const eduKey = rawEdu ? String(rawEdu).toLowerCase() : '';
-      let streamLevel: EducationLevel | null = null;
-      if (eduKey.includes('diploma')) streamLevel = 'Diploma';
-      else if (eduKey.includes('undergraduate') || eduKey.includes('degree')) streamLevel = 'Undergraduate';
-      else if (eduKey.includes('postgraduate') || eduKey.includes('master')) streamLevel = 'Postgraduate';
-      else if (eduKey.includes('phd') || eduKey.includes('doctor')) streamLevel = 'PhD';
-      else if (eduKey.includes('iti') || eduKey.includes('vocational')) streamLevel = 'ITI';
-      else if (eduKey.includes('school')) streamLevel = 'School';
-      else if (eduKey.includes('other')) streamLevel = 'Other';
-
-      if (streamLevel && STREAMS_BY_EDUCATION[streamLevel]) {
-        const dynamicOptions = STREAMS_BY_EDUCATION[streamLevel].map((st) => ({
-          value: st,
-          label: st,
-        }));
-        return {
-          ...activeQuestion,
-          options: dynamicOptions,
-        };
-      }
-    }
-    return activeQuestion;
-  }, [activeQuestion, profile.fields]);
-
-  const currentFieldDef = effectiveQuestion ? getField(effectiveQuestion.fieldId) : null;
 
   return (
     <div className="max-w-3xl mx-auto py-6 sm:py-10 px-4 sm:px-6 space-y-6">
@@ -518,11 +550,23 @@ export const AdaptiveQuestionnaire: React.FC<AdaptiveQuestionnaireProps> = ({
 
         <button
           type="button"
+          disabled={isSubmitting}
           onClick={handleContinue}
-          className="min-h-[44px] inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#065F46] hover:bg-[#044835] text-amber-50 text-xs sm:text-sm font-bold shadow-xs transition-all duration-150 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#065F46] hover:scale-[1.02] active:scale-[0.98]"
+          className={`min-h-[44px] inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#065F46] hover:bg-[#044835] text-amber-50 text-xs sm:text-sm font-bold shadow-xs transition-all duration-150 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#065F46] hover:scale-[1.02] active:scale-[0.98] ${
+            isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+          }`}
         >
-          <span>{t('profile.questionnaire.saveAndNext', undefined, 'Continue')}</span>
-          <ArrowRight className="w-4 h-4" />
+          {isSubmitting ? (
+            <>
+              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              <span>Saving...</span>
+            </>
+          ) : (
+            <>
+              <span>{t('profile.questionnaire.saveAndNext', undefined, 'Continue')}</span>
+              <ArrowRight className="w-4 h-4" />
+            </>
+          )}
         </button>
       </div>
     </div>

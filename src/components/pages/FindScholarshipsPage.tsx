@@ -119,9 +119,9 @@ export const FindScholarshipsPage: React.FC<FindScholarshipsPageProps> = ({ onNa
 
   // Close questionnaire and reload profile
   const handleQuestionnaireClose = async () => {
+    await refreshProfile();
     setIsQuestionnaireOpen(false);
     setQuestionnaireTargetField(undefined);
-    await refreshProfile();
     setShowUpdatedToast(true);
   };
 

@@ -60,4 +60,28 @@ OFFICIAL_SOURCES = [
         "source_type": "state_portal",
         "priority": 1,
     },
+    {
+        "id": "dst_inspire",
+        "name": "Department of Science & Technology (INSPIRE)",
+        "url": "https://online-inspire.gov.in",
+        "schemes_url": "https://online-inspire.gov.in",
+        "source_type": "central_department",
+        "priority": 2,
+    },
+    {
+        "id": "foundations",
+        "name": "Higher Education Foundations (Reliance & Tata Trusts)",
+        "url": "https://scholarships.reliancefoundation.org",
+        "schemes_url": "https://scholarships.reliancefoundation.org",
+        "source_type": "foundation_portal",
+        "priority": 2,
+    },
+    {
+        "id": "announcements_discovery",
+        "name": "Official Circulars & Search Discovery Feed",
+        "url": "https://socialjustice.gov.in",
+        "schemes_url": "https://socialjustice.gov.in",
+        "source_type": "discovery_feed",
+        "priority": 3,
+    },
 ]

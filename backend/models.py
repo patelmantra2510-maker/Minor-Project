@@ -119,6 +119,7 @@ class IntelligenceRunRecord(BaseModel):
     sourcesChecked: int = 0
     discoveredCount: int = 0
     updatedCount: int = 0
+    unchangedCount: int = 0
     failedSources: List[str] = Field(default_factory=list)
     logSummary: str = ""
     triggerType: Literal['scheduled', 'manual'] = 'scheduled'

@@ -11,6 +11,9 @@ from .collectors import (
     AICTECollector,
     UGCCollector,
     MYSYCollector,
+    DSTInspireCollector,
+    FoundationsCollector,
+    AnnouncementsDiscoveryCollector,
 )
 from .sync_service import sync_scholarship
 from .db import record_intelligence_run, update_source_status, get_db_connection
@@ -83,6 +86,9 @@ class IntelligenceScheduler:
             ("mysy_gujarat", "Mukhyamantri Yuva Swavalamban Yojana (MYSY)", MYSYCollector()),
             ("aicte", "AICTE India", AICTECollector()),
             ("ugc", "UGC India", UGCCollector()),
+            ("dst_inspire", "Department of Science & Technology (INSPIRE)", DSTInspireCollector()),
+            ("foundations", "Higher Education Foundations (Reliance & Tata)", FoundationsCollector()),
+            ("announcements_discovery", "Official Circulars & Search Discovery", AnnouncementsDiscoveryCollector()),
         ]
 
         total_discovered = 0
@@ -165,6 +171,7 @@ class IntelligenceScheduler:
             sources_checked=sources_checked,
             discovered_count=total_discovered,
             updated_count=total_updated,
+            unchanged_count=total_unchanged,
             failed_sources=failed_sources,
             log_summary=log_summary,
             trigger_type=trigger_type,

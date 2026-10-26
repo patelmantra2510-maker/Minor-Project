@@ -57,17 +57,80 @@ def sync_scholarship(item: ExtractedScholarship) -> Tuple[str, Dict[str, Any]]:
                 """, (item.sourceUrl,))
                 existing_row = cursor.fetchone()
 
-        # 3. If Record Exists -> Update Changed Fields Without Overwriting with Incomplete Data
+        # 3. If Record Exists -> Granular Change Detection & Safe Updates
         if existing_row:
             target_id = existing_row["id"]
             existing_hash = existing_row["raw_data_hash"] if "raw_data_hash" in existing_row.keys() else None
-            existing_deadline = existing_row["application_deadline"]
-            existing_status = existing_row["status"]
+
+            # Detect changes per category
+            detected_changes: List[str] = []
+
+            # 1. Application opening dates and deadlines
+            existing_start = existing_row["application_start"] or ""
+            existing_deadline = existing_row["application_deadline"] or ""
+            if item.applicationDeadline and item.applicationDeadline != existing_deadline:
+                detected_changes.append(f"deadline ({existing_deadline} -> {item.applicationDeadline})")
+            if item.applicationStart and item.applicationStart != existing_start:
+                detected_changes.append(f"start_date ({existing_start} -> {item.applicationStart})")
+
+            # 2. Academic year and status
+            existing_academic_year = existing_row["academic_year"] or ""
+            existing_status = existing_row["status"] or ""
+            if item.academicYear and item.academicYear != existing_academic_year:
+                detected_changes.append(f"academic_year ({existing_academic_year} -> {item.academicYear})")
+            if item.status and item.status != existing_status:
+                detected_changes.append(f"status ({existing_status} -> {item.status})")
+
+            # 3. Benefits and award amounts
+            existing_benefits = json.loads(existing_row["benefits"] or "{}")
+            existing_max_amount = existing_benefits.get("maxAnnualAmount")
+            new_max_amount = item.benefits.maxAnnualAmount
+            if new_max_amount and new_max_amount != existing_max_amount:
+                detected_changes.append(f"award_amount (Rs.{existing_max_amount} -> Rs.{new_max_amount})")
+            elif item.benefits.amountDescription and item.benefits.amountDescription != existing_benefits.get("amountDescription", ""):
+                detected_changes.append("benefits_description")
+
+            # 4. Eligibility criteria
+            existing_income = existing_row["income_limit"]
+            if item.incomeLimit is not None and item.incomeLimit != existing_income:
+                detected_changes.append(f"income_limit ({existing_income} -> {item.incomeLimit})")
+
+            existing_pct = existing_row["minimum_percentage"]
+            if item.minimumPercentage is not None and item.minimumPercentage != existing_pct:
+                detected_changes.append(f"min_percentage ({existing_pct} -> {item.minimumPercentage})")
+
+            existing_levels = set(json.loads(existing_row["education_levels"] or "[]"))
+            new_levels = set(item.educationLevels or [])
+            if new_levels and new_levels != existing_levels:
+                detected_changes.append("education_levels")
+
+            existing_categories = set(json.loads(existing_row["categories"] or "[]"))
+            new_categories = set(item.categories or [])
+            if new_categories and new_categories != existing_categories:
+                detected_changes.append("categories")
+
+            # 5. Required documents (preserve existing rich checklist; union with newly found docs)
+            existing_docs = json.loads(existing_row["documents"] or "[]")
+            merged_docs = list(existing_docs)
+            if item.documents:
+                for doc in item.documents:
+                    if doc not in merged_docs:
+                        merged_docs.append(doc)
+            if len(merged_docs) > len(existing_docs):
+                detected_changes.append(f"new_documents (+{len(merged_docs) - len(existing_docs)})")
+
+            # 6. Application links
+            existing_app_url = existing_row["application_website"] or ""
+            if item.applicationWebsite and item.applicationWebsite != existing_app_url and len(item.applicationWebsite) > 8:
+                detected_changes.append("application_website")
+
+            # Fallback hash check
+            if item.rawHash and item.rawHash != existing_hash and not detected_changes:
+                detected_changes.append("content_hash")
+
+            has_changes = len(detected_changes) > 0
 
             # Preserve existing rich fields if freshly extracted fields are empty or sparse
-            existing_docs = json.loads(existing_row["documents"] or "[]")
-            final_docs = item.documents if item.documents and len(item.documents) > 0 else existing_docs
-
             existing_who = json.loads(existing_row["who_can_apply"] or "[]")
             final_who = item.whoCanApply if item.whoCanApply and len(item.whoCanApply) > 0 else existing_who
 
@@ -77,8 +140,7 @@ def sync_scholarship(item: ExtractedScholarship) -> Tuple[str, Dict[str, Any]]:
             existing_desc = existing_row["description"] or ""
             final_desc = item.description if len(item.description.strip()) > 30 else (existing_desc or item.description)
 
-            existing_benefits = json.loads(existing_row["benefits"] or "{}")
-            final_benefits = item.benefits.model_dump() if item.benefits.amountDescription else existing_benefits
+            final_benefits = item.benefits.model_dump() if item.benefits.amountDescription or item.benefits.maxAnnualAmount else existing_benefits
 
             # If existing scheme is rejected by admin, preserve rejection unless source published brand new verifiable scheme
             final_review_status = item.reviewStatus
@@ -86,12 +148,6 @@ def sync_scholarship(item: ExtractedScholarship) -> Tuple[str, Dict[str, Any]]:
             if existing_row["review_status"] == "rejected":
                 final_review_status = "rejected"
                 final_is_verified = 0
-
-            has_changes = (
-                item.rawHash != existing_hash or
-                item.applicationDeadline != existing_deadline or
-                item.status != existing_status
-            )
 
             if has_changes:
                 cursor.execute("""
@@ -104,6 +160,11 @@ def sync_scholarship(item: ExtractedScholarship) -> Tuple[str, Dict[str, Any]]:
                         description = ?,
                         who_can_apply = ?,
                         how_to_apply_steps = ?,
+                        income_limit = ?,
+                        minimum_percentage = ?,
+                        education_levels = ?,
+                        categories = ?,
+                        application_website = ?,
                         last_updated = ?,
                         tags = ?,
                         source_url = ?,
@@ -120,17 +181,22 @@ def sync_scholarship(item: ExtractedScholarship) -> Tuple[str, Dict[str, Any]]:
                     item.applicationDeadline or existing_row["application_deadline"],
                     item.status,
                     json.dumps(final_benefits),
-                    json.dumps(final_docs),
+                    json.dumps(merged_docs),
                     final_desc,
                     json.dumps(final_who),
                     json.dumps(final_steps),
+                    item.incomeLimit if item.incomeLimit is not None else existing_income,
+                    item.minimumPercentage if item.minimumPercentage is not None else existing_pct,
+                    json.dumps(list(new_levels)) if new_levels else existing_row["education_levels"],
+                    json.dumps(list(new_categories)) if new_categories else existing_row["categories"],
+                    item.applicationWebsite or existing_app_url,
                     today_date,
                     json.dumps(item.tags or json.loads(existing_row["tags"] or "[]")),
-                    item.sourceUrl,
-                    item.sourceDomain,
-                    item.rawHash,
+                    item.sourceUrl or existing_row["source_url"],
+                    item.sourceDomain or existing_row["source_domain"],
+                    item.rawHash or existing_hash,
                     now_iso,
-                    item.verificationNotes,
+                    item.verificationNotes or existing_row["verification_notes"],
                     final_review_status,
                     final_is_verified,
                     item.academicYear or existing_row["academic_year"],
@@ -138,14 +204,15 @@ def sync_scholarship(item: ExtractedScholarship) -> Tuple[str, Dict[str, Any]]:
                 ))
                 conn.commit()
 
+                changes_summary = ", ".join(detected_changes)
                 log_audit_activity(
                     "UPDATE",
                     "scholarship",
                     target_id,
-                    f"Auto-updated by Intelligence: deadline={item.applicationDeadline}, status={item.status}"
+                    f"Intelligence auto-updated: {changes_summary}"
                 )
-                logger.info(f"Updated existing scholarship: {item.name} ({target_id})")
-                return "updated", {"id": target_id, "name": item.name, "changes": "deadline/status"}
+                logger.info(f"Updated existing scholarship: {item.name} ({target_id}) -> Changes: {changes_summary}")
+                return "updated", {"id": target_id, "name": item.name, "changes": changes_summary}
             else:
                 # Mark verified timestamp without changing content
                 cursor.execute("""

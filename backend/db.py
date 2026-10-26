@@ -94,6 +94,12 @@ def init_db_schema():
             );
         """)
 
+        # Check intelligence_runs columns
+        cursor.execute("PRAGMA table_info(intelligence_runs);")
+        run_cols = [c["name"] for c in cursor.fetchall()]
+        if "unchanged_count" not in run_cols:
+            cursor.execute("ALTER TABLE intelligence_runs ADD COLUMN unchanged_count INTEGER DEFAULT 0;")
+
         # 4. Intelligence Sources Table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS intelligence_sources (
@@ -122,14 +128,12 @@ def init_db_schema():
             );
         """)
 
-        # 6. Seed official sources if empty
-        cursor.execute("SELECT COUNT(*) as count FROM intelligence_sources;")
-        if cursor.fetchone()["count"] == 0:
-            for s in OFFICIAL_SOURCES:
-                cursor.execute("""
-                    INSERT INTO intelligence_sources (id, name, url, source_type, priority, is_active)
-                    VALUES (?, ?, ?, ?, ?, 1);
-                """, (s["id"], s["name"], s["url"], s["source_type"], s.get("priority", 1)))
+        # 6. Seed official sources (insert any newly registered source)
+        for s in OFFICIAL_SOURCES:
+            cursor.execute("""
+                INSERT OR IGNORE INTO intelligence_sources (id, name, url, source_type, priority, is_active)
+                VALUES (?, ?, ?, ?, ?, 1);
+            """, (s["id"], s["name"], s["url"], s["source_type"], s.get("priority", 1)))
 
         conn.commit()
         logger.info("Intelligence DB schema migration completed successfully.")
@@ -160,6 +164,7 @@ def record_intelligence_run(
     sources_checked: int,
     discovered_count: int,
     updated_count: int,
+    unchanged_count: int,
     failed_sources: List[str],
     log_summary: str,
     trigger_type: str = "scheduled"
@@ -171,10 +176,10 @@ def record_intelligence_run(
         cursor.execute("""
             INSERT INTO intelligence_runs (
                 started_at, completed_at, status, sources_checked,
-                discovered_count, updated_count, failed_sources,
+                discovered_count, updated_count, unchanged_count, failed_sources,
                 log_summary, trigger_type
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         """, (
             started_at,
             completed_at,
@@ -182,6 +187,7 @@ def record_intelligence_run(
             sources_checked,
             discovered_count,
             updated_count,
+            unchanged_count,
             json.dumps(failed_sources),
             log_summary,
             trigger_type

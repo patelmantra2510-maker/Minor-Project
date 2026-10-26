@@ -254,3 +254,96 @@ def test_ai_extractor_fallback():
     res = extract_scholarship_details_with_ai("Sample text from portal")
     if not is_groq_available():
         assert res is None
+
+def test_dst_inspire_collector_extracts_schemes():
+    from backend.collectors.dst_inspire_collector import DSTInspireCollector
+    collector = DSTInspireCollector()
+    schemes = collector.collect()
+    assert len(schemes) >= 2
+    she = next((s for s in schemes if "SHE" in s.shortName or "Higher Education" in s.name), None)
+    assert she is not None
+    assert she.benefits.maxAnnualAmount == 80000
+    assert "online-inspire.gov.in" in she.sourceDomain
+    assert len(she.documents) >= 4
+
+def test_foundations_collector_extracts_schemes():
+    from backend.collectors.foundations_collector import FoundationsCollector
+    collector = FoundationsCollector()
+    schemes = collector.collect()
+    assert len(schemes) >= 3
+    rf_ug = next((s for s in schemes if "reliance-foundation-ug-scholarship" in s.id), None)
+    assert rf_ug is not None
+    assert rf_ug.incomeLimit == 1500000
+    assert rf_ug.minimumPercentage == 60.0
+
+    tata = next((s for s in schemes if "tata-trusts-means-grant" in s.id), None)
+    assert tata is not None
+    assert tata.incomeLimit == 450000
+
+def test_granular_change_detection_across_all_categories():
+    test_uid = "unit-test-granular-change-detection"
+    conn = get_db_connection()
+    conn.execute("DELETE FROM scholarships WHERE id = ?;", (test_uid,))
+    conn.commit()
+
+    base_scheme = ExtractedScholarship(
+        id=test_uid,
+        slug=test_uid,
+        name="Granular Change Detection Test Scheme",
+        shortName="Change Test",
+        provider="Ministry of Education",
+        state="All India",
+        type="Government",
+        educationLevels=["Undergraduate"],
+        courses=["All"],
+        categories=["General"],
+        genderEligibility="All",
+        incomeLimit=300000,
+        minimumPercentage=55.0,
+        yearEligibility=["All"],
+        benefits=ScholarshipBenefitsModel(amountDescription="₹30,000/year", maxAnnualAmount=30000),
+        applicationStart="2026-08-01",
+        applicationDeadline="2026-11-15",
+        status="Open",
+        documents=["Aadhaar Card", "Income Certificate"],
+        description="Initial scheme description.",
+        whoCanApply=["Students"],
+        howToApplySteps=["Apply online"],
+        officialWebsite="https://scholarships.gov.in",
+        applicationWebsite="https://scholarships.gov.in",
+        lastUpdated="2026-10-24",
+        sourceUrl="https://scholarships.gov.in/scheme-initial",
+        sourceDomain="scholarships.gov.in"
+    )
+
+    action, _ = sync_scholarship(base_scheme)
+    assert action == "inserted"
+
+    # Test 1: Change income limit & education levels
+    updated_scheme = base_scheme.model_copy(deep=True)
+    updated_scheme.incomeLimit = 400000
+    updated_scheme.educationLevels = ["Undergraduate", "Postgraduate"]
+    action_upd1, details_upd1 = sync_scholarship(updated_scheme)
+    assert action_upd1 == "updated"
+    assert "income_limit" in details_upd1["changes"]
+    assert "education_levels" in details_upd1["changes"]
+
+    # Test 2: Add new document (union merge)
+    updated_scheme2 = updated_scheme.model_copy(deep=True)
+    updated_scheme2.documents = ["Aadhaar Card", "Income Certificate", "Caste Certificate"]
+    action_upd2, details_upd2 = sync_scholarship(updated_scheme2)
+    assert action_upd2 == "updated"
+    assert "new_documents" in details_upd2["changes"]
+
+    # Verify documents union in DB
+    row = conn.execute("SELECT documents FROM scholarships WHERE id = ?;", (test_uid,)).fetchone()
+    import json
+    saved_docs = json.loads(row["documents"])
+    assert "Caste Certificate" in saved_docs
+    assert len(saved_docs) == 3
+
+    # Cleanup
+    conn.execute("DELETE FROM scholarships WHERE id = ?;", (test_uid,))
+    conn.commit()
+    conn.close()
+

@@ -558,6 +558,7 @@ export interface IntelligenceRun {
   sourcesChecked: number;
   discoveredCount: number;
   updatedCount: number;
+  unchangedCount?: number;
   failedSources: string[];
   logSummary: string;
   triggerType: string;

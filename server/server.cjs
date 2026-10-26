@@ -298,12 +298,14 @@ const server = http.createServer((req, res) => {
 
   // Proxy /api/intelligence to FastAPI backend (port 8000)
   if (urlPath.startsWith('/api/intelligence')) {
+    const fastapiHost = process.env.FASTAPI_HOST || '127.0.0.1';
+    const fastapiPort = process.env.FASTAPI_PORT ? parseInt(process.env.FASTAPI_PORT, 10) : 8000;
     const options = {
-      hostname: '127.0.0.1',
-      port: 8000,
+      hostname: fastapiHost,
+      port: fastapiPort,
       path: req.url,
       method: req.method,
-      headers: { ...req.headers, host: '127.0.0.1:8000' }
+      headers: { ...req.headers, host: `${fastapiHost}:${fastapiPort}` }
     };
     const proxyReq = http.request(options, (proxyRes) => {
       res.writeHead(proxyRes.statusCode, proxyRes.headers);

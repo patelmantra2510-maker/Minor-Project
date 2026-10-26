@@ -99,6 +99,7 @@ async def get_intelligence_status():
                 "sourcesChecked": r["sources_checked"],
                 "discoveredCount": r["discovered_count"],
                 "updatedCount": r["updated_count"],
+                "unchangedCount": r["unchanged_count"] if "unchanged_count" in r.keys() and r["unchanged_count"] is not None else 0,
                 "failedSources": json.loads(r["failed_sources"] or "[]"),
                 "logSummary": r["log_summary"],
                 "triggerType": r["trigger_type"],

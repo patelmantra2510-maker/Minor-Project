@@ -261,13 +261,27 @@ export const IntelligenceMonitoring: React.FC<IntelligenceMonitoringProps> = ({
               <CheckCircle2 className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+              <div className="text-xs font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2 flex-wrap">
                 <span>Last Scan Cycle Completed</span>
                 <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 uppercase">
                   {statusData.lastRun.status}
                 </span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                  +{statusData.lastRun.discoveredCount} Discovered
+                </span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                  {statusData.lastRun.updatedCount} Updated
+                </span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
+                  {statusData.lastRun.unchangedCount ?? '0'} Unchanged
+                </span>
+                {statusData.lastRun.failedSources && statusData.lastRun.failedSources.length > 0 && (
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
+                    {statusData.lastRun.failedSources.length} Failed
+                  </span>
+                )}
               </div>
-              <p className="text-xs text-stone-600 dark:text-stone-400 mt-0.5">
+              <p className="text-xs text-stone-600 dark:text-stone-400 mt-1">
                 {statusData.lastRun.logSummary}
               </p>
             </div>
@@ -419,6 +433,7 @@ export const IntelligenceMonitoring: React.FC<IntelligenceMonitoringProps> = ({
                   <th className="py-3 px-4 font-bold">Portals</th>
                   <th className="py-3 px-4 font-bold">Discovered</th>
                   <th className="py-3 px-4 font-bold">Updated</th>
+                  <th className="py-3 px-4 font-bold">Unchanged</th>
                   <th className="py-3 px-4 font-bold">Summary</th>
                 </tr>
               </thead>
@@ -449,8 +464,11 @@ export const IntelligenceMonitoring: React.FC<IntelligenceMonitoringProps> = ({
                     <td className="py-3.5 px-4 font-mono font-bold text-emerald-700 dark:text-emerald-400">
                       +{run.discoveredCount}
                     </td>
-                    <td className="py-3.5 px-4 font-mono text-stone-600 dark:text-stone-300">
+                    <td className="py-3.5 px-4 font-mono text-blue-700 dark:text-blue-300 font-semibold">
                       {run.updatedCount}
+                    </td>
+                    <td className="py-3.5 px-4 font-mono text-stone-500 dark:text-stone-400">
+                      {run.unchangedCount ?? '—'}
                     </td>
                     <td className="py-3.5 px-4 text-stone-500 max-w-xs truncate" title={run.logSummary}>
                       {run.logSummary}

@@ -1,4 +1,5 @@
 import { eligibilityFields, fieldById } from '../data/eligibility/fields';
+import { isKnownStudyStream } from '../data/streams';
 import type {
   EligibilityFieldDefinition,
   FieldDataType,
@@ -72,7 +73,8 @@ export function isOperatorCompatibleWithField(
  */
 export function validateFieldValue(
   field: EligibilityFieldDefinition,
-  value: unknown
+  value: unknown,
+  dynamicOptions?: Array<{ value: any; label: string }>
 ): { valid: boolean; error?: string } {
   if (value === null || value === undefined) {
     if (field.validation?.required) {
@@ -114,9 +116,29 @@ export function validateFieldValue(
       if (typeof value !== 'string') {
         return { valid: false, error: `${field.label} must be a string.` };
       }
-      if (field.options && field.options.length > 0) {
-        const optionExists = field.options.some((opt) => opt.value === value);
+      const optionsToCheck = dynamicOptions && dynamicOptions.length > 0 ? dynamicOptions : field.options;
+      if (optionsToCheck && optionsToCheck.length > 0) {
+        const optionExists = optionsToCheck.some(
+          (opt) =>
+            opt.value === value ||
+            (typeof opt.value === 'string' && opt.value.toLowerCase() === value.toLowerCase())
+        );
         if (!optionExists) {
+          // Special canonical validation for field_stream:
+          // Check if value is recognized in any known canonical stream, legacy option, or mapped token
+          if (
+            (field.id === 'field_stream' || field.key === 'stream') &&
+            (isKnownStudyStream(value) ||
+              field.options?.some(
+                (opt) =>
+                  opt.value === value ||
+                  opt.value.toLowerCase() === value.toLowerCase() ||
+                  opt.label.toLowerCase() === value.toLowerCase()
+              ))
+          ) {
+            return { valid: true };
+          }
+
           return {
             valid: false,
             error: `Invalid option '${value}' for ${field.label}.`,

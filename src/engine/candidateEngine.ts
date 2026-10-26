@@ -1,6 +1,7 @@
 import type { Scholarship } from '../types/scholarship';
 import type { StudentProfile } from '../types/studentProfile';
 import { evaluateRule, evaluateRuleGroup } from './ruleEvaluator';
+import { isStreamEligibleForScholarship } from '../data/streams';
 
 /**
  * Determines whether a scholarship is still a candidate for the student.
@@ -101,6 +102,17 @@ export function isScholarshipCandidate(
     const studentScore = Number(scoreField.value);
     if (!isNaN(studentScore) && scholarship.minimumPercentage !== null) {
       if (studentScore < scholarship.minimumPercentage) {
+        return false;
+      }
+    }
+  }
+
+  // Course / Stream Check
+  if (!scholarship.courses.includes('All')) {
+    const streamField = fields['field_stream'] || fields['field_course_stream'];
+    if (streamField && streamField.status === 'known' && streamField.value) {
+      const streamRes = isStreamEligibleForScholarship(scholarship.courses, String(streamField.value));
+      if (streamRes.status === 'unmatched') {
         return false;
       }
     }

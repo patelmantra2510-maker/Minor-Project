@@ -11,6 +11,7 @@ import type {
   ScholarshipEligibilityResult,
 } from '../types/eligibility';
 import { evaluateRule, evaluateRuleGroup } from './ruleEvaluator';
+import { isStreamEligibleForScholarship } from '../data/streams';
 
 export function evaluateScholarship(
   scholarship: Scholarship,
@@ -63,35 +64,13 @@ export function evaluateScholarship(
   }
 
   // 3. Course / Stream Check
-  if (scholarship.courses.includes('All')) {
-    checks.push({
-      ruleId: 'course',
-      label: 'Course / Stream',
-      status: 'matched',
-      detail: 'Open to all course streams within eligible education levels.',
-    });
-  } else if (scholarship.courses.includes(answers.stream)) {
-    checks.push({
-      ruleId: 'course',
-      label: 'Course / Stream',
-      status: 'matched',
-      detail: `Your stream (${answers.stream}) is directly covered.`,
-    });
-  } else if (answers.stream.toLowerCase().includes('other')) {
-    checks.push({
-      ruleId: 'course',
-      label: 'Course / Stream',
-      status: 'warning',
-      detail: `Selected course stream requires verification against approved institution programs.`,
-    });
-  } else {
-    checks.push({
-      ruleId: 'course',
-      label: 'Course / Stream',
-      status: 'unmatched',
-      detail: `Restricted to specified courses (e.g. ${scholarship.courses.slice(0, 2).join(', ')}). Your stream: ${answers.stream}.`,
-    });
-  }
+  const streamCheck = isStreamEligibleForScholarship(scholarship.courses, answers.stream);
+  checks.push({
+    ruleId: 'course',
+    label: 'Course / Stream',
+    status: streamCheck.status,
+    detail: streamCheck.detail,
+  });
 
   // 4. Year of Study Check
   if (scholarship.yearEligibility.includes('All')) {
@@ -481,6 +460,19 @@ export function evaluateScholarshipEligibility(
     } else if (Number(incField.value) > scholarship.incomeLimit) {
       hasDefiniteFailure = true;
       failureReason = `Annual income exceeds ceiling of ₹${scholarship.incomeLimit.toLocaleString('en-IN')}.`;
+    }
+  }
+
+  // 5. Course / Stream
+  if (!scholarship.courses.includes('All')) {
+    const streamField = fields['field_stream'] || fields['field_course_stream'];
+    if (streamField && streamField.status === 'known' && streamField.value) {
+      const streamVal = String(streamField.value);
+      const streamRes = isStreamEligibleForScholarship(scholarship.courses, streamVal);
+      if (streamRes.status === 'unmatched') {
+        hasDefiniteFailure = true;
+        failureReason = streamRes.detail;
+      }
     }
   }
 

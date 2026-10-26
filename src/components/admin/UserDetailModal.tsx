@@ -13,6 +13,7 @@ import {
   IndianRupee,
   Award,
 } from 'lucide-react';
+import { normalizeStudyStream } from '../../data/streams';
 
 interface UserDetailModalProps {
   user: AdminUserRecord | null;
@@ -41,6 +42,11 @@ function formatDateTime(isoStr?: string): string {
 function formatFieldValue(key: string, val: any): string {
   if (val === null || val === undefined || val === '') return '—';
   if (typeof val === 'boolean') return val ? 'Yes' : 'No';
+
+  // Stream formatting
+  if (key === 'field_stream') {
+    return normalizeStudyStream(String(val));
+  }
 
   // Currency / Income
   if (key.includes('income')) {

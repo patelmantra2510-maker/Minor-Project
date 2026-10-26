@@ -205,7 +205,7 @@ export const AdaptiveQuestionnaire: React.FC<AdaptiveQuestionnaireProps> = ({
 
     // Validate only if status is known
     if (answerStatus === 'known') {
-      const validation = validateFieldValue(fieldDef, answerValue);
+      const validation = validateFieldValue(fieldDef, answerValue, effectiveQuestion?.options);
       if (!validation.valid) {
         setValidationError(validation.error || 'Please provide a valid answer.');
         return;
@@ -411,6 +411,7 @@ export const AdaptiveQuestionnaire: React.FC<AdaptiveQuestionnaireProps> = ({
       else if (eduKey.includes('phd') || eduKey.includes('doctor')) streamLevel = 'PhD';
       else if (eduKey.includes('iti') || eduKey.includes('vocational')) streamLevel = 'ITI';
       else if (eduKey.includes('school')) streamLevel = 'School';
+      else if (eduKey.includes('other')) streamLevel = 'Other';
 
       if (streamLevel && STREAMS_BY_EDUCATION[streamLevel]) {
         const dynamicOptions = STREAMS_BY_EDUCATION[streamLevel].map((st) => ({

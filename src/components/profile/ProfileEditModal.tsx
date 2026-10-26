@@ -3,6 +3,8 @@ import { useLanguage } from '../../context/LanguageContext';
 import { X, Check } from 'lucide-react';
 import type { StudentProfile, StudentFieldValue } from '../../types/studentProfile';
 import { fieldById } from '../../data/eligibility/fields';
+import { STREAMS_BY_EDUCATION } from '../../data/streams';
+import type { EducationLevel } from '../../types/scholarship';
 import type { EligibilityFieldDefinition } from '../../types/eligibility';
 
 interface ProfileEditModalProps {
@@ -117,20 +119,44 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
                 )}
 
                 {/* Input render by data type */}
-                {def.dataType === 'single_select' && def.options ? (
-                  <select
-                    value={val}
-                    onChange={(e) => handleChange(fid, e.target.value)}
-                    className="w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl border border-[#DFD8CC] dark:border-[#23453E] bg-stone-50/50 dark:bg-[#182E29] text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-[#065F46]"
-                  >
-                    <option value="">Select option...</option>
-                    {def.options.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                ) : def.dataType === 'boolean' ? (
+                {def.dataType === 'single_select' && def.options ? (() => {
+                  let selectOptions = def.options;
+                  if (fid === 'field_stream') {
+                    const rawEdu = formData['field_education_level'] || currentProfile?.fields?.['field_education_level']?.value;
+                    const eduKey = rawEdu ? String(rawEdu).toLowerCase() : '';
+                    let streamLevel: EducationLevel | null = null;
+                    if (eduKey.includes('diploma')) streamLevel = 'Diploma';
+                    else if (eduKey.includes('undergraduate') || eduKey.includes('degree')) streamLevel = 'Undergraduate';
+                    else if (eduKey.includes('postgraduate') || eduKey.includes('master')) streamLevel = 'Postgraduate';
+                    else if (eduKey.includes('phd') || eduKey.includes('doctor')) streamLevel = 'PhD';
+                    else if (eduKey.includes('iti') || eduKey.includes('vocational')) streamLevel = 'ITI';
+                    else if (eduKey.includes('school')) streamLevel = 'School';
+                    else if (eduKey.includes('other')) streamLevel = 'Other';
+
+                    if (streamLevel && STREAMS_BY_EDUCATION[streamLevel]) {
+                      const levelStreams = STREAMS_BY_EDUCATION[streamLevel].map((st) => ({ value: st, label: st }));
+                      if (val && !levelStreams.some((o) => o.value === val)) {
+                        levelStreams.unshift({ value: val, label: val });
+                      }
+                      selectOptions = levelStreams;
+                    }
+                  }
+
+                  return (
+                    <select
+                      value={val}
+                      onChange={(e) => handleChange(fid, e.target.value)}
+                      className="w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl border border-[#DFD8CC] dark:border-[#23453E] bg-stone-50/50 dark:bg-[#182E29] text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-[#065F46]"
+                    >
+                      <option value="">Select option...</option>
+                      {selectOptions.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  );
+                })() : def.dataType === 'boolean' ? (
                   <div className="flex items-center gap-4 pt-1">
                     <label className="inline-flex items-center gap-1.5 text-xs text-stone-700 dark:text-stone-300 cursor-pointer">
                       <input

@@ -1,4 +1,5 @@
 import type { EligibilityFieldDefinition } from '../../types/eligibility';
+import { ALL_STREAM_FIELD_OPTIONS } from '../streams';
 
 export const eligibilityFields: EligibilityFieldDefinition[] = [
   // ==========================================
@@ -208,20 +209,7 @@ export const eligibilityFields: EligibilityFieldDefinition[] = [
     description: 'Academic discipline or subject area',
     dataType: 'single_select',
     category: 'education',
-    options: [
-      { value: 'engineering_technology', label: 'Engineering & Technology' },
-      { value: 'medicine_health_sciences', label: 'Medicine & Health Sciences' },
-      { value: 'pure_applied_sciences', label: 'Pure & Applied Sciences' },
-      { value: 'commerce_management', label: 'Commerce & Management' },
-      { value: 'arts_humanities', label: 'Arts & Humanities' },
-      { value: 'law_legal_studies', label: 'Law & Legal Studies' },
-      { value: 'pharmacy', label: 'Pharmacy' },
-      { value: 'agriculture_allied', label: 'Agriculture & Allied Sciences' },
-      { value: 'polytechnic_diploma', label: 'Polytechnic / Diploma' },
-      { value: 'vocational_iti', label: 'Vocational / ITI' },
-      { value: 'general', label: 'General / School Education' },
-      { value: 'other', label: 'Other' },
-    ],
+    options: ALL_STREAM_FIELD_OPTIONS,
     eligibilityRelevant: true,
     discoverable: true,
     informationValueWeight: 9,

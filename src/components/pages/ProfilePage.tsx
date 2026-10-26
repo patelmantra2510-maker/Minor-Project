@@ -23,6 +23,7 @@ import {
   Sparkles,
   RotateCcw,
   AlertTriangle,
+  ArrowLeft,
 } from 'lucide-react';
 
 interface ProfilePageProps {
@@ -279,12 +280,22 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
   // First-time onboarding view if no profile or completely empty
   if (!profile || !hasPopulatedFields) {
     return (
-      <>
+      <div className="max-w-6xl mx-auto py-6 sm:py-10 px-4 sm:px-6">
+        <div className="mb-4">
+          <button
+            type="button"
+            onClick={() => onNavigate('find')}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 dark:border-[#23453E] hover:bg-stone-100 dark:hover:bg-[#1C3630] text-stone-600 dark:text-stone-300 text-xs font-semibold transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>{t('profile.backToFind', undefined, 'Back to Find Scholarships')}</span>
+          </button>
+        </div>
         <ProfileOnboardingState
           onStartProfile={handleStartProfile}
           onExploreScholarships={() => onNavigate('explore')}
         />
-        {activeEditSection && profile && (
+        {activeEditSection && (
           <ProfileEditModal
             isOpen={true}
             sectionId={activeEditSection.id}
@@ -294,34 +305,65 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
               activeEditSection.defaultTitle
             )}
             fieldIds={activeEditSection.fieldIds}
-            currentProfile={profile}
+            currentProfile={
+              profile || {
+                id: 'temp',
+                profileType: 'registered',
+                createdAt: '',
+                updatedAt: '',
+                fields: {},
+                preferences: { language: 'en', theme: 'system' },
+              }
+            }
             onClose={() => setActiveEditSection(null)}
             onSave={handleSaveSectionFields}
           />
         )}
-      </>
+      </div>
     );
   }
 
   // Returning user dashboard view
   return (
     <main className="max-w-6xl mx-auto py-6 sm:py-10 px-4 sm:px-6 space-y-8">
+      {/* Back button to Find Scholarships */}
+      <div>
+        <button
+          type="button"
+          onClick={() => onNavigate('find')}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 dark:border-[#23453E] hover:bg-stone-100 dark:hover:bg-[#1C3630] text-stone-600 dark:text-stone-300 text-xs font-semibold transition-colors cursor-pointer"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>{t('profile.backToFind', undefined, 'Back to Find Scholarships')}</span>
+        </button>
+      </div>
+
       {/* Top Header */}
       <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EAF3EE] dark:bg-[#163328] text-[#065F46] dark:text-emerald-300 text-xs font-semibold mb-2">
             <ShieldCheck className="w-3.5 h-3.5" />
-            <span>{t('profile.guestBadge', undefined, 'Guest Profile · Stored locally')}</span>
+            <span>
+              {profile.profileType === 'registered'
+                ? t('profile.registeredBadge', undefined, 'Registered Student Profile')
+                : t('profile.guestBadge', undefined, 'Guest Profile · Stored locally')}
+            </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold font-editorial text-stone-900 dark:text-white tracking-tight">
             {t('profile.welcomeBack', undefined, 'Welcome back')}
           </h1>
           <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1 max-w-xl">
-            {t(
-              'profile.privacyNotice',
-              undefined,
-              'Edvora saves your profile locally on this device. No account or password required.'
-            )}
+            {profile.profileType === 'registered'
+              ? t(
+                  'profile.registeredPrivacyNotice',
+                  undefined,
+                  'Your profile is securely synced to your account. Update your details below anytime.'
+                )
+              : t(
+                  'profile.privacyNotice',
+                  undefined,
+                  'Edvora saves your profile locally on this device. No account or password required.'
+                )}
           </p>
         </div>
 
@@ -373,9 +415,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {PROFILE_SECTIONS.map((sec) => {
+            const profileFields = profile?.fields || {};
             const displayItems: DisplayFieldItem[] = sec.fieldIds.map((fid) => {
               const def = fieldById[fid];
-              const fVal = profile.fields[fid] || {
+              const fVal = profileFields[fid] || {
                 value: null,
                 status: 'unknown',
                 updatedAt: '',
@@ -405,7 +448,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Edit Section Modal */}
-      {activeEditSection && profile && (
+      {activeEditSection && (
         <ProfileEditModal
           isOpen={true}
           sectionId={activeEditSection.id}
@@ -415,7 +458,16 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
             activeEditSection.defaultTitle
           )}
           fieldIds={activeEditSection.fieldIds}
-          currentProfile={profile}
+          currentProfile={
+            profile || {
+              id: 'temp',
+              profileType: 'registered',
+              createdAt: '',
+              updatedAt: '',
+              fields: {},
+              preferences: { language: 'en', theme: 'system' },
+            }
+          }
           onClose={() => setActiveEditSection(null)}
           onSave={handleSaveSectionFields}
         />

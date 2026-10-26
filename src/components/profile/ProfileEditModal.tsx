@@ -28,8 +28,9 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
   // Local form state initialized from current profile
   const [formData, setFormData] = useState<Record<string, any>>(() => {
     const initial: Record<string, any> = {};
+    const fields = currentProfile?.fields || {};
     for (const fid of fieldIds) {
-      const existing = currentProfile.fields[fid];
+      const existing = fields[fid];
       initial[fid] = existing ? existing.value : '';
     }
     return initial;

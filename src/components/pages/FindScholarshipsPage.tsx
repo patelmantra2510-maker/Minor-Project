@@ -95,7 +95,7 @@ export const FindScholarshipsPage: React.FC<FindScholarshipsPageProps> = ({ onNa
   // Check critical missing fields gating candidate matching
   const missingCriticalFields = useMemo(() => {
     if (!profile) return ['field_education_level', 'field_domicile_state'];
-    const fields = profile.fields;
+    const fields = profile.fields || {};
     const missing: string[] = [];
 
     const edu = fields['field_education_level'];
@@ -235,7 +235,7 @@ export const FindScholarshipsPage: React.FC<FindScholarshipsPageProps> = ({ onNa
   }
 
   // Case 1: Empty Profile view
-  if (!profile || !hasPopulatedFields) {
+  if (!profile || !hasPopulatedFields || completion.percentage === 0) {
     return (
       <div className="max-w-3xl mx-auto py-12 px-4 sm:px-6">
         <div className="bg-white dark:bg-[#142420] border border-[#E8E2D7] dark:border-[#1E3A33] rounded-3xl p-8 sm:p-12 text-center shadow-xs space-y-6">
@@ -278,12 +278,13 @@ export const FindScholarshipsPage: React.FC<FindScholarshipsPageProps> = ({ onNa
   }
 
   // Profile fields helper for Compact Summary
-  const eduLevel = profile.fields['field_education_level']?.value || '—';
-  const stream = profile.fields['field_stream']?.value || profile.fields['field_stream']?.customText || '';
+  const profileFields = profile?.fields || {};
+  const eduLevel = profileFields['field_education_level']?.value || '—';
+  const stream = profileFields['field_stream']?.value || profileFields['field_stream']?.customText || '';
   const eduDisplay = stream ? `${eduLevel} • ${stream}` : String(eduLevel);
-  const location = profile.fields['field_domicile_state']?.value || profile.fields['field_current_state']?.value || '—';
-  const category = profile.fields['field_category']?.value || '—';
-  const score = profile.fields['field_latest_score']?.value || profile.fields['field_class_12_percentage']?.value || '—';
+  const location = profileFields['field_domicile_state']?.value || profileFields['field_current_state']?.value || '—';
+  const category = profileFields['field_category']?.value || '—';
+  const score = profileFields['field_latest_score']?.value || profileFields['field_class_12_percentage']?.value || '—';
   const scoreDisplay = score !== '—' ? `${score}%` : '—';
 
   return (
@@ -352,7 +353,7 @@ export const FindScholarshipsPage: React.FC<FindScholarshipsPageProps> = ({ onNa
               />
             </div>
             <button
-              onClick={() => handleOpenQuestionnaire()}
+              onClick={() => onNavigate('profile')}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-stone-100 dark:bg-[#1C3630] hover:bg-stone-200 dark:hover:bg-[#23453E] text-stone-700 dark:text-stone-200 text-xs font-semibold border border-stone-200 dark:border-[#23453E] transition-colors cursor-pointer"
             >
               <span>{t('profile.updateProfile', undefined, 'Update Profile')}</span>

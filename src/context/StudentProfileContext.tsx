@@ -16,6 +16,7 @@ import {
 import { invalidateDependentFields } from '../engine/dynamicQuestionEngine';
 import { useScholarships } from './ScholarshipContext';
 import { useLanguage } from './LanguageContext';
+import { useAuth } from '../auth/AuthContext';
 
 export interface StudentProfileContextType {
   profile: StudentProfile | null;
@@ -42,36 +43,52 @@ export interface StudentProfileContextType {
 
 const StudentProfileContext = createContext<StudentProfileContextType | undefined>(undefined);
 
-export const StudentProfileProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const StudentProfileProvider: React.FC<{
+  children: React.ReactNode;
+  initialProfile?: StudentProfile | null;
+}> = ({ children, initialProfile }) => {
   const { language } = useLanguage();
   const { scholarships } = useScholarships();
 
-  const [profile, setProfile] = useState<StudentProfile | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  let authContext: any = null;
+  try {
+    authContext = useAuth();
+  } catch {
+    authContext = null;
+  }
+  const user = authContext?.user;
+  const isAuthenticated = authContext?.isAuthenticated;
+  const currentUserId = isAuthenticated && user?.userId ? user.userId : undefined;
 
-  // Refresh profile from persistent storage
+  const [profile, setProfile] = useState<StudentProfile | null>(() => initialProfile ?? null);
+  const [isLoading, setIsLoading] = useState<boolean>(() =>
+    initialProfile ? false : typeof window === 'undefined' ? false : true
+  );
+
+  // Refresh profile from persistent storage (user-scoped or guest)
   const refreshProfile = useCallback(async () => {
     try {
-      const loaded = await profileStorage.getProfile();
+      const loaded = await profileStorage.getProfile(currentUserId);
       setProfile(loaded);
     } catch (err) {
       console.warn('[StudentProfileContext] Error refreshing profile:', err);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [currentUserId]);
 
-  // Initial load
+  // Initial and user-change load
   useEffect(() => {
     refreshProfile();
-  }, [refreshProfile]);
+  }, [refreshProfile, currentUserId]);
 
   // Multi-tab synchronization
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === EDVORA_PROFILE_KEY || e.key === null) {
+      const targetKey = currentUserId ? `edvora_profile_${currentUserId}` : EDVORA_PROFILE_KEY;
+      if (e.key === targetKey || e.key === EDVORA_PROFILE_KEY || e.key === null) {
         refreshProfile();
       }
     };
@@ -80,7 +97,7 @@ export const StudentProfileProvider: React.FC<{ children: React.ReactNode }> = (
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [refreshProfile]);
+  }, [refreshProfile, currentUserId]);
 
   // Compute live profile completion percentage
   const profileCompletion = useMemo<ProfileCompletionResult>(() => {
@@ -90,22 +107,25 @@ export const StudentProfileProvider: React.FC<{ children: React.ReactNode }> = (
     return calculateProfileCompletion(profile, scholarships);
   }, [profile, scholarships]);
 
-  // Check if profile has any answered fields
+  // Check if profile has any actual answered/populated fields
   const hasPopulatedFields = useMemo<boolean>(() => {
     if (!profile || !profile.fields) return false;
-    return Object.values(profile.fields).some(
-      (f) =>
-        f.status === 'prefer_not_to_say' ||
-        (f.value !== null && f.value !== undefined && f.value !== '')
-    );
+    return Object.values(profile.fields).some((f) => {
+      if (!f) return false;
+      if (f.status === 'prefer_not_to_say') return true;
+      if (f.status === 'custom' && typeof f.customText === 'string' && f.customText.trim() !== '') return true;
+      if (f.status === 'known' && f.value !== null && f.value !== undefined && f.value !== '') return true;
+      return false;
+    });
   }, [profile]);
 
-  // Create default guest profile
+  // Create default clean profile
   const createDefaultProfile = useCallback(async (): Promise<StudentProfile> => {
     const now = new Date().toISOString();
     const newProfile: StudentProfile = {
-      id: `guest_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-      profileType: 'guest',
+      id: currentUserId || `guest_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      userId: currentUserId,
+      profileType: currentUserId ? 'registered' : 'guest',
       createdAt: now,
       updatedAt: now,
       lastActiveAt: now,
@@ -116,21 +136,26 @@ export const StudentProfileProvider: React.FC<{ children: React.ReactNode }> = (
       },
     };
 
-    await profileStorage.saveProfile(newProfile);
+    await profileStorage.saveProfile(newProfile, currentUserId);
     setProfile(newProfile);
     return newProfile;
-  }, [language]);
+  }, [language, currentUserId]);
 
   // Save full profile object
-  const saveProfile = useCallback(async (newProfile: StudentProfile): Promise<void> => {
-    const updated: StudentProfile = {
-      ...newProfile,
-      updatedAt: new Date().toISOString(),
-      lastActiveAt: new Date().toISOString(),
-    };
-    await profileStorage.saveProfile(updated);
-    setProfile(updated);
-  }, []);
+  const saveProfile = useCallback(
+    async (newProfile: StudentProfile): Promise<void> => {
+      const updated: StudentProfile = {
+        ...newProfile,
+        userId: currentUserId || newProfile.userId,
+        profileType: currentUserId ? 'registered' : (newProfile.profileType || 'guest'),
+        updatedAt: new Date().toISOString(),
+        lastActiveAt: new Date().toISOString(),
+      };
+      await profileStorage.saveProfile(updated, currentUserId);
+      setProfile(updated);
+    },
+    [currentUserId]
+  );
 
   // Update a single field
   const updateField = useCallback(
@@ -153,7 +178,7 @@ export const StudentProfileProvider: React.FC<{ children: React.ReactNode }> = (
       };
 
       const updatedFields = {
-        ...currentProfile.fields,
+        ...(currentProfile.fields || {}),
         [fieldId]: newFieldValue,
       };
 
@@ -164,11 +189,11 @@ export const StudentProfileProvider: React.FC<{ children: React.ReactNode }> = (
         fields: updatedFields,
       });
 
-      await profileStorage.saveProfile(cleanedProfile);
+      await profileStorage.saveProfile(cleanedProfile, currentUserId);
       setProfile(cleanedProfile);
       return cleanedProfile;
     },
-    [profile, createDefaultProfile]
+    [profile, createDefaultProfile, currentUserId]
   );
 
   // Update multiple fields simultaneously with optional dependency invalidation
@@ -181,7 +206,7 @@ export const StudentProfileProvider: React.FC<{ children: React.ReactNode }> = (
       const currentProfile = profile || (await createDefaultProfile());
 
       const mergedFields = {
-        ...currentProfile.fields,
+        ...(currentProfile.fields || {}),
         ...fieldsMap,
       };
 
@@ -196,18 +221,18 @@ export const StudentProfileProvider: React.FC<{ children: React.ReactNode }> = (
         nextProfile = invalidateDependentFields(nextProfile);
       }
 
-      await profileStorage.saveProfile(nextProfile);
+      await profileStorage.saveProfile(nextProfile, currentUserId);
       setProfile(nextProfile);
       return nextProfile;
     },
-    [profile, createDefaultProfile]
+    [profile, createDefaultProfile, currentUserId]
   );
 
   // Reset profile (clears profile & questionnaire without touching saved scholarships, compare lists, or app preferences)
   const resetProfile = useCallback(async (): Promise<void> => {
-    await profileStorage.clearProfile();
+    await profileStorage.clearProfile(currentUserId);
     setProfile(null);
-  }, []);
+  }, [currentUserId]);
 
   const value: StudentProfileContextType = {
     profile,

@@ -93,7 +93,7 @@ export const AdaptiveQuestionnaire: React.FC<AdaptiveQuestionnaireProps> = ({
       } else {
         setActiveQuestion(nextRes.question);
         // Pre-fill if answer exists in profile
-        const existingField = currentProf.fields[nextRes.question.fieldId];
+        const existingField = currentProf?.fields ? currentProf.fields[nextRes.question.fieldId] : undefined;
         if (existingField) {
           setAnswerValue(existingField.value);
           setAnswerStatus(existingField.status);
@@ -402,7 +402,7 @@ export const AdaptiveQuestionnaire: React.FC<AdaptiveQuestionnaireProps> = ({
   const effectiveQuestion = useMemo(() => {
     if (!activeQuestion) return null;
     if (activeQuestion.fieldId === 'field_stream') {
-      const rawEdu = profile.fields['field_education_level']?.value;
+      const rawEdu = profile?.fields ? profile.fields['field_education_level']?.value : undefined;
       const eduKey = rawEdu ? String(rawEdu).toLowerCase() : '';
       let streamLevel: EducationLevel | null = null;
       if (eduKey.includes('diploma')) streamLevel = 'Diploma';

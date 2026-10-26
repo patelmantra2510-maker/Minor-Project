@@ -55,18 +55,30 @@ function extractStudentInfo(
     };
 
     return {
-      location: (getFieldVal('field_domicile_state') || getFieldVal('field_current_state')) as string | undefined,
-      educationLevel: getFieldVal('field_education_level') as string | undefined,
-      stream: getFieldVal('field_course_stream') as string | undefined,
-      currentYear: getFieldVal('field_current_year') as string | undefined,
-      category: getFieldVal('field_social_category') as string | undefined,
+      location: (getFieldVal('field_domicile_state') || getFieldVal('field_current_state') || getFieldVal('field_state')) as string | undefined,
+      educationLevel: (getFieldVal('field_education_level') || getFieldVal('field_program')) as string | undefined,
+      stream: (getFieldVal('field_stream') || getFieldVal('field_course_stream') || getFieldVal('field_branch')) as string | undefined,
+      currentYear: (getFieldVal('field_academic_year') || getFieldVal('field_current_year') || getFieldVal('field_semester')) as string | undefined,
+      category: (getFieldVal('field_category') || getFieldVal('field_social_category')) as string | undefined,
       gender: getFieldVal('field_gender') as string | undefined,
-      annualIncome: typeof getFieldVal('field_annual_income') === 'number' ? (getFieldVal('field_annual_income') as number) : undefined,
-      academicPercentage: typeof getFieldVal('field_academic_percentage') === 'number' ? (getFieldVal('field_academic_percentage') as number) : undefined,
-      isDisability: getFieldVal('field_disability_status') as boolean | undefined,
-      isOrphan: getFieldVal('field_orphan_status') as boolean | undefined,
-      isDefenceWard: getFieldVal('field_defence_ward_status') as boolean | undefined,
-      isMinority: getFieldVal('field_minority_status') as boolean | undefined,
+      annualIncome:
+        typeof getFieldVal('field_family_income') === 'number'
+          ? (getFieldVal('field_family_income') as number)
+          : typeof getFieldVal('field_annual_income') === 'number'
+          ? (getFieldVal('field_annual_income') as number)
+          : undefined,
+      academicPercentage:
+        typeof getFieldVal('field_latest_score') === 'number'
+          ? (getFieldVal('field_latest_score') as number)
+          : typeof getFieldVal('field_academic_percentage') === 'number'
+          ? (getFieldVal('field_academic_percentage') as number)
+          : typeof getFieldVal('field_class_12_percentage') === 'number'
+          ? (getFieldVal('field_class_12_percentage') as number)
+          : undefined,
+      isDisability: (getFieldVal('field_has_disability') || getFieldVal('field_is_disabled') || getFieldVal('field_disability_status')) as boolean | undefined,
+      isOrphan: (getFieldVal('field_is_orphan') || getFieldVal('field_orphan_status')) as boolean | undefined,
+      isDefenceWard: (getFieldVal('field_is_defence_dependent') || getFieldVal('field_defence_ward_status')) as boolean | undefined,
+      isMinority: (getFieldVal('field_minority_status') || getFieldVal('field_is_minority')) as boolean | undefined,
     };
   }
 
@@ -102,6 +114,15 @@ export interface ProfileCompletionStatus {
 export function calculateProfileCompletion(
   profileOrAnswers?: StudentProfile | StudentAnswers | null
 ): ProfileCompletionStatus {
+  if (!profileOrAnswers) {
+    return {
+      percentage: 0,
+      knownFields: 0,
+      totalFields: 8,
+      isReady: false,
+    };
+  }
+
   const student = extractStudentInfo(profileOrAnswers);
 
   const coreChecks = [
@@ -117,7 +138,12 @@ export function calculateProfileCompletion(
 
   const knownFields = coreChecks.filter(Boolean).length;
   const totalFields = coreChecks.length;
-  const percentage = Math.round((knownFields / totalFields) * 100);
+  const percentage =
+    knownFields === 0
+      ? 0
+      : knownFields >= totalFields
+      ? 100
+      : Math.min(99, Math.round((knownFields / totalFields) * 100));
 
   return {
     percentage,

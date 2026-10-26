@@ -292,7 +292,11 @@ export async function migrateGuestProfileToAccount(
       await cloudProfileStorage.saveProfile(mergedProfile);
 
       // 5. Update local cache with registered profile
-      await localProfileStorage.saveProfile(mergedProfile);
+      await localProfileStorage.saveProfile(mergedProfile, userId);
+    } else {
+      // User opted to start fresh with their new account:
+      // Ensure the registered user starts with a clean profile
+      await localProfileStorage.clearProfile(userId);
     }
 
     // Merge saved scholarships with deduplication

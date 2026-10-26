@@ -22,19 +22,19 @@ export interface StoredQuestionnaireEnvelope {
 }
 
 export interface ProfileStorageProvider {
-  loadProfile(): Promise<StudentProfile | null>;
-  saveProfile(profile: StudentProfile): Promise<void>;
-  clearProfile(): Promise<void>;
-  hasProfile(): Promise<boolean>;
+  loadProfile(userId?: string): Promise<StudentProfile | null>;
+  saveProfile(profile: StudentProfile, userId?: string): Promise<void>;
+  clearProfile(userId?: string): Promise<void>;
+  hasProfile(userId?: string): Promise<boolean>;
 }
 
 export interface ProfileStorage extends ProfileStorageProvider {
-  getProfile(): Promise<StudentProfile | null>;
-  loadProfile(): Promise<StudentProfile | null>;
-  saveProfile(profile: StudentProfile): Promise<void>;
-  updateProfile(profile: StudentProfile): Promise<void>;
-  clearProfile(): Promise<void>;
-  hasProfile(): Promise<boolean>;
+  getProfile(userId?: string): Promise<StudentProfile | null>;
+  loadProfile(userId?: string): Promise<StudentProfile | null>;
+  saveProfile(profile: StudentProfile, userId?: string): Promise<void>;
+  updateProfile(profile: StudentProfile, userId?: string): Promise<void>;
+  clearProfile(userId?: string): Promise<void>;
+  hasProfile(userId?: string): Promise<boolean>;
 
   loadQuestionnaireState(): Promise<QuestionnaireState | null>;
   saveQuestionnaireState(state: QuestionnaireState): Promise<void>;
@@ -134,6 +134,7 @@ export class LocalStorageProfileStorage implements ProfileStorage {
   private profileStorageKey: string;
   private questionnaireStorageKey: string;
   private memoryFallbackProfile: StudentProfile | null = null;
+  private memoryFallbackProfiles: Record<string, StudentProfile> = {};
   private memoryFallbackQuestionnaire: QuestionnaireState | null = null;
 
   constructor(
@@ -159,13 +160,24 @@ export class LocalStorageProfileStorage implements ProfileStorage {
   }
 
   // Profile methods
-  async loadProfile(): Promise<StudentProfile | null> {
+  async loadProfile(userId?: string): Promise<StudentProfile | null> {
     if (!this.isLocalStorageAvailable()) {
+      if (userId) {
+        return this.memoryFallbackProfiles[userId] || null;
+      }
       return this.memoryFallbackProfile;
     }
 
     try {
-      const raw = window.localStorage.getItem(this.profileStorageKey);
+      const storageKey = userId ? `edvora_profile_${userId}` : this.profileStorageKey;
+      let raw = window.localStorage.getItem(storageKey);
+
+      // Special fallback: if userId is the default seeded demo student and not found yet
+      if (!raw && userId === 'demo-student-001') {
+        const demoRaw = window.localStorage.getItem('edvora_profile_demo-student-001');
+        if (demoRaw) raw = demoRaw;
+      }
+
       if (!raw) return null;
 
       const parsed = JSON.parse(raw);
@@ -187,12 +199,12 @@ export class LocalStorageProfileStorage implements ProfileStorage {
       const recovered = recoverCorruptedProfile(parsed);
       if (recovered && Object.keys(recovered.fields).length > 0) {
         // Resave clean recovered profile
-        await this.saveProfile(recovered);
+        await this.saveProfile(recovered, userId);
         return recovered;
       }
 
       // Completely unrecoverable data
-      await this.clearProfile();
+      await this.clearProfile(userId);
       return null;
     } catch {
       // Safe fallback on JSON parse failure
@@ -200,29 +212,39 @@ export class LocalStorageProfileStorage implements ProfileStorage {
     }
   }
 
-  async getProfile(): Promise<StudentProfile | null> {
-    return this.loadProfile();
+  async getProfile(userId?: string): Promise<StudentProfile | null> {
+    return this.loadProfile(userId);
   }
 
-  async hasProfile(): Promise<boolean> {
-    const p = await this.loadProfile();
+  async hasProfile(userId?: string): Promise<boolean> {
+    const p = await this.loadProfile(userId);
     return p !== null;
   }
 
-  async saveProfile(profile: StudentProfile): Promise<void> {
+  async saveProfile(profile: StudentProfile, userId?: string): Promise<void> {
     if (!isValidProfileStructure(profile)) {
       throw new Error('[Edvora ProfileStorage] Attempted to save invalid profile structure.');
     }
 
     const now = new Date().toISOString();
+    const targetUserId = userId || profile.userId || (profile.profileType === 'registered' ? profile.id : undefined);
+
     const updatedProfile: StudentProfile = {
       ...profile,
+      userId: targetUserId || profile.userId,
       updatedAt: now,
       lastActiveAt: now,
     };
 
     if (!this.isLocalStorageAvailable()) {
-      this.memoryFallbackProfile = updatedProfile;
+      if (userId) {
+        this.memoryFallbackProfiles[userId] = updatedProfile;
+      } else {
+        this.memoryFallbackProfile = updatedProfile;
+        if (targetUserId) {
+          this.memoryFallbackProfiles[targetUserId] = updatedProfile;
+        }
+      }
       return;
     }
 
@@ -232,42 +254,48 @@ export class LocalStorageProfileStorage implements ProfileStorage {
         profile: updatedProfile,
         storedAt: now,
       };
-      window.localStorage.setItem(this.profileStorageKey, JSON.stringify(envelope));
 
-      // Link to logged in demo user if active
-      try {
-        const rawSession = window.localStorage.getItem('edvora_demo_session');
-        if (rawSession) {
-          const session = JSON.parse(rawSession);
-          if (session?.userId) {
-            window.localStorage.setItem(`edvora_profile_${session.userId}`, JSON.stringify(updatedProfile));
-          }
-        } else if (updatedProfile.userId) {
-          window.localStorage.setItem(`edvora_profile_${updatedProfile.userId}`, JSON.stringify(updatedProfile));
+      if (userId) {
+        window.localStorage.setItem(`edvora_profile_${userId}`, JSON.stringify(envelope));
+      } else {
+        window.localStorage.setItem(this.profileStorageKey, JSON.stringify(envelope));
+        if (targetUserId) {
+          window.localStorage.setItem(`edvora_profile_${targetUserId}`, JSON.stringify(envelope));
         }
-        if (typeof window.dispatchEvent === 'function') {
-          if (typeof CustomEvent !== 'undefined') {
-            window.dispatchEvent(new CustomEvent('edvora:profile-updated'));
-          }
+      }
+
+      if (typeof window.dispatchEvent === 'function') {
+        if (typeof CustomEvent !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('edvora:profile-updated'));
         }
-      } catch {
-        // Safe fallback
       }
     } catch {
-      this.memoryFallbackProfile = updatedProfile;
+      if (userId) {
+        this.memoryFallbackProfiles[userId] = updatedProfile;
+      } else {
+        this.memoryFallbackProfile = updatedProfile;
+      }
     }
   }
 
-  async updateProfile(profile: StudentProfile): Promise<void> {
-    return this.saveProfile(profile);
+  async updateProfile(profile: StudentProfile, userId?: string): Promise<void> {
+    return this.saveProfile(profile, userId);
   }
 
-  async clearProfile(): Promise<void> {
-    this.memoryFallbackProfile = null;
+  async clearProfile(userId?: string): Promise<void> {
+    if (userId) {
+      delete this.memoryFallbackProfiles[userId];
+    } else {
+      this.memoryFallbackProfile = null;
+    }
     this.memoryFallbackQuestionnaire = null;
     if (this.isLocalStorageAvailable()) {
       try {
-        window.localStorage.removeItem(this.profileStorageKey);
+        if (userId) {
+          window.localStorage.removeItem(`edvora_profile_${userId}`);
+        } else {
+          window.localStorage.removeItem(this.profileStorageKey);
+        }
         window.localStorage.removeItem(this.questionnaireStorageKey);
       } catch {
         // Ignore removal error
@@ -335,19 +363,19 @@ export class LocalStorageProfileStorage implements ProfileStorage {
  * Does not implement fake authentication or fake endpoints today.
  */
 export class RemoteProfileStorageProvider implements ProfileStorageProvider {
-  async loadProfile(): Promise<StudentProfile | null> {
+  async loadProfile(_userId?: string): Promise<StudentProfile | null> {
     throw new Error('RemoteProfileStorageProvider requires cloud authentication service.');
   }
 
-  async saveProfile(_profile: StudentProfile): Promise<void> {
+  async saveProfile(_profile: StudentProfile, _userId?: string): Promise<void> {
     throw new Error('RemoteProfileStorageProvider requires cloud authentication service.');
   }
 
-  async clearProfile(): Promise<void> {
+  async clearProfile(_userId?: string): Promise<void> {
     throw new Error('RemoteProfileStorageProvider requires cloud authentication service.');
   }
 
-  async hasProfile(): Promise<boolean> {
+  async hasProfile(_userId?: string): Promise<boolean> {
     return false;
   }
 }
